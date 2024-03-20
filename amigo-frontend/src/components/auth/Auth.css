@@ -1,3 +1,8 @@
+* {
+    box-sizing: border-box;
+  }
+  
+
 .container{
     display: flex;
     flex-direction: column;
@@ -7,6 +12,8 @@
     width: 600px;
     background: #ffff;
     padding-bottom: 30px;
+    border: 2px solid #3c009d;
+    border-radius: 10px; /* colțuri rotunde de 10 pixeli */
 }
 
 .header {
@@ -77,6 +84,41 @@
     font-size: 19px;
 }
 
+.data-container label{
+    height: 50px;
+    width: 100px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #797979;
+    font-size: 19px;
+    margin-right: 60px;
+}
+
+.input-data {
+    display: flex; 
+    align-items: center;
+    margin: auto;
+    width: 480px;
+    height: 80px;
+    background: #eaeaea;
+    border-radius: 6px;
+}
+.data-container {
+    margin-left: 27px;
+}
+
+.data-container input{
+    height: 50px;
+    width: 200px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #797979;
+    font-size: 19px;
+    margin-left: 0px;
+}
+
 .forgot-password{
     padding-left: 62px;
     margin-top: 27px;
@@ -121,6 +163,14 @@
     margin-top: 8px; /* Spațiu între mesajul de eroare și elementul de deasupra */
     border-radius: 4px; /* Rotunjirea colțurilor */
     width: fit-content; /* Latimea se ajusteaza in functie de lungimea textului */
-    margin-left: 16px; /* Spațiu la stânga pentru a nu fi prea lipit de marginea stângă a containerului */
+    margin-left: 60px; /* Spațiu la stânga pentru a nu fi prea lipit de marginea stângă a containerului */
+    
   }
-  
+
+  input[type="date"]::-webkit-datetime-edit, 
+input[type="date"]::-webkit-inner-spin-button, 
+input[type="date"]::-webkit-clear-button {
+    display: none;
+}
+
+

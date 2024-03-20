@@ -17,11 +17,12 @@ public class AccountController {
     @PostMapping("/add")
     public String add(@RequestBody Account account) {
         accountService.saveAccount(account);
+        System.out.printf("Email " + account.getEmail() + "Id " + account.getAccount_id());
         return "Account added";
     }
 
     @GetMapping("/getAll")
-    public List<Account> getAllPersons() {
+    public List<Account> getAllAccount() {
         return accountService.getAllAccount();
     }
 }

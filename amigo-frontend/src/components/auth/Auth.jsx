@@ -1,124 +1,263 @@
-import React, { useState } from 'react'
-import email_icon from '../Assets/email.png'
-import password_icon from '../Assets/password.png'
-import user_icon from '../Assets/person.png'
-import { useNavigate } from 'react-router-dom';
-import './Auth.css'
-const Login = () => {
+    import React, { useState, useEffect } from 'react'
+    import email_icon from '../Assets/email.png'
+    import password_icon from '../Assets/password.png'
+    import dbo_icon from '../Assets/dbo.png'
+    import user_icon from '../Assets/person.png'
+    import { useNavigate } from 'react-router-dom';
+    import { useGlobalState, setGlobalState } from '../state';
+    import './Auth.css'
+    import NavBar from '../Navbar';
+    const urlBase = "http://localhost:8080/";
 
-    const [action, setAction] = useState("Sign In");
-    const [email, setEmail] = useState('')
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
-    const [error, setError] = useState('');
-    const navigate = useNavigate();
-    
-    const handleClickSignUp = async (e) => {
-        e.preventDefault();
-    
-        if (!validateEmail(email)) {
-            setError("The email is not valid.");
-            setTimeout(() => setError(''), 3000);
-            return;
+    const Login = () => {
+
+        const [action, setAction] = useState("Sign In");
+        const [email, setEmail] = useState('')
+        const [username, setUsername] = useState('')
+        const [password, setPassword] = useState('')
+        const [repeatPassword, setRepeatPassword] = useState('')
+        const [dob, setDob] = useState('');
+        const [error, setError] = useState('');
+        const navigate = useNavigate();
+        const [defaultLoggin] = useGlobalState("loggin");
+        const [defaultEmail] = useGlobalState("email");
+        const [defaultUsername] = useGlobalState("username");
+
+        useEffect(() => {
+            console.log("Current defaultLoggin:", defaultLoggin);
+            console.log("Current defaultEmail:", defaultEmail);
+            console.log("Current defaultUsername:", defaultUsername);
+        }, [defaultLoggin, defaultEmail, defaultUsername])
+        
+        const handleClickSignUp = async (e) => {
+            e.preventDefault();
+        
+            if (!validateEmail(email)) {
+                setError("The email is not valid.");
+                setTimeout(() => setError(''), 3000);
+                return;
+            }
+        
+            if (!validateUsername(username)) {
+                setError("The username is not valid.");
+                setTimeout(() => setError(''), 3000);
+                return;
+            }
+        
+            if (!validatePassword(password)) {
+                setError("The password is not valid. It must contain at least 6 and at most 30 characters, uppercase and lowercase, and at least one special character.");
+                setTimeout(() => setError(''), 3000);
+                return;
+            }
+
+            if (password != repeatPassword) {
+                setError("Passwords do not match.");
+                setTimeout(() => setError(''), 3000);
+                return;
+            }
+        
+            try {
+                let accounts = await getAllAccount();
+                let emailTaken = false;
+                let usernameTaken = false;
+                accounts.forEach(element => {
+                    if (element.email === email) {
+                        emailTaken = true;
+                    }
+                    if (element.username === username) {
+                        usernameTaken = true;
+                    }
+                });
+        
+                if (emailTaken) {
+                    setError("The email its already use.");
+                    setTimeout(() => setError(''), 3000);
+                    return;
+                }
+        
+                if (usernameTaken) {
+                    setError("The username its already use.");
+                    setTimeout(() => setError(''), 3000);
+                    return;
+                }
+        
+                let currentDate = new Date();
+                let year = currentDate.getFullYear();
+                let month = currentDate.getMonth();
+                let day = currentDate.getDate() + 1;
+                let account_date_created = new Date(year, month, day);
+        
+                let account = { email, username, password, account_date_created };
+                console.log(account)
+        
+                let response = await fetch(urlBase+"account/add",{
+                    method:"POST",
+                    headers:{"Content-Type":"application/json"}, 
+                    body:JSON.stringify(account)
+                });
+        
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                let account_id = await getIdByEmail(email);
+                // console.log("The ID for the account is: " + account_id);
+
+                //Create the profile for the account
+                const gender = {
+                    MALE: 'MALE',
+                    FEMALE: 'FEMALE',
+                    OTHER: 'OTHER'
+                };
+                let profile = {account_id, dob, img_url:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgFBQkGBxYIBwYGBw8ICQgWIBEiIiAdHx8YHSggGCYlGx8fITEhJSkrLi4uFx8zODMsNygtLisBCgoKBQUFDgUFDisZExkrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrK//AABEIAMgAyAMBIgACEQEDEQH/xAAbAAEAAwEBAQEAAAAAAAAAAAAABAUGAwIBB//EADEQAQACAQIDBQYFBQAAAAAAAAABAgMEEgURIiEyQlJxEyMxUVNiQXKBkcEzYWNz0f/EABQBAQAAAAAAAAAAAAAAAAAAAAD/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwD9bAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHm960pNrzWta13WtZSa7id8szTBNsOPu7vFYFpqNfp9Pzi991vp4+qyDfjUR/Tw7v8AZdUALWONX59WHHy+26Vp+K4MsxW+7Ba31O7+6gAa74jM4NdqMHKKZLWr9O3VVdaHXU1VeU+7yV72PzegJgAAAAAAAAAAAAAAAAI+vzew0uS8T1bdtfWQVXFtZObJOGk+7xW6tvilXAAAAAA9UvalovSbVtXqraryA0fD9XGqw8521yU6b1/lLZjQ6idNqKX59Pdv6NPE845wAAAAAAAAAAAAAAAq+O35YcdPNfd+y0VHHufPD8u0FQAAAAAAAA0+hvN9HitPx2Mw0vDqzXRYonybgSQAAAAAAAAAAAAAFbxyk209LxH9K/V+qyQeL5JporREbva22flBnwAAAAAAAeqV32rWPFba1VKxStaR8KV2spEzExMTtmrR8Nve+jx2yza1rc+q3yBKAAAAAAAAAAAAAAcNZhjUafJSY7du6vq7gMlMcpmJ+NXxO4pprYM83iPd57bq2/v8kEAAAAAH2Im0xERum3drUHTTYbajPTHX42t1W8sNRWsUrWsfCtdtVbwnQ3wzOXL02tXbXH5YWYAAAAAAAAAAAAAAAAOebHXNjtjvG6L12/lZnNjthy2x3jtpba1Sp43p+da56x216L/wCnAAAAWnBNPFsls1o7MXTT1VbQcHrt0VZ89psCcAAAAAAAAAAAAAAAAAAj8RrFtFlifJuSFfxnNFNN7OJ6s9tv6AoQAAAGh4ReLaKkeS01szyz4LqIplthtPZl6qeoLsAAAAAAAAAAAAAAAAR82s0+Hv5MfPy16rK/U8YtbnXT02/wCTJ/wFjqtTj01N2Se3w4/FZntTqL6nLN7+Lu18sOeS98lpvktbJa3is8gAAAAPtZmtotWds16q2fAF/wAP19NRSKXmtMte9XzJ7JRMxPOJ2ystHxW9OVNRFstfDkr3qguxzw5seeu7FeuSPtdAAAAAAAAAHy1orWbWmtYr3rWecuSmKlr5Lba171lBrtdk1NpiN2PHXu4/N6gmavi0Vmaaatck/Vt3Vbl1ObNMzkyXt9u7pcQAAAAAAAAAAAAHql70tFqWtjmvirZPwcXy05RmrXPHm7tlcA0en4hp8/ZF/ZW+nk6UtkU3R8Qy6a0VtNsuP6dvD6A0I54ctM+OMmO26tnQAAAEDi+onDp9lZ22z9P6fiCu4prJ1OXZSfd4rdP3T80EAAAAAAAAAAAAAAAAAAAS+H6u2my9u62O/fr/AC0UTFqxaJ3RbqrZkl5wXUTfDbFad04O76AsgAFBxrJu1ez8MVIqAIAAAAAAAAAAAAAAAAAAAACXwvN7HWU5z05eiwA0YAP/2Q==", description: null, gender:gender.OTHER};
+                console.log(profile);
+                response = await fetch(urlBase+"profile/add",{
+                    method:"POST",
+                    headers:{"Content-Type":"application/json"}, 
+                    body:JSON.stringify(profile)
+                });
+        
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                setGlobalState("loggin", true);
+                setGlobalState("email", email);
+                setGlobalState("username", username)
+                setEmail('');
+                setUsername('');
+                setPassword('');
+                setRepeatPassword('');
+                setError('');
+                //Navigate to the home page
+                navigate(`/home`);
+            } catch (error) {
+                console.error("Error:", error.message);
+            }
+        };
+
+        const handleClickSignIn = async (e) => {
+            e.preventDefault()
+            let local_username;
+            
+            try {
+                let accounts = await getAllAccount();
+                let accountExist = false;
+
+                accounts.forEach(element => {
+                    if ((element.email === email) && (element.password === password)) {
+                        accountExist = true;
+                        local_username = element.username;
+                    }
+                });
+                
+                if (!accountExist) {
+                    setError("The email and password doesn't match.");
+                    setTimeout(() => setError(''), 3000);
+                    return;
+                }
+                else {
+                    
+                    setGlobalState("loggin", true);
+                    setGlobalState("email", email);
+                    setGlobalState("username", local_username);
+                    navigate(`/home`);
+                }
+            } catch (error) {
+                console.error("Error:", error.message);
+            }
         }
-    
-        if (!validateUsername(username)) {
-            setError("The username is not valid.");
-            setTimeout(() => setError(''), 3000);
-            return;
-        }
-    
-        if (!validatePassword(password)) {
-            setError("The password is not valid. It must contain at least 6 characters, uppercase and lowercase, and at least one special character.");
-            setTimeout(() => setError(''), 3000);
-            return;
-        }
-    
+
+        const validateEmail = (email) => {
+            const re = /\S+@\S+\.\S+/;
+            return re.test(email);
+        };
+
+        const validateUsername = (username) => {
+            return username.length >= 3;
+        };
+
+        const validatePassword = (password) => {
+            const re = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+}{"':;?/>.<,])(?=.*[a-zA-Z]).{6,}$/;
+            const maxLength = 30; // Lungimea maximă a parolei
+            
+            if (password.length > maxLength) {
+                return false; // Parola este prea lungă
+            }
+        
+            return re.test(password);
+        };
+
+    return (
+        <div className='auth-page'>
+            <NavBar/>
+            <div className='container'>
+                <div className='header'>
+                        <div className='text'>{action}</div>
+                        <div className='underline'></div>
+                </div>
+                <div className='inputs'>
+                    {action==="Sign In"?<div></div>:<div className='input'>
+                                                    <img src={user_icon} alt=''/>
+                                                    <input type='text' placeholder='Name' onChange={(e) => setUsername(e.target.value)}/>
+                                                    </div>}
+                    <div className='input'>
+                        <img src={email_icon} alt=''/>
+                        <input type='email' placeholder='Email' onChange={(e) => setEmail(e.target.value)}/>
+                    </div>
+                    {action==='Sign Up'?
+                    <div className='input-data'>
+                        <div className='data-container'>
+                            <label htmlFor="birthDate">Date of Birth:</label>
+                            <input type="date" id="birthDate" name="birthDate" max="2024-03-16" required onChange={(e) => setDob(e.target.value)}/>
+                        </div>
+                    </div>
+                    :<div></div>}
+ 
+
+                    <div className='input'>
+                        <img src={password_icon} alt=''/>
+                        <input type='password' placeholder='Password' onChange={(e) => setPassword(e.target.value)}/>
+                    </div>
+                    {action==="Sign Up"?<div className='input'>
+                        <img src={password_icon} alt=''/>
+                        <input type='password' placeholder='Repeat Password' onChange={(e) => setRepeatPassword(e.target.value)}/>
+                    </div>:<div></div>}
+
+                    <div className='connect' onClick={action === "Sign In" ? handleClickSignIn : handleClickSignUp}>Connect</div>
+                </div>
+
+                {error && <div className="error">{error}</div>}
+
+                {action==="Sign Up"?<div></div>:<div className='forgot-password'>Forgot password?<span>Click Here!</span></div>}
+                <div className='submit-container'>
+                    <div className={action==="Sign In"?"submit gray":"submit"} onClick={()=>{setAction("Sign Up")}}>Sign Up</div>
+                    <div className={action==="Sign Up"?"submit gray":"submit"} onClick={()=>{setAction("Sign In")}}>Sign In</div>
+                </div>
+
+            </div>
+        </div>
+    )
+
+    };
+
+    const getIdByEmail = async (email) => {
         try {
-            const accounts = await getAll();
-            let emailTaken = false;
-            let usernameTaken = false;
-            accounts.forEach(element => {
-                if (element.email === email) {
-                    emailTaken = true;
-                }
-                if (element.username === username) {
-                    usernameTaken = true;
-                }
-            });
-    
-            if (emailTaken) {
-                setError("The email its already use.");
-                setTimeout(() => setError(''), 3000);
-                return;
-            }
-    
-            if (usernameTaken) {
-                setError("The username its already use.");
-                setTimeout(() => setError(''), 3000);
-                return;
-            }
-    
-            const currentDate = new Date();
-            const year = currentDate.getFullYear();
-            const month = currentDate.getMonth();
-            const day = currentDate.getDate() + 1;
-            const account_date_created = new Date(year, month, day);
-    
-            const account = { email, username, password, account_date_created };
-            console.log(account)
-    
-            const response = await fetch("http://localhost:8080/account/add",{
-                method:"POST",
-                headers:{"Content-Type":"application/json"}, 
-                body:JSON.stringify(account)
-            });
-    
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-    
-            console.log("account added");
-            setEmail('');
-            setUsername('');
-            setPassword('');
-            setError('');
-            //Navigate to the home page
-            navigate(`/home`);
+        const accounts = await getAllAccount();
+        const account = accounts.find(account => account.email === email);
+        if (account) {
+            return account.account_id;
+        } else {
+            throw new Error("Account not found");
+        }
         } catch (error) {
-            console.error("Error:", error.message);
+        console.error("Error:", error.message);
+        return null;
         }
     };
 
-    const handleClickSignIn = async (e) => {
-        e.preventDefault()
-        
-        try {
-            const accounts = await getAll();
-            const accountExist = false;
-
-            accounts.forEach(element => {
-                if ((element.email === email) && (element.password === password)) {
-                    accountExist = true;
-                }
-            });
-            
-            if (accountExist) {
-                setError("The email and password doesn't match.");
-                setTimeout(() => setError(''), 3000);
-                return;
-            }
-            else {
-                navigate(`/home`);
-                console.log("Connected")
-            }
-        } catch (error) {
-            console.error("Error:", error.message);
-        }
-    }
-
-    const getAll = () => {
-        return fetch("http://localhost:8080/account/getAll", {
+    const getAllAccount = () => {
+        return fetch(urlBase+"account/getAll", {
             method: "GET",
         }).then(response => {
             if (!response.ok) {
@@ -126,60 +265,26 @@ const Login = () => {
             }
             return response.json();
         }).then(data => {
-            console.log("All accounts:", data);
             return data;
         }).catch(error => {
             console.error("Error getting accounts:", error);
             return [];
         });
-    };
+    }
+const getUsernameByEmail = async (email) => {
+    try {
+    const accounts = await getAllAccount();
+    const account = accounts.find(account => account.email === email);
+    if (account) {
+        return account.username;
+    } else {
+        throw new Error("Account not found");
+    }
+    } catch (error) {
+    console.error("Error:", error.message);
+    return null;
+    }
+};
+    
 
-    const validateEmail = (email) => {
-        const re = /\S+@\S+\.\S+/;
-        return re.test(email);
-    };
-
-    const validateUsername = (username) => {
-        return username.length >= 3;
-    };
-
-    const validatePassword = (password) => {
-        const re = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+}{"':;?/>.<,])(?=.*[a-zA-Z]).{6,}$/;
-        return re.test(password);
-    };
-
-  return (
-    <div className='container'>
-        <div className='header'>
-                <div className='text'>{action}</div>
-                <div className='underline'></div>
-        </div>
-        <div className='inputs'>
-            {action==="Sign In"?<div></div>:<div className='input'>
-                                            <img src={user_icon} alt=''/>
-                                            <input type='text' placeholder='Name' onChange={(e) => setUsername(e.target.value)}/>
-                                            </div>}
-            <div className='input'>
-                <img src={email_icon} alt=''/>
-                <input type='email' placeholder='Email' onChange={(e) => setEmail(e.target.value)}/>
-            </div>
-            <div className='input'>
-                <img src={password_icon} alt=''/>
-                <input type='password' placeholder='Password' onChange={(e) => setPassword(e.target.value)}/>
-            </div>
-            <div className='connect' onClick={action === "Sign In" ? handleClickSignIn : handleClickSignUp}>Connect</div>
-        </div>
-
-        {error && <div className="error">{error}</div>}
-
-        {action==="Sign Up"?<div></div>:<div className='forgot-password'>Forgot password?<span>Click Here!</span></div>}
-        <div className='submit-container'>
-            <div className={action==="Sign In"?"submit gray":"submit"} onClick={()=>{setAction("Sign Up")}}>Sign Up</div>
-            <div className={action==="Sign Up"?"submit gray":"submit"} onClick={()=>{setAction("Sign In")}}>Sign In</div>
-        </div>
-
-    </div>
-  )
-}
-
-export default Login
+    export default {Login , getAllAccount, getIdByEmail, getUsernameByEmail }
