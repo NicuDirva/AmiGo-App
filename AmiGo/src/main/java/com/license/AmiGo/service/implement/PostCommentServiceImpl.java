@@ -22,4 +22,7 @@ public class PostCommentServiceImpl implements PostCommentService {
     public List<Post_comment> getAllPostComment() {
         return postCommentRepository.findAll();
     }
+    public List<Post_comment> getAllPostCommentById(long post_id) {
+        return postCommentRepository.getAllPostCommentById(post_id);
+    }
 }

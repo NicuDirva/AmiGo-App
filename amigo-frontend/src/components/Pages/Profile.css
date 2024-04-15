@@ -17,4 +17,38 @@
   }
   
   /* Stiluri suplimentare pentru container, cum ar fi dimensiunea și spațiul suplimentar, dacă este necesar */
+
+  .upload-avatar {
+    margin-top: 20px; /* sau orice alte margini sau spațieri dorite */
+}
+
+.upload-label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.upload-input {
+    display: flex;
+    align-items: center;
+}
+
+.upload-button {
+    margin-left: 10px;
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.upload-button:hover {
+    background-color: #0056b3;
+}
+
+/* Stilizare input file pentru a se potrivi cu butonul */
+input[type="file"] {
+    display: none; /* ascunde inputul default */
+}
   

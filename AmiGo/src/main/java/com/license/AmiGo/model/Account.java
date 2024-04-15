@@ -10,7 +10,7 @@ import java.util.Date;
 public class Account {
     @Id @GeneratedValue
     private long account_id;
-    private Date account_date_created;
+    private String account_date_created;
     private String password;
     private String username;
     private String email;
@@ -29,7 +29,7 @@ public class Account {
                 '}';
     }
 
-    public Account(Date account_date_created, String password, String username, String email) {
+    public Account(String account_date_created, String password, String username, String email) {
         this.account_date_created = account_date_created;
         this.password = password;
         this.username = username;
@@ -44,11 +44,11 @@ public class Account {
         this.account_id = account_id;
     }
 
-    public Date getAccount_date_created() {
+    public String getAccount_date_created() {
         return account_date_created;
     }
 
-    public void setAccount_date_created(Date account_date_created) {
+    public void setAccount_date_created(String account_date_created) {
         this.account_date_created = account_date_created;
     }
 

@@ -1,0 +1,44 @@
+.post-card {
+    border: 1px solid #ccc;
+    padding: 10px 80px 10px 80px;
+    margin-bottom: 20px; /* Spațiu între postări */
+    border-radius: 5px; /* Rotunjirea colțurilor */
+}
+
+.top-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    justify-content: space-between;
+}
+
+.avatar img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.username h3 {
+    margin: 0;
+}
+
+.middle-row img {
+    max-width: 100%;
+    height: auto;
+}
+
+.post-content p {
+    margin: 0;
+}
+
+.bottom-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.react-icons img {
+    width: 20px;
+    height: 20px;
+    margin-left: 10px;
+}

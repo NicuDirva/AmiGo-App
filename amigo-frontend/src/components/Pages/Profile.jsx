@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../Navbar';
 import Auth from '../auth/Auth'
 import './Profile.css'
+import PostCard from '../card/PostCard';
 const urlBase = "http://localhost:8080/";
 
 const Profile = () => {
@@ -19,13 +20,12 @@ const Profile = () => {
     const [description, setDescription] = useState('');
     const [newDescription, setNewDescription] = useState('');
     const [gender, setGender] = useState(genderType.OTHER);
-    const [username, setUsername] = useState('');
     const [dob, setDob] = useState('')
     const [newDob, setNewDob] = useState('')
-    const navigate = useNavigate();
     const [error, setError] = useState('');
     const [action, setAction] = useState('connected');
     const [accountId, setAccountId] = useState('');
+    const [newAvatar, setNewAvatar] = useState('');
 
     useEffect(() => {
       const fetchData = async () => {
@@ -107,6 +107,33 @@ const Profile = () => {
       setNewDob('');
     }
   }
+
+  const convertImgBase64 = (e) => {
+    var reader = new FileReader();
+    reader.readAsDataURL(e.target.files[0]);
+    reader.onload = () => {
+      setNewAvatar(reader.result);
+    }
+  }
+
+  const handleAvatarChange = async (e) => {
+    console.log("Noul AVATAR:" + newAvatar)
+    if(newAvatar != imgUrl && newAvatar != '') {
+      const profile = await getProfileById(accountId);
+      profile.img_url = newAvatar;
+
+      const response = await fetch(urlBase+"profile/editAvatar",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"}, 
+      body:JSON.stringify(profile)
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    console.log("New avatar sent")
+    }
+  }
       
 
   return (
@@ -115,30 +142,51 @@ const Profile = () => {
             <div>
               <Navbar/>
               <div>
-                <div className='avatar-profile-container'>
-                  {<img className='avatar-profile' src={imgUrl} alt="Profile" />}
-                </div>
+              <div className='avatar-profile-container'>
+                  {imgUrl && <img className='avatar-profile' src={imgUrl} alt="Profile" />}
+                  {action === 'editProfile' ? (
+                      <div className="upload-avatar">
+                          <label htmlFor="image" className="upload-label">New avatar:</label>
+                          <div className="upload-input">
+                              <input
+                                  type="file"
+                                  id="image"
+                                  accept="image/*"
+                                  onChange={convertImgBase64}
+                                  required
+                              />
+                              <button onClick={handleAvatarChange} className="upload-button">Upload</button>
+                          </div>
+                      </div>
+                  ) : null}
+              </div>
                 {action==='connected'?
                 <p onClick={(e) => {setAction('editProfile')}}>Edit profile</p>
                 :<div></div>}
                 <div>
                 <div>
                   <p>Description: {description}</p>
-                  <input type='text' placeholder='New Description' value={newDescription} onChange={(e) => setNewDescription(e.target.value)} />
-                  <button onClick={handleDescriptionChange}>Change Description</button>
+                  {action==="editProfile"?<div><input type='text' placeholder='New Description' value={newDescription} onChange={(e) => setNewDescription(e.target.value)} />
+                  <button onClick={handleDescriptionChange}>Change Description</button></div>
+                  :<div></div>}
                 </div>
                 <div>
                   <p>Gender: {gender}</p>
-                  <select value={gender} onChange={(e) => handleGenderChange(e.target.value)}>
+                  {action==="editProfile"?
+                  <div><select value={gender} onChange={(e) => handleGenderChange(e.target.value)}>
                     <option value={genderType.MALE}>Male</option>
                     <option value={genderType.FEMALE}>Female</option>
                     <option value={genderType.OTHER}>Other</option>
-                  </select>
+                    </select>
+                  </div>
+                  :<div></div>}
                 </div>
                 <div>
                   <p>Date of Birth: {dob}</p>
+                  {action==="editProfile"?<div>
                   <input type='date' value={newDob} onChange={(e) => setNewDob(e.target.value)} />
-                  <button onClick={handleDOBChange}>Change DOB</button>
+                  <button onClick={handleDOBChange}>Change DOB</button></div>
+                  :<div></div>}
                 </div>
                 </div>
                 {action==='editProfile'?
@@ -147,6 +195,7 @@ const Profile = () => {
                 <div>
               </div>
               </div>
+              <PostCard.PostCard/>
             </div>
         :
         <div>

@@ -4,7 +4,6 @@ import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 
-import javax.xml.stream.events.Comment;
 import java.util.Vector;
 
 @Node
@@ -12,40 +11,24 @@ public class Post {
     @Id@GeneratedValue
     private long post_id;
     private long account_id;
-    private long group_id;
+    private Long group_id;
     private String urlImgPost;
     private String contentPost;
     private String post_date_created;
-    private Vector<Account> likePostArray;
-    private Vector<Comment> commentArray;
+    private Vector<Long> likePostArray;
 
-    public Post(long post_id, long account_id, long group_id, String urlImgPost, String contentPost, String post_date_created, Vector<Account> likePostArray, Vector<Comment> commentArray) {
+    public Post() {
+    }
+    public Post(long post_id, long account_id, long group_id, String urlImgPost, String contentPost, String post_date_created, Vector<Long> likePostArray) {
         this.post_id = post_id;
         this.account_id = account_id;
         this.group_id = group_id;
         this.urlImgPost = urlImgPost;
         this.contentPost = contentPost;
         this.post_date_created = post_date_created;
-        this.likePostArray = likePostArray;
-        this.commentArray = commentArray;
+        this.likePostArray = new Vector<>();
     }
 
-    public Post() {
-    }
-
-    @Override
-    public String toString() {
-        return "Post{" +
-                "post_id=" + post_id +
-                ", account_id=" + account_id +
-                ", group_id=" + group_id +
-                ", urlImgPost='" + urlImgPost + '\'' +
-                ", contentPost='" + contentPost + '\'' +
-                ", post_date_created='" + post_date_created + '\'' +
-                ", likePostArray=" + likePostArray +
-                ", commentArray=" + commentArray +
-                '}';
-    }
 
     public long getPost_id() {
         return post_id;
@@ -95,19 +78,11 @@ public class Post {
         this.post_date_created = post_date_created;
     }
 
-    public Vector<Account> getLikePostArray() {
+    public Vector<Long> getLikePostArray() {
         return likePostArray;
     }
 
-    public void setLikePostArray(Vector<Account> likePostArray) {
+    public void setLikePostArray(Vector<Long> likePostArray) {
         this.likePostArray = likePostArray;
-    }
-
-    public Vector<Comment> getCommentArray() {
-        return commentArray;
-    }
-
-    public void setCommentArray(Vector<Comment> commentArray) {
-        this.commentArray = commentArray;
     }
 }

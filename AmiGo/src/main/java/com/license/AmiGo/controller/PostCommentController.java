@@ -8,20 +8,23 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/postComment")
-@CrossOrigin
+@RequestMapping("/comment")
+@CrossOrigin(origins = "http://localhost:3000")
 public class PostCommentController {
     @Autowired
     private PostCommentService postCommentService;
 
     @PostMapping("/add")
     public void add(@RequestBody Post_comment postComment) {
-
         postCommentService.savePostComment(postComment);
     }
-    @PostMapping("getAll")
+    @GetMapping("/getAll")
     public List<Post_comment> getAllPostComment() {
-
         return postCommentService.getAllPostComment();
+    }
+
+    @GetMapping("/getAllPostCommentById")
+    public List<Post_comment> getAllPostComment(@RequestParam("post_id") long post_id) {
+        return postCommentService.getAllPostCommentById(post_id);
     }
 }

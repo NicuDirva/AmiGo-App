@@ -83,9 +83,11 @@
         
                 let currentDate = new Date();
                 let year = currentDate.getFullYear();
-                let month = currentDate.getMonth();
-                let day = currentDate.getDate() + 1;
-                let account_date_created = new Date(year, month, day);
+                let month = currentDate.getMonth() + 1; // Adăugăm 1 pentru că lunile încep de la 0
+                let day = currentDate.getDate();
+                
+                // Formatare data
+                let account_date_created = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
         
                 let account = { email, username, password, account_date_created };
                 console.log(account)
@@ -199,7 +201,7 @@
                 <div className='inputs'>
                     {action==="Sign In"?<div></div>:<div className='input'>
                                                     <img src={user_icon} alt=''/>
-                                                    <input type='text' placeholder='Name' onChange={(e) => setUsername(e.target.value)}/>
+                                                    <input type='text' placeholder='Username' onChange={(e) => setUsername(e.target.value)}/>
                                                     </div>}
                     <div className='input'>
                         <img src={email_icon} alt=''/>

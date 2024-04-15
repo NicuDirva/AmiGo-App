@@ -10,6 +10,10 @@ public interface ProfileService {
     List<Profile> getAllProfile();
 
     void editDescription(Profile profile);
+    void editAvatar(Profile profile);
     void editDob(Profile profile);
     void editGender(Profile profile);
+
+    String getAvatarbyId(long account_id);
+
 }
