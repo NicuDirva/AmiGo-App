@@ -20,8 +20,7 @@ public class Post_comment {
     public Post_comment() {
     }
 
-    public Post_comment(long comment_id, long account_id, long post_id, String content, String created_date, Vector<Post_comment> commentArray) {
-        this.comment_id = comment_id;
+    public Post_comment(long account_id, long post_id, String content, String created_date, Vector<Post_comment> commentArray) {
         this.account_id = account_id;
         this.post_id = post_id;
         this.content = content;

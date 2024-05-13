@@ -34,10 +34,34 @@ const CommentForm = ({post_id}) => {
               if (!response.ok) {
                 throw new Error('Failed to save comment');
               }
+
+            const response2 = await fetch(`${urlBase}comment/HAS_COMMENT`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(post_id),
+            });
+    
+            if (!response2.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const response3 = await fetch(`${urlBase}comment/HAS_POST`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(account_id),
+            });
+    
+            if (!response3.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
           
               setCommentContent('');
           
-              console.log('Post saved successfully');
+              console.log('Comment saved successfully');
             } catch (error) {
               console.error('Error saving comment:', error.message);
             }

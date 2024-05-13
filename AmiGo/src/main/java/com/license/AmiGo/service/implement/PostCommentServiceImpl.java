@@ -25,4 +25,15 @@ public class PostCommentServiceImpl implements PostCommentService {
     public List<Post_comment> getAllPostCommentById(long post_id) {
         return postCommentRepository.getAllPostCommentById(post_id);
     }
+
+    public void createHasCommentRelationship(long post_id) {
+        postCommentRepository.createHasCommentRelationship(post_id);
+    }
+
+    public void createHasPostRelationship(long account_id) {
+        postCommentRepository.createHasPostRelationship(account_id);
+    }
+    public void deleteComment(long comment_id) {
+        postCommentRepository.deleteComment(comment_id);
+    }
 }

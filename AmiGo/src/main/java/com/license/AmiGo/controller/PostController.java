@@ -1,5 +1,6 @@
 package com.license.AmiGo.controller;
 
+import com.license.AmiGo.model.Account;
 import com.license.AmiGo.model.Post;
 import com.license.AmiGo.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,13 @@ public class PostController {
         return postService.getAllPost();
     }
     @GetMapping("/getAccountPost")
-    public List<Post> getAccountPost(@RequestParam("account_id") long accountId) {
-        return postService.getAccountPost(accountId);
+    public List<Post> getAccountPost(@RequestParam("account_id") long account_id) {
+        return postService.getAccountPost(account_id);
+    }
+
+    @GetMapping("/getPostsByGroupId")
+    public List<Post> getGroupPost(@RequestParam("group_id") long group_id) {
+        return postService.getGroupPost(group_id);
     }
 
     @GetMapping("/getPost")
@@ -36,11 +42,19 @@ public class PostController {
         return postService.getPost(post_id);
     }
 
-    @PatchMapping("/addLike")
-    public void addLikeToPost(@RequestBody Map<String, Long> request) {
-        Long post_id = request.get("post_id");
-        Long account_id = request.get("account_id");
-        postService.addLikeToPost(post_id, account_id);
+    @PatchMapping("/getLikeAccount")
+    public List<Account> getLikeAccount(@RequestBody Post post) {
+        return postService.getLikeAccount(post);
+    }
+
+
+    @PatchMapping("/HAS_POST")
+    public void createPostedRelationship(@RequestBody Long account_id) {
+        postService.createPostedRelationship(account_id);
+    }
+    @PostMapping("/DELETE_POST")
+    public void deletePost(@RequestBody Long post_id) {
+        postService.deletePost(post_id);
     }
 
 }

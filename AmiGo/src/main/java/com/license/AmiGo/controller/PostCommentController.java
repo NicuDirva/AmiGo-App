@@ -27,4 +27,18 @@ public class PostCommentController {
     public List<Post_comment> getAllPostComment(@RequestParam("post_id") long post_id) {
         return postCommentService.getAllPostCommentById(post_id);
     }
+
+    @PatchMapping("/HAS_COMMENT")
+    public void createHasCommentRelationship(@RequestBody Long post_id) {
+        postCommentService.createHasCommentRelationship(post_id);
+    }
+
+    @PatchMapping("/HAS_POST")
+    public void createHasPostRelationship(@RequestBody Long account_id) {
+        postCommentService.createHasPostRelationship(account_id);
+    }
+    @PostMapping("/DELETE_COMMENT")
+    public void deleteComment(@RequestBody Long comment_id) {
+        postCommentService.deleteComment(comment_id);
+    }
 }

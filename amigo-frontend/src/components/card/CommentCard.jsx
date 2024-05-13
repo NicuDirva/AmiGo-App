@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import Auth from '../auth/Auth';
 import PostCard from './PostCard';
 import './PostCard.css'
+import Group from '../Pages/Group';
 
 const urlBase = "http://localhost:8080/";
 
@@ -11,37 +12,86 @@ const CommentCard = ({post_id}) => {
     const [comments, setComments] = useState([]);
     const [defaultEmail] = useGlobalState("email");
     const [error, setError] = useState('');
-    const [authorAvatarUrl, setAuthorAvatarUrl] = useState('');
+    const [currentUserRoleNumber, setCurrentUserRoleNumber] = useState(0);
+    const [currentUserId, setCurrentUserId] = useState('');
 
-    useEffect(() => {
-        const fetchData = async () => {
-            if (defaultEmail) {
-                const fetchedComments = await getAllComment(post_id);
-                const account_id = await Auth.getIdByEmail(defaultEmail);
-                setAuthorAvatarUrl(await PostCard.getAvatarProfileById(account_id));
-                if (fetchedComments) {
-                    setComments(fetchedComments);
-                    console.log(comments);
-                } else {
-                    setError('Error fetching comments');
+    const fetchData = async () => {
+        if (defaultEmail) {
+            const currentId = await Auth.getIdByEmail(defaultEmail);
+            setCurrentUserId(currentId);
+            const fetchedComments = await getAllComment(post_id);
+            const currentPost = await PostCard.getPost(post_id);
+            console.log("Postarea curenta", currentPost);
+            const fetchCommentsWithAvatar = [];
+        
+            if(currentPost.group_id != -1) {
+                const creatorStatus = await Group.checkCreatorGroup(currentId, currentPost.group_id);
+                const adminStatus = await Group.checkAdminGroup(currentId, currentPost.group_id); // Verificați dacă utilizatorul este admin
+                
+                if (creatorStatus) {
+                    setCurrentUserRoleNumber(2);
+                }
+                if (adminStatus) {
+                    setCurrentUserRoleNumber(1);
+                }
+                for (const element of fetchedComments) {
+                    let role;
+                    const isCreatorLocal = await Group.checkCreatorGroup(element.account_id, currentPost.group_id);
+                    const isAdminLocal = await Group.checkAdminGroup(element.account_id, currentPost.group_id);                        
+                    if (isCreatorLocal) {
+                        role = 2;
+                    } else {
+                        if (isAdminLocal) {
+                            role = 1;
+                        } else {
+                            role = 0;
+                        }
+                    }
+
+                    const currentElemId = await PostCard.getAvatarProfileById(element.account_id);
+                    fetchCommentsWithAvatar.push({ comment:element, authorAvatarUrl: currentElemId, role });
+                }
+                console.log("userul current are rolul nu nr", currentUserRoleNumber)
+            }   
+            else {
+                for (const element of fetchedComments) {
+                    const currentElemId = await PostCard.getAvatarProfileById(element.account_id);
+                    fetchCommentsWithAvatar.push({ comment:element, authorAvatarUrl: currentElemId, role:0 });
                 }
             }
-        };
+        
+            if (fetchCommentsWithAvatar.length > 0) {
+                setComments(fetchCommentsWithAvatar);
+            } else {
+                setError('Error fetching comments');
+            }
+        }
+        
+    };
+    
+    useEffect(() => {
         fetchData();
-    }, [defaultEmail]);
+    }, []);
   return (
     <div className="comment-container">
         {comments.map((comment, index) => (
             <div key={index} className="comment-card">
                 <div className="avatar">
-                    <img src={authorAvatarUrl} alt="Avatar" />
+                    <img src={comment.authorAvatarUrl} alt="Avatar" />
                 </div>
                 <div className="comment-content">
-                    <p>{comment.content}</p>
+                    <p>{comment.comment.content}</p>
                 </div>
                 <div>
-                    {comment.created_date}
+                    {comment.comment.created_date}
                 </div>
+                {(comment.comment.account_id === currentUserId || comment.role < currentUserRoleNumber) && (
+                        <button onClick={() => {
+                            Group.deleteComment(comment.comment.comment_id);
+                            fetchData();
+                        }}>Delete Comment</button>
+                         
+                    )}
             </div>
         ))}
     </div>

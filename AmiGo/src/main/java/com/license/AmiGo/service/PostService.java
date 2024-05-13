@@ -1,5 +1,6 @@
 package com.license.AmiGo.service;
 
+import com.license.AmiGo.model.Account;
 import com.license.AmiGo.model.Post;
 import org.springframework.stereotype.Service;
 
@@ -11,5 +12,8 @@ public interface PostService {
     List<Post> getAllPost();
     Optional<Post> getPost(long post_id);
     List<Post> getAccountPost(long account_id);
-    void addLikeToPost(long post_id, Long account_id);
+    List<Post> getGroupPost(long group_id);
+    List<Account> getLikeAccount(Post post);
+    void createPostedRelationship(long account_id);
+    void deletePost(long post_id);
 }

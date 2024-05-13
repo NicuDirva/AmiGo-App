@@ -13,6 +13,7 @@ public interface ProfileService {
     void editAvatar(Profile profile);
     void editDob(Profile profile);
     void editGender(Profile profile);
+    void editAccess(Profile profile);
 
     String getAvatarbyId(long account_id);
 

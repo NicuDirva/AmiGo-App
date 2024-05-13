@@ -10,6 +10,11 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
+import SearchPage from './components/Pages/SearchPage';
+import Friend from './components/Pages/Friend';
+import Group from './components/Pages/Group';
+import GroupCard from './components/card/GroupCard';
+import MembershipPage from './components/Pages/MembershipPage';
 
 const router = createBrowserRouter([
   {
@@ -21,10 +26,29 @@ const router = createBrowserRouter([
     element: <Home/>
   },
   {
-    path: "/profile",
-    element: <Profile/>
+    path: `/profile/:usernameParm`,
+    element: <Profile.Profile/>
   },
-
+  {
+    path: `/group/:groupIdParm`,
+    element: <GroupCard/>
+  },
+  {
+    path: `/member/:groupIdParm`,
+    element: <MembershipPage/>
+  },
+  {
+    path: `/searchResult/:searchText?`,
+    element: <SearchPage/>
+  },
+  {
+    path: `/friend`,
+    element: <Friend/>
+  },
+  {
+    path: `/group`,
+    element: <Group.Group/>
+  },
 
 ]);
 

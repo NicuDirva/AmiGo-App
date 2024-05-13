@@ -15,18 +15,15 @@ public class Post {
     private String urlImgPost;
     private String contentPost;
     private String post_date_created;
-    private Vector<Long> likePostArray;
 
     public Post() {
     }
-    public Post(long post_id, long account_id, long group_id, String urlImgPost, String contentPost, String post_date_created, Vector<Long> likePostArray) {
-        this.post_id = post_id;
+    public Post(long account_id, long group_id, String urlImgPost, String contentPost, String post_date_created) {
         this.account_id = account_id;
         this.group_id = group_id;
         this.urlImgPost = urlImgPost;
         this.contentPost = contentPost;
         this.post_date_created = post_date_created;
-        this.likePostArray = new Vector<>();
     }
 
 
@@ -78,11 +75,4 @@ public class Post {
         this.post_date_created = post_date_created;
     }
 
-    public Vector<Long> getLikePostArray() {
-        return likePostArray;
-    }
-
-    public void setLikePostArray(Vector<Long> likePostArray) {
-        this.likePostArray = likePostArray;
-    }
 }

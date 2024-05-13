@@ -45,6 +45,10 @@ public class ProfileController {
     public void editGender(@RequestBody Profile profile) {
         profileService.editGender(profile);
     }
+    @PostMapping("/editAccess")
+    public void editAccess(@RequestBody Profile profile) {
+        profileService.editAccess(profile);
+    }
 
     @GetMapping("/getAvatarById")
     public String getAvatarById(@RequestParam("account_id") long account_id) {

@@ -16,6 +16,8 @@ public class Profile {
     private Gender gender;
     private String dob;
 
+    private String access;
+
     public String getDob() {
         return dob;
     }
@@ -24,15 +26,24 @@ public class Profile {
         this.dob = dob;
     }
 
-    public Profile(long account_id, String img_url, String description, Gender gender, String dob) {
+    public Profile(long account_id, String img_url, String description, Gender gender, String dob, String access) {
         this.account_id = account_id;
         this.img_url = img_url;
         this.description = description;
         this.gender = gender;
         this.dob = dob;
+        this.access = access;
     }
     public Profile() {
 
+    }
+
+    public String getAccess() {
+        return access;
+    }
+
+    public void setAccess(String access) {
+        this.access = access;
     }
 
     public long getProfile_id() {

@@ -1,5 +1,6 @@
 package com.license.AmiGo.service.implement;
 
+import com.license.AmiGo.model.Account;
 import com.license.AmiGo.model.Post;
 import com.license.AmiGo.repository.PostRepository;
 import com.license.AmiGo.service.PostService;
@@ -27,21 +28,22 @@ public class PostServiceImpl implements PostService {
     public List<Post> getAccountPost(long account_id) {
         return postRepository.getAllPost(account_id);
     }
+    public List<Post> getGroupPost(long group_id) {
+        return postRepository.getGroupPost(group_id);
+    }
 
-    @Override
-    public void addLikeToPost(long post_id, Long account_id) {
-        Optional<Post> postOptional = postRepository.findById(post_id);
-        if (postOptional.isPresent()) {
-            Post post = postOptional.get();
-            post.getLikePostArray().add(account_id);
-            postRepository.save(post);
-        } else {
-            throw new IllegalArgumentException("Post not found with id: " + post_id);
-        }
+    public List<Account> getLikeAccount(Post post) {
+        return postRepository.getLikeAccount(post);
     }
 
     @Override
     public Optional<Post> getPost(long post_id) {
         return postRepository.findById(post_id);
+    }
+    public void createPostedRelationship(long account_id) {
+        postRepository.createPostedRelationship(account_id);
+    }
+    public void deletePost(long post_id) {
+        postRepository.deletePost(post_id);
     }
 }

@@ -47,6 +47,14 @@ public class ProfileServiceImpl implements ProfileService {
 
         profileRepository.save(existingProfile);
     }
+    public void editAccess(Profile profile) {
+        Profile existingProfile = profileRepository.findById(profile.getProfile_id())
+                .orElseThrow(() -> new RuntimeException("Profile not found"));
+
+        existingProfile.setAccess(profile.getAccess());
+
+        profileRepository.save(existingProfile);
+    }
 
     @Override
     public String getAvatarbyId(long account_id) {
