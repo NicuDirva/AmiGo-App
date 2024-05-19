@@ -13,6 +13,7 @@ const Friend = () => {
     const [defaultLoggin] = useGlobalState("loggin");
     const [friendList, setFriendList] = useState([]);
     const [friendRequestList, setFriendRequestList] = useState([]);
+    const [friendRequestSendList, setFriendRequestSendList] = useState([]);
     const navigate = useNavigate();
 
     const handleClickContainer = (usernameParm) => {
@@ -23,6 +24,13 @@ const Friend = () => {
         const currentId = await Auth.getIdByEmail(defaultEmail);
         const friendListAccount  = await Profile.getFriendshipById(currentId);
         const friendRequestListAccount = await Profile.FriendRequestReceivedById(currentId);
+        const friendRequestSent = await Profile.getFriendRequestById(currentId);
+        const sentRequestWithProfile = []
+        for (const frnd of friendRequestSent) {
+          const profile = await Profile.getProfileById(frnd.account_id);
+          sentRequestWithProfile.push({username:frnd.username, profile});
+      }
+        setFriendRequestSendList(sentRequestWithProfile);
         let friend = [];
         let friendRequest = [];
         for (const frnd of friendListAccount) {
@@ -82,6 +90,22 @@ const Friend = () => {
           throw new Error(`HTTP error! status: ${response2.status}`);
         }
       }
+      const handleUnsend = async (account_id) => {
+        const senderId = await Auth.getIdByEmail(defaultEmail);
+        const receiverId = account_id;
+        
+        let response2 = await fetch(urlBase+"account/DELETE_SEND_REQUEST",{
+          method:"PATCH",
+          headers:{"Content-Type":"application/json"}, 
+          body:JSON.stringify({senderId, receiverId})
+        });
+            
+        if (!response2.ok) {
+          throw new Error(`HTTP error! status: ${response2.status}`);
+        }
+        fetchData();
+    
+      }
 
   return (
     <div>
@@ -89,8 +113,31 @@ const Friend = () => {
         <div>
             <Navbar/>
             <div className="friend-container">
+                <div className="friend-list-container">
+                <h2>Friends</h2>
+                {friendList.map((obj, index) => (
+                    <div className="friend-item" key={index}>
+                    <img className='avatar-profile' src={obj.profile.img_url} alt='avatar' onClick={() => handleClickContainer(obj.username)}/>
+                    <p>{obj.username}</p>
+                    </div>
+                ))}
+                </div>
+
                 <div className="friend-request-container">
-                <h2>Friend Requests</h2>
+                <h2>Friend Requests Sent</h2>
+                {friendRequestSendList.map((obj, index) => (
+                    <div className="friend-request-item" key={index}>
+                    <img className='avatar-profile' src={obj.profile.img_url} alt='avatar' onClick={() => handleClickContainer(obj.username)}/>
+                    <p>{obj.username}</p>
+                    <div>
+                        <button onClick={() => handleUnsend(obj.profile.account_id)}>Unsend</button>
+                    </div>
+                    </div>
+                ))}   
+                </div>
+
+                <div className="friend-request-container">
+                <h2>Friend Requests Received</h2>
                 {friendRequestList.map((obj, index) => (
                     <div className="friend-request-item" key={index}>
                     <img className='avatar-profile' src={obj.profile.img_url} alt='avatar' onClick={() => handleClickContainer(obj.username)}/>
@@ -99,15 +146,6 @@ const Friend = () => {
                         <button onClick={() => handleAcceptRequest(obj.profile.account_id)}>Accept</button>
                         <button onClick={() => handleIgnoreRequest(obj.profile.account_id)}>Ignore</button>
                     </div>
-                    </div>
-                ))}
-                </div>
-                <div className="friend-list-container">
-                <h2>Friends</h2>
-                {friendList.map((obj, index) => (
-                    <div className="friend-item" key={index}>
-                    <img className='avatar-profile' src={obj.profile.img_url} alt='avatar' onClick={() => handleClickContainer(obj.username)}/>
-                    <p>{obj.username}</p>
                     </div>
                 ))}
                 </div>

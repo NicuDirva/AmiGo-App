@@ -2,6 +2,7 @@ package com.license.AmiGo.controller;
 
 import com.license.AmiGo.model.Account;
 import com.license.AmiGo.model.Group;
+import com.license.AmiGo.model.Profile;
 import com.license.AmiGo.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,8 +27,21 @@ public class GroupController {
         return groupService.getAllGroup();
     }
     @PatchMapping("/CREATE")
-    public void createGroupRelationship(@RequestBody Long creator_id){
-        groupService.createGroupRelationship(creator_id);
+    public void createGroupRelationship(@RequestBody Map<String, Long> request){
+        Long creator_id = request.get("creator_id");
+        Long group_id = request.get("group_id");
+        groupService.createGroupRelationship(creator_id, group_id);
+    }
+
+    @PatchMapping("/DELETE_CREATE_GROUP_RELATIONSHIP")
+    public void deleteCreateGroupRelationship(@RequestBody Map<String, Long> request){
+        Long creator_id = request.get("creator_id");
+        Long group_id = request.get("group_id");
+        groupService.deleteCreateGroupRelationship(creator_id, group_id);
+    }
+    @PostMapping("/editGroupCreator")
+    public void editGroupCreator(@RequestBody Group group) {
+        groupService.editGroupCreator(group);
     }
     @PatchMapping("/MEMBERSHIP")
     public void createMembershipRelationship(@RequestBody Map<String, Long> request){
@@ -69,9 +83,26 @@ public class GroupController {
     public Group getGroupByCreatorId(@RequestBody Long creator_id) {
         return groupService.getGroupByCreatorId(creator_id);
     }
+    @PostMapping("/getGroupById")
+    public Group getGroupById(@RequestBody Long group_id) {
+        return groupService.getGroupById(group_id);
+    }
     @PostMapping("/getMembersByGroupId")
     public List<Account> getMembersByGroupId(@RequestBody Long group_id) {
         return groupService.getMembersByGroupId(group_id);
+    }
+
+    @PostMapping("/getAdminByGroupId")
+    public List<Account> getAdminByGroupId(@RequestBody Long group_id) {
+        return groupService.getAdminByGroupId(group_id);
+    }
+    @PostMapping("/deleteByGroupId")
+    public void deleteByGroupId(@RequestBody Long group_id) {
+        groupService.deleteByGroupId(group_id);
+    }
+    @PostMapping("/getMembersRequestByGroupId")
+    public List<Account> getMembersRequestByGroupId(@RequestBody Long group_id) {
+        return groupService.getMembersRequestByGroupId(group_id);
     }
     @PostMapping("/checkMembershipByAccountId")
     public Long checkMembershipByAccountId(@RequestBody Map<String, Long>  request) {
@@ -101,5 +132,15 @@ public class GroupController {
     @PostMapping("/getAllMemberGroupByAccountId")
     public List<Group> getAllMemberGroupByAccountId(@RequestBody Long account_id) {
         return groupService.getAllMemberGroupByAccountId(account_id);
+    }
+
+    @PostMapping("/getCommonMembersGroupByAccountId")
+    public List<Account> getCommonMembersGroupByAccountId(@RequestBody Long account_id) {
+        return groupService.getCommonMembersGroupByAccountId(account_id);
+    }
+
+    @PostMapping("/editGroup")
+    public void editGroup(@RequestBody Group group) {
+        groupService.editGroup(group);
     }
 }

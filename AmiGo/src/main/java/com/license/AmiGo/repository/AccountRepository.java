@@ -83,8 +83,14 @@ public interface AccountRepository extends Neo4jRepository<Account, Long> {
 
     @Query("MATCH (p:Profile)\n" +
             "WHERE p.account_id = $account_id\n" +
-            "RETURN id(p) as profile_id,p.access as access, p.account_id as account_id, p.img_url as img_url, p.description as description, p.gender as gender, p.dob as dob")
+            "RETURN id(p) as profile_id, p.location as location, p.access as access, p.account_id as account_id, p.img_url as img_url, p.description as description, p.gender as gender, p.dob as dob")
     Profile getProfileByAccountId(@Param("account_id") long account_id);
+
+    @Query("MATCH (sender:Account), (receiver:Account)\n" +
+            "WHERE id(sender) = $sender_id AND id(receiver) = $receiver_id\n" +
+            "MERGE (sender)-[msg:SENT_MESSAGE]->(receiver)\n" +
+            "SET msg.sender_id = $sender_id, msg.receiver_id = $receiver_id, msg.content = $content, msg.timeSent = $timeSent")
+    void createMessage(@Param("sender_id") long sender_id, @Param("receiver_id") long receiver_id, @Param("content") String content, @Param("timeSent") String timeSent);
 
 
 }

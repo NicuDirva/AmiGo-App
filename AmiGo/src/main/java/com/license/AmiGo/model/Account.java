@@ -14,20 +14,9 @@ public class Account {
     private String password;
     private String username;
     private String email;
-
     public Account() {
     }
 
-    @Override
-    public String toString() {
-        return "Account{" +
-                "account_id=" + account_id +
-                ", account_date_created=" + account_date_created +
-                ", password='" + password + '\'' +
-                ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                '}';
-    }
 
     public Account(String account_date_created, String password, String username, String email) {
         this.account_date_created = account_date_created;
@@ -35,6 +24,7 @@ public class Account {
         this.username = username;
         this.email = email;
     }
+
 
     public long getAccount_id() {
         return account_id;

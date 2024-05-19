@@ -3,42 +3,44 @@ import { setGlobalState, useGlobalState } from './state';
 import { useNavigate } from 'react-router-dom';
 import './Navbar.css'
 import search_icon from './Assets/search_1251856.png'
-import menu_icon from './Assets/hamburger_13313335.png'
 import friendIcon from './Assets/add-group_2521833.png'
 import groupIcon from './Assets/consultation_7346382.png'
-import SearchBar from './SearchResult';
+import profileIcon from './Assets/profile_7368494.png'
+import homeIcon from './Assets/house_13313258.png'
+import signOutIcon from './Assets/logout_13313199.png'
+import messageIcon from './Assets/real_message.png'
 
 function Navbar() {
   const [defaultLoggin] = useGlobalState("loggin");
   const [defaultUsername] = useGlobalState("username");
   const [searchText, setSearchText] = useState('')
-  const [showMenu, setShowMenu] = useState(false);
-  const [showFriendOption, setShowFriendOption] = useState(false);
-  const [showGroupOption, setShowGroupOption] = useState(false);
   const navigate = useNavigate();
 
-  const handleSignOut = () => {
+  const handleSignOutIcon = () => {
     setGlobalState("email", "");
     setGlobalState("loggin", false);
     setGlobalState("username", "");
     navigate("/");
   };
 
-  const handleProfile = () => {
+  const handleProfileIcon = () => {
     navigate(`/profile/${defaultUsername}`);
   }
+  const handleMessageIcon = () => {
+    navigate(`/message`);
+  }
 
-  const handleHome = () => {
+  const handleFeedIcon = () => {
     navigate("/home");
   }
 
   const handleSearch = async () => {
     navigate(`/searchResult/${searchText}`)
   }
-  const handleFriend = async () => {
+  const handleFriendIcon = async () => {
     navigate(`/friend`)
   }
-  const handleGroup = () => {
+  const handleGroupIcon = () => {
     navigate(`/group`)
   }
 
@@ -63,33 +65,31 @@ function Navbar() {
                   <img className='search_icon' src={search_icon} alt='search_icon' />
                 </button>
               </div>
+
               <div className='dropdown'>
-                <img onClick={() => setShowMenu(!showFriendOption)} className='dropdown_icon' src={friendIcon} alt='friend_icon' />
-                  {showMenu && (
-                    <div className="dropdown-content">
-                      <a onClick={handleFriend}>Friends</a>
-                    </div>
-                  )}
+                <img onClick={handleFeedIcon} className='dropdown_icon' src={homeIcon} alt='home_icon' />
               </div>
+
               <div className='dropdown'>
-                <img onClick={() => setShowGroupOption(!showGroupOption)} className='dropdown_icon' src={groupIcon} alt='group_icon' />
-                  {showMenu && (
-                    <div className="dropdown-content">
-                      <a onClick={handleGroup}>Groups</a>
-                    </div>
-                  )}
+                <img onClick={handleMessageIcon} className='dropdown_icon' src={messageIcon} alt='message_icon' />
               </div>
-              <div className="dropdown">
-                  <img onClick={() => setShowMenu(!showMenu)} className='dropdown_icon' src={menu_icon} alt='menu_icon' />
-                {showMenu && (
-                  <div className="dropdown-content">
-                    <a onClick={handleHome}>Home</a>
-                    <a onClick={handleProfile}>Profile</a>
-                    <a onClick={handleFriend}>Friend</a>
-                    <a onClick={handleSignOut}>Sign Out</a>
-                  </div>
-                )}
+
+              <div className='dropdown'>
+                <img onClick={handleFriendIcon} className='dropdown_icon' src={friendIcon} alt='friend_icon' />
               </div>
+
+              <div className='dropdown'>
+                <img onClick={handleGroupIcon} className='dropdown_icon' src={groupIcon} alt='group_icon' />
+              </div>
+
+              <div className='dropdown'>
+                <img onClick={handleProfileIcon} className='dropdown_icon' src={profileIcon} alt='profile_icon' />
+              </div>
+
+              <div className='dropdown'>
+                <img onClick={handleSignOutIcon} className='dropdown_icon' src={signOutIcon} alt='signout_icon' />
+              </div>
+
             </div>
           </nav>
         </div>

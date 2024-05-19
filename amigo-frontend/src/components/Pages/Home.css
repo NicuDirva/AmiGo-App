@@ -5,3 +5,27 @@
     height: 100%;
     background-color: aliceblue;
   }
+  .recommendation-container {
+    display: flex;
+    overflow-x: auto; /* Permite scroll pe orizontală */
+    white-space: nowrap;
+    padding: 10px; /* Adaugă padding pentru un aspect mai plăcut */
+}
+
+.recommendation-item {
+    margin: 10px;
+    text-align: center;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.recommendation-item img {
+    width: 50px; /* Redu dimensiunea avatarului */
+    height: 50px; /* Redu dimensiunea avatarului */
+    border-radius: 50%; /* Fă avatarul rotund */
+}
+
+.recommendation-item h3 {
+    margin: 10px 0;
+    font-size: 14px; /* Opțional: Redu dimensiunea fontului pentru un aspect mai compact */
+}

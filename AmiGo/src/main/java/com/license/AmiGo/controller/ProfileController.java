@@ -26,6 +26,12 @@ public class ProfileController {
         return profileService.getAllProfile();
     }
 
+    @PostMapping("/getProfileById")
+    public Profile getProfileById(@RequestBody Long profile_id) {
+        return profileService.getProfileById(profile_id);
+    }
+
+
     @PostMapping("/editDob")
     public void editDob(@RequestBody Profile profile) {
         profileService.editDob(profile);
@@ -40,7 +46,10 @@ public class ProfileController {
     public void editAvatar(@RequestBody Profile profile) {
         profileService.editAvatar(profile);
     }
-
+    @PostMapping("/editLocation")
+    public void editLocation(@RequestBody Profile profile) {
+        profileService.editLocation(profile);
+    }
     @PostMapping("/editGender")
     public void editGender(@RequestBody Profile profile) {
         profileService.editGender(profile);

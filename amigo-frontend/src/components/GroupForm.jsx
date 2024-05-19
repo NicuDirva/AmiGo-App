@@ -43,7 +43,7 @@ const GroupForm = () => {
               headers: {
                   "Content-Type": "application/json",
               },
-              body: JSON.stringify(creator_id),
+              body: JSON.stringify({ creator_id, group_id:current_group_create.group_id}),
           });
 
           if (!response2.ok) {

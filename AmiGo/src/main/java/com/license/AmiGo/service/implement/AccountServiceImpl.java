@@ -1,6 +1,7 @@
 package com.license.AmiGo.service.implement;
 
 import com.license.AmiGo.model.Account;
+import com.license.AmiGo.model.Message;
 import com.license.AmiGo.model.Profile;
 import com.license.AmiGo.repository.AccountRepository;
 import com.license.AmiGo.service.AccountService;
@@ -63,5 +64,8 @@ public class AccountServiceImpl implements AccountService {
     }
     public Profile getProfileByAccountId(long account_id) {
         return accountRepository.getProfileByAccountId(account_id);
+    }
+    public void createMessage(long sender_id, long receiver_id, String content, String timeSent) {
+        accountRepository.createMessage(sender_id, receiver_id, content, timeSent);
     }
 }

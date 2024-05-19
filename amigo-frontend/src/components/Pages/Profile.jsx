@@ -25,19 +25,31 @@ const Profile = () => {
     const [gender, setGender] = useState(genderType.OTHER);
     const [dob, setDob] = useState('')
     const [access, setAccess] = useState('')
-    const [newAccess, setNewAccess] = useState('')
+    const [location, setLocation] = useState('')
     const [newDob, setNewDob] = useState('')
     const [error, setError] = useState('');
     const [action, setAction] = useState('connected');
     const [accountId, setAccountId] = useState('');
+    const [currentUsernameView, setCurrentUsernameView] = useState(null);
     const [newAvatar, setNewAvatar] = useState('');
     const [friendStatus, setFriendStatus] = useState(false);
     const [sendedFriendRequest, setSendedFriendRequest] = useState(false);
     const [receivedFriendRequest, setReceivedFriendRequest] = useState(false);
+    const judete = [
+      "ALBA", "ARAD", "ARGES", "BACAU", "BIHOR", "BISTRITA-NASAUD", "BOTOSANI",
+      "BRASOV", "BRAILA", "BUZAU", "CARAS-SEVERIN", "CALARASI", "CLUJ", "CONSTANTA",
+      "COVASNA", "DAMBOVITA", "DOLJ", "GALATI", "GIURGIU", "GORJ", "HARGHITA", "HUNEDOARA",
+      "IALOMITA", "IASI", "ILFOV", "MARAMURES", "MEHEDINTI", "MURES", "NEAMT", "OLT", "PRAHOVA",
+      "SATU MARE", "SALAJ", "SIBIU", "SUCEAVA", "TELEORMAN", "TIMIS", "TULCEA", "VASLUI",
+      "VALCEA", "VRANCEA", "BUCURESTI"
+  ];
+    const navigate = useNavigate();
   
     const fetchData = async () => {
       if (defaultUsername==usernameParm) {
           const account_id = await Auth.getIdByEmail(defaultEmail);
+          const currentUsernameSerch = await Auth.getUsernameByEmail(defaultEmail);
+          setCurrentUsernameView(currentUsernameSerch);
           setAccountId(account_id)
           const profile = await getProfileById(account_id);
           if (profile) {
@@ -46,12 +58,20 @@ const Profile = () => {
               setGender(profile.gender);
               setDob(profile.dob);
               setAccess(profile.access);
+              if(profile.location) {
+                setLocation(profile.location);
+              }
+              else {
+                setLocation("No location selected")
+              }
           } else {
               setError('Profile not found in displayProfile');
           }
       }
       else {
         const account_id_visit = await Auth.getIdByUsername(usernameParm);
+        const currentUsernameSerch = await Auth.getUsernameById(account_id_visit);
+        setCurrentUsernameView(currentUsernameSerch);
         setAccountId(account_id_visit);
         const currentAccountId = await Auth.getIdByEmail(defaultEmail)
         const friendList = await getFriendshipById(currentAccountId);
@@ -81,12 +101,19 @@ const Profile = () => {
           console.log("ReceiverFriendRequest status", receivedFriendRequest);
         }
         const profile = await getProfileById(account_id_visit);
+        console.log("In functia Profile avem profilul setat/cautat:::::::::::::::::::::::::::::::::::::::::::::::", profile)
         if (profile) {
             setDescription(profile.description);
             setImgUrl(profile.img_url);
             setGender(profile.gender);
             setDob(profile.dob);
             setAccess(profile.access);
+            if(profile.location) {
+              setLocation(profile.location);
+            }
+            else {
+              setLocation("No location selected")
+            }
         } else {
             setError('Profile not found in displayProfile');
         }
@@ -135,6 +162,26 @@ const Profile = () => {
       }
 
       setGender(selectedGender);
+    }
+    fetchData();
+  }
+
+  const handleLocationChange = async (e) => {
+    const selectedLocation = e.target.value;
+    try {
+        const profile = await getProfileById(accountId);
+        profile.location = selectedLocation;
+        const response = await fetch(urlBase + "profile/editLocation", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(profile)
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    } catch (error) {
+        console.error('Error:', error);
     }
     fetchData();
   }
@@ -190,7 +237,7 @@ const Profile = () => {
   }
 
   const handleAvatarChange = async (e) => {
-    console.log("Noul AVATAR:" + newAvatar)
+    const currentId = await Auth.getEmailByUsername(defaultEmail);
     if(newAvatar != imgUrl && newAvatar != '') {
       const profile = await getProfileById(accountId);
       profile.img_url = newAvatar;
@@ -299,6 +346,10 @@ const Profile = () => {
     }
     fetchData();
   }
+
+  const handleSentMessage = (accountIdParm) => {
+    navigate(`/message/${accountIdParm}`);
+  }
       
 
   return (
@@ -309,6 +360,7 @@ const Profile = () => {
               <div>
               <div className='avatar-profile-container'>
                   {imgUrl && <img className='avatar-profile' src={imgUrl} alt="Profile" />}
+                  <h2>{currentUsernameView}</h2>
                   {action === 'editProfile' ? (
                       <div className="upload-avatar">
                           <label htmlFor="image" className="upload-label">New avatar:</label>
@@ -371,6 +423,24 @@ const Profile = () => {
                     <p>Access: {access}</p>
                 </div>
                 )}
+                {action === "editProfile" ? (
+                <div>                    
+                  <form onChange={handleLocationChange}>
+                    <select name="location" defaultValue={location}>
+                      <option value="">Select County</option>
+                      {judete.map((judet, index) => (
+                        <option key={index} value={judet}>{judet}</option>
+                      ))}
+                    </select>
+                  </form>
+                </div>
+                ) : (
+                <div>
+                    <p>Location: {location}</p>
+                </div>
+                )}
+
+
 
                 </div>
                 {action==='editProfile'?
@@ -412,6 +482,17 @@ const Profile = () => {
                 </div>
                 <div>
                   <p>Date of Birth: {dob}</p>
+                </div>
+                <div>
+                  {
+                    location != "No location selected"?
+                      <p>Location: {location}</p>
+                    :
+                      <null/>
+                  }
+                </div>
+                <div>
+                  <button onClick={() => handleSentMessage(accountId)}>Sent Message</button>
                 </div>
                 <PostCard.PostCard usernameParm={usernameParm}/>
             </div>
@@ -467,9 +548,7 @@ const getFriendshipById = async (account_id) => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    // Extrage și parsează conținutul JSON din răspuns
-    const data = await response.json();
-    return data;
+    return response.json();
   } catch (error) {
     console.error("Error fetching friendship data:", error);
     throw error; // Aruncă eroarea mai departe pentru a fi gestionată în altă parte
@@ -535,4 +614,21 @@ const getAllFriendRequest = () => {
   });
 }
 
-export default { Profile, getAllFriendRequest,getFriendshipById, getFriendRequestById, FriendRequestReceivedById, getProfileById}
+const getPostByAccountId = async (account_id) => {
+  return fetch(`${urlBase}post/getAccountPost?account_id=${account_id}`, {
+      method: "GET",
+  }).then(response => {
+      if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+      }
+      return response.json();
+  }).then(data => {
+      return data;
+  }).catch(error => {
+      console.error("Error getting post:", error);
+      return [];
+  });
+};
+
+
+export default { Profile,getPostByAccountId, getAllFriendRequest,getFriendshipById, getFriendRequestById, FriendRequestReceivedById, getProfileById}

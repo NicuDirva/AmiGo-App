@@ -11,6 +11,8 @@ public interface ProfileService {
 
     void editDescription(Profile profile);
     void editAvatar(Profile profile);
+    Profile getProfileById(long profile_id);
+    void editLocation(Profile profile);
     void editDob(Profile profile);
     void editGender(Profile profile);
     void editAccess(Profile profile);

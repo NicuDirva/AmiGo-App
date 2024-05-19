@@ -61,7 +61,10 @@ const Group = () => {
               )}
               </div>
           </div>:
-        <div>Nu esti conectat la cont</div>
+        <div>
+          <Navbar/>
+          Nu esti conectat la cont
+          </div>
       }
       </div>
     );
@@ -92,6 +95,68 @@ const getGroupByCreatorId = async (creator_id) => {
 const getMembershipsByGroupId = async (group_id) => {
   try {
       const response = await fetch(urlBase + "group/getMembersByGroupId", {
+          method: "POST", // Vom folosi POST pentru a trimite creator_id către backend
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify(group_id) // Trimiterea creator_id către backend în corpul cererii
+      });
+
+      if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+  } catch (error) {
+      console.error("Error getting group:", error);
+      return [];
+  }
+}
+
+
+const getAdminByGroupId = async (group_id) => {
+  try {
+      const response = await fetch(urlBase + "group/getAdminByGroupId", {
+          method: "POST", // Vom folosi POST pentru a trimite creator_id către backend
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify(group_id) // Trimiterea creator_id către backend în corpul cererii
+      });
+
+      if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+  } catch (error) {
+      console.error("Error getting group:", error);
+      return [];
+  }
+}
+const deleteByGroupId = async (group_id) => {
+  try {
+      const response = await fetch(urlBase + "group/deleteByGroupId", {
+          method: "POST", // Vom folosi POST pentru a trimite creator_id către backend
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify(group_id) // Trimiterea creator_id către backend în corpul cererii
+      });
+
+      if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+      }
+  } catch (error) {
+      console.error("Error getting group:", error);
+  }
+}
+
+const getMembershipRequestsByGroupId = async (group_id) => {
+  try {
+      const response = await fetch(urlBase + "group/getMembersRequestByGroupId", {
           method: "POST", // Vom folosi POST pentru a trimite creator_id către backend
           headers: {
               "Content-Type": "application/json"
@@ -248,6 +313,18 @@ const deleteAdminRelationship = async (account_id, group_id) => {
   }
 }
 
+const handleDeleteJoinRequest = async ( account_id, group_id) => {
+  let response = await fetch(urlBase+"group/DELETE_MEMBERSHIP_REQUEST",{
+    method:"PATCH",
+    headers:{"Content-Type":"application/json"}, 
+    body:JSON.stringify({account_id, group_id})
+  });
+      
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+}
+
 const deleteMembershipRelationship = async (account_id, group_id) => {
   let response = await fetch(urlBase+"group/DELETE_MEMBERSHIP",{
     method:"PATCH",
@@ -284,5 +361,45 @@ const deleteComment = async (comment_id) => {
   }
 }
 
+const handleJoin = async (account_id, group_id) => {
+  let response = await fetch(urlBase+"group/MEMBERSHIP",{
+    method:"PATCH",
+    headers:{"Content-Type":"application/json"}, 
+    body:JSON.stringify({account_id, group_id})
+  });
+      
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+}
 
-export default  { Group, deletePost, deleteComment, createAdminRelationship, deleteAdminRelationship, deleteMembershipRelationship, getAllGroup, checkAdminGroup, checkCreatorGroup, getGroupByCreatorId, getMembershipsByGroupId, getGroupById, getPostsByGroupId, getAllMemberGroupByAccountId } 
+const createCreateGroupRelationship = async (creator_id, group_id) => {
+  const response2 = await fetch(`${urlBase}group/CREATE`, {
+    method: "PATCH",
+    headers: {
+        "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ creator_id, group_id}),
+  });
+
+  if (!response2.ok) {
+    throw new Error(`HTTP error! status: ${response2.status}`);
+  }
+}
+
+const deleteCreateGroupRelationship = async (creator_id, group_id) => {
+  const response2 = await fetch(`${urlBase}group/DELETE_CREATE_GROUP_RELATIONSHIP`, {
+    method: "PATCH",
+    headers: {
+        "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ creator_id, group_id}),
+  });
+
+  if (!response2.ok) {
+    throw new Error(`HTTP error! status: ${response2.status}`);
+  }
+}
+
+
+export default  { Group,getMembershipRequestsByGroupId, deleteCreateGroupRelationship, createCreateGroupRelationship, deleteByGroupId, getAdminByGroupId, handleJoin, handleDeleteJoinRequest, deletePost, deleteComment, createAdminRelationship, deleteAdminRelationship, deleteMembershipRelationship, getAllGroup, checkAdminGroup, checkCreatorGroup, getGroupByCreatorId, getMembershipsByGroupId, getGroupById, getPostsByGroupId, getAllMemberGroupByAccountId } 

@@ -9,6 +9,7 @@ import Navbar from '../Navbar';
 import { useNavigate, useParams } from 'react-router-dom';
 import PostForm from '../PostForm';
 import { Navigate } from 'react-router-dom';
+import Profile from '../Pages/Profile';
 
 const urlBase = "http://localhost:8080/";
 
@@ -21,11 +22,24 @@ const GroupCard = () => {
     const { groupIdParm } = useParams();
     const [groupAccess, setGroupAccess] = useState('');
     const [isOwner, setIsOwner] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [action, setAction] = useState('');
+    const [editMode, setEditMode] = useState(false);
+    const [newGroupName, setNewGroupName] = useState('');
+    const [newGroupImage, setNewGroupImage] = useState('');
+    const [newGroupAccess, setNewGroupAccess] = useState('');
+    const [memberGroup, setMemberGroup] = useState(null);
+    const [adminGroup, setAdminGroup] = useState(null);
+    const [ membershipCount, setMembershipCount] = useState(null);
     const navigate = useNavigate();
 
     const fetchData = async () => {
         const currentGroup = await Group.getGroupById(groupIdParm);
+        setMemberGroup(await Group.getMembershipsByGroupId(groupIdParm));
+        setAdminGroup(await Group.getAdminByGroupId(groupIdParm));
         setGroup(currentGroup);
+        const memberships = await Group.getMembershipsByGroupId(groupIdParm);
+        setMembershipCount(memberships.length);
         const currentId = await Auth.getIdByEmail(defaultEmail);
         if(currentGroup.access == "private") {
             setGroupAccess("private");
@@ -90,11 +104,38 @@ const GroupCard = () => {
             isOwnerBool = true;
           }
           setIsOwner(isOwnerBool);
+
+          let is_admin = await fetch(urlBase+"group/checkAdminGroupByAccountId",{
+            method:"POST",
+            headers:{"Content-Type":"application/json"}, 
+            body:JSON.stringify({account_id: currentId, group_id: groupIdParm})
+          });
+              
+          if (!is_admin.ok) {
+            throw new Error(`HTTP error! status: ${is_admin.status}`);
+          }
+          const is_admin_json = await is_admin.json(); // Parsați răspunsul JSON
+          let isAdminBool;
+          if(is_admin_json == 0) {
+            isAdminBool = false;
+          }
+          else {
+            isAdminBool = true;
+          }
+          setIsAdmin(isAdminBool);
+  
+    }
+
+    const convertImgBase64 = (e) => {
+      var reader = new FileReader();
+      reader.readAsDataURL(e.target.files[0]);
+      reader.onload = () => {
+        setNewGroupImage(reader.result);
+      }
     }
 
     const handleJoin = async () => {
         const currentId = await Auth.getIdByEmail(defaultEmail);
-    
         let response = await fetch(urlBase+"group/MEMBERSHIP",{
           method:"PATCH",
           headers:{"Content-Type":"application/json"}, 
@@ -122,7 +163,6 @@ const GroupCard = () => {
 
       const handleDeleteJoin = async () => {
         const currentId = await Auth.getIdByEmail(defaultEmail);
-    
         let response = await fetch(urlBase+"group/DELETE_MEMBERSHIP",{
           method:"PATCH",
           headers:{"Content-Type":"application/json"}, 
@@ -132,7 +172,46 @@ const GroupCard = () => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
+        if (isOwner) {
+          await Group.deleteCreateGroupRelationship(currentId, groupIdParm);
+          if (adminGroup.length !== 0) {
+              console.log("Alege un admin random")
+              // Select a random admin to be the new creator
+              const randomAdmin = adminGroup[Math.floor(Math.random() * adminGroup.length)];
+              await Group.deleteAdminRelationship(randomAdmin.account_id, groupIdParm);
+              await Group.createCreateGroupRelationship(randomAdmin.account_id, groupIdParm);
+              await handleGroupOwnership(randomAdmin.account_id);
+              fetchData();
+          } else if (memberGroup.length !== 0) {
+            console.log("Alege un membru random")
+              // Select a random member to be the new creator
+              const randomMember = memberGroup[Math.floor(Math.random() * memberGroup.length)];
+              await Group.createCreateGroupRelationship(randomMember.account_id, groupIdParm);
+              await handleGroupOwnership(randomMember.account_id);
+              fetchData();
+          } else {
+              await Group.deleteByGroupId(groupIdParm);
+              navigate(`/group`);
+          }
+      }
     }
+
+    const handleGroupOwnership = async (newCreatorId) => {
+      try {
+          const groupCopy = { ...group, creator_id: newCreatorId };
+          const response = await fetch(urlBase + "group/editGroupCreator", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(groupCopy)
+          });
+  
+          if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+          }
+      } catch (error) {
+          console.error("Error updating group creator:", error);
+      }
+  };
 
     const handleDeleteJoinRequest = async () => {
         const currentId = await Auth.getIdByEmail(defaultEmail);
@@ -152,6 +231,41 @@ const GroupCard = () => {
         navigate(`/member/${groupIdParm}`);
       }
 
+      const handleGroupMemberRequest = (groupIdParm) => {
+        navigate(`/groupMemberRequest/${groupIdParm}`);
+      }
+
+      const handleEditGroup = () => {
+        setEditMode(!editMode); // Toggle editMode
+    }
+
+    const handleSaveChanges = async () => {
+        setEditMode(false);
+        if (defaultEmail) { 
+          const group = await Group.getGroupById(groupIdParm);
+          if (newGroupName) {
+            group.name = newGroupName;
+          }
+          if (newGroupAccess) {
+            group.access = newGroupAccess;
+          }
+          if (newGroupImage) {
+            group.urlImg = newGroupImage;
+          }
+
+          const response = await fetch(urlBase+"group/editGroup",{
+            method:"POST",
+            headers:{"Content-Type":"application/json"}, 
+            body:JSON.stringify(group)
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+        }
+        fetchData();
+    }
+
     useEffect(() => {
         fetchData();
     });
@@ -162,6 +276,45 @@ const GroupCard = () => {
         <div className="group-info">
             <img className="group-image" src={group.urlImg} alt={group.name} />
             <h2 className="group-name">{group.name}</h2>
+
+
+            {isOwner && (
+                <button className="edit-group-button" onClick={handleEditGroup}>
+                    {editMode ? 'Cancel' : 'Edit Group'}
+                </button>
+            )}
+            {editMode && isOwner && (
+                <div className="edit-group-fields">
+                    <input
+                        type="text"
+                        value={newGroupName}
+                        onChange={(e) => setNewGroupName(e.target.value)}
+                        placeholder="New Group Name"
+                    />
+                    <br/>
+                    <div>
+                    <label htmlFor="image">New image group:</label>
+                    <input
+                      type="file"
+                      id="image"
+                      accept="image/*"
+                      onChange={convertImgBase64}
+                      required
+                    />
+                    </div>
+                    <select
+                        value={newGroupAccess}
+                        onChange={(e) => setNewGroupAccess(e.target.value)}
+                    >
+                        <option value="public">Public</option>
+                        <option value="private">Private</option>
+                    </select>
+                    <br/>
+                    <button onClick={handleSaveChanges}>Save Changes</button>
+                </div>
+            )}
+
+
             <div className="button-container">
                 {isGroupMember ? (
                     isOwner ?
@@ -186,8 +339,22 @@ const GroupCard = () => {
                     </button>
                 }
             </div>
-            <p onClick={() => handleGroupMember(group.group_id)}>See members</p>
-            <PostForm group_id={groupIdParm} />
+            {
+              groupAccess === "public"?
+              <p onClick={() => handleGroupMember(group.group_id)}>{membershipCount} members</p>
+              :
+              <p>{membershipCount} members</p>
+            }
+    
+            {(isOwner || isAdmin) && (
+                <p onClick={() => handleGroupMemberRequest(groupIdParm)}>Member request</p>
+            )}
+            {
+              isOwner || isAdmin || isGroupMember?
+                <PostForm group_id={groupIdParm} />
+              :
+              null
+            }
             <GroupPostCard groupIdParm={groupIdParm} />
         </div>
     )}

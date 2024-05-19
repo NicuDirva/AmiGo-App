@@ -1,0 +1,22 @@
+.recommendation-container {
+    display: flex;
+    overflow-x: scroll;
+    white-space: nowrap;
+}
+
+.recommendation-item {
+    margin: 10px;
+    text-align: center;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.recommendation-item img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
+
+.recommendation-item h3 {
+    margin: 10px 0;
+}

@@ -1,9 +1,6 @@
 package com.license.AmiGo.controller;
 
-import com.license.AmiGo.model.Account;
-import com.license.AmiGo.model.Group;
-import com.license.AmiGo.model.Post;
-import com.license.AmiGo.model.Profile;
+import com.license.AmiGo.model.*;
 import com.license.AmiGo.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -109,6 +106,12 @@ public class AccountController {
         return accountService.getProfileByAccountId(account_id);
     }
 
-
-
+    @PostMapping("/SENT_MESSAGE")
+    public void createMessage(@RequestBody Map<String, Object> message) {
+        Integer sender_id = (Integer) message.get("sender_id");
+        Integer receiver_id = (Integer) message.get("receiver_id");
+        String content = (String) message.get("content");
+        String timeSent = (String) message.get("timeSent");
+        accountService.createMessage(sender_id, receiver_id, content, timeSent);
+    }
 }

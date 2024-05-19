@@ -24,6 +24,8 @@ const GroupPostCard = ({groupIdParm}) => {
     const [showLikesModal, setShowLikesModal] = useState(false);
     const [currentUserRoleNumber, setCurrentUserRoleNumber] = useState(0);
     const [currentUserId, setCurrentUserId] = useState('');
+    const [showLikePost, setShowLikePost] = useState('');
+    const [showCommentPostId, setShowCommentPostId] = useState('');
     const navigate = useNavigate();
 
     const fetchData = async () => {
@@ -104,16 +106,25 @@ const GroupPostCard = ({groupIdParm}) => {
     }, [displayComments, defaultEmail]);
 
 
-    const handleCommentButton = () => {
+    const handleCommentButton = (post_id) => {
         if(!displayComments) {
+            setShowCommentPostId(post_id);
             setDisplayComment(true);
         }
         else {
+            setShowCommentPostId('');
             setDisplayComment(false);
         }
     }
-    const handleDisplayLike = () => {
-        setShowLikesModal(true);
+    const handleDisplayLike = (post_id) => {
+        if(!showLikesModal) {
+            setShowLikesModal(true);
+            setShowLikePost(post_id);
+        }
+        else {
+            setShowLikesModal(false);
+            setShowLikePost('');
+        }
     }
 
     const handleClickContainer = (usernameParm) => {
@@ -181,7 +192,7 @@ const GroupPostCard = ({groupIdParm}) => {
                 <div key={index} className="post-card">
                     <div className="top-row">
                         <div className="avatar">
-                            <img src={pst.img_url} alt="Avatar" />
+                            <img src={pst.img_url} alt="Avatar" onClick={() => handleClickContainer(pst.username)}/>
                         </div>
                         <div className="username">
                             <h3>{pst.username}</h3>
@@ -204,29 +215,30 @@ const GroupPostCard = ({groupIdParm}) => {
                                 <img src={dislikeIcon} alt='Like' onClick={() => handleLikeButton(pst.post.post_id, pst.post.account_id)}/>
                             }
                         </div>
-                        <p onClick={handleDisplayLike}>{pst.likeProfile?pst.likeProfile.length:0} like</p>
+                        <p onClick={() => handleDisplayLike(pst.post.post_id)}>{pst.likeProfile ? pst.likeProfile.length : 0} like</p>
                         <div className='react-icons'>
-                            <img src={commentIcon} alt='Comment' onClick={handleCommentButton}/>
+                            <img src={commentIcon} alt='Comment' onClick={() => handleCommentButton(pst.post.post_id)}/>
                         </div>
                     </div>
                     <div>
                         {pst.post.post_date_created}
                     </div>
                     {
-                    showLikesModal && (
-                    <div className="likes-modal">
-                        <h2>Likes</h2>
-                            {pst.likeProfile.map((profile, index) => (
-                                    <div className='search-result-item'>
-                                        <img className='avatar-profile' src={profile.img_url} alt={profile.username} onClick={() => handleClickContainer(profile.username)}/>
-                                        <p>{profile.username}</p>
-                                    </div>
-                            ))}
-                        <button onClick={() => setShowLikesModal(false)}>Close</button>
-                    </div>)
+                    showLikesModal && pst.post.post_id === showLikePost && (
+                        <div className="likes-modal">
+                            {pst.likeProfile.map((profile, index) => {
+                                    return (
+                                        <div className='search-result-item' key={index}>
+                                            <img className='avatar-profile' src={profile.img_url} alt={profile.username} onClick={() => handleClickContainer(profile.username)}/>
+                                            <p>{profile.username}</p>
+                                        </div>
+                                    ); 
+                            })}
+                        </div>
+                    )
                     }
                     <CommentForm post_id={pst.post.post_id}/>
-                    {displayComments?<CommentCard post_id={pst.post.post_id}/>:<div></div>}
+                    {displayComments && pst.post.post_id === showCommentPostId?<CommentCard.CommentCard post_id={pst.post.post_id}/>:<div></div>}
                     {(pst.post.account_id === currentUserId || pst.role < currentUserRoleNumber) && (
                         <button onClick={() => {
                             Group.deletePost(pst.post.post_id);

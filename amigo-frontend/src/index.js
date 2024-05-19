@@ -15,6 +15,10 @@ import Friend from './components/Pages/Friend';
 import Group from './components/Pages/Group';
 import GroupCard from './components/card/GroupCard';
 import MembershipPage from './components/Pages/MembershipPage';
+import GroupMemberRequest from './components/Pages/GroupMemberRequest';
+import MessagePage from './components/Pages/MessagePage';
+import MessageCard from './components/card/MessageCard';
+import SinglePostCard from './components/card/SinglePostCard';
 
 const router = createBrowserRouter([
   {
@@ -36,6 +40,22 @@ const router = createBrowserRouter([
   {
     path: `/member/:groupIdParm`,
     element: <MembershipPage/>
+  },
+  {
+    path: `/message/:accountIdParm`,
+    element: <MessageCard.MessageCard/>
+  },
+  {
+    path: `/post/:postIdParm`,
+    element: <SinglePostCard/>
+  },
+  {
+    path: `/message`,
+    element: <MessagePage/>
+  },
+  {
+    path: `/groupMemberRequest/:groupIdParm`,
+    element: <GroupMemberRequest/>
   },
   {
     path: `/searchResult/:searchText?`,

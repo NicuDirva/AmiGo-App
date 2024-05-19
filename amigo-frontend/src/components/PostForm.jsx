@@ -91,7 +91,6 @@ const PostForm = ({group_id}) => {
               id="image"
               accept="image/*"
               onChange={convertImgBase64}
-              required
             />
           </div>
           <button type="submit">Submit</button>

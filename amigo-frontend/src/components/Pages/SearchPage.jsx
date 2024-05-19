@@ -16,7 +16,10 @@ const SearchPage = () => {
           <SearchResult searchText={searchText}/>
           </div>
         :
-        <div>Nu esti conectat la cont</div>
+        <div>
+          <Navbar/>
+          Nu esti conectat la cont
+        </div>
         }
     </div>
   )

@@ -3,7 +3,7 @@ import { useGlobalState } from './state';
 import Auth from './auth/Auth';
 const urlBase = "http://localhost:8080/";
 
-const CommentForm = ({post_id}) => {
+const CommentForm = ({ post_id }) => {
     const [commentContent, setCommentContent] = useState('');
     const [defaultEmail] = useGlobalState("email");
 
@@ -14,26 +14,26 @@ const CommentForm = ({post_id}) => {
             alert('Please enter a comment.');
             return;
         }
-        
+
         const account_id = await Auth.getIdByEmail(defaultEmail);
         let currentDate = new Date();
         let year = currentDate.getFullYear();
         let month = currentDate.getMonth() + 1; // Adăugăm 1 pentru că lunile încep de la 0
         let day = currentDate.getDate();
         let created_date = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
-        let comment = {account_id, post_id, content: commentContent, created_date, commentArray:[]}
+        let comment = { account_id, post_id, content: commentContent, created_date, commentArray: [] };
         console.log(comment);
 
         try {
-            let response = await fetch(urlBase+"comment/add",{
-                method:"POST",
-                headers:{"Content-Type":"application/json"}, 
-                body:JSON.stringify(comment)
+            let response = await fetch(urlBase + "comment/add", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(comment)
             });
-          
-              if (!response.ok) {
+
+            if (!response.ok) {
                 throw new Error('Failed to save comment');
-              }
+            }
 
             const response2 = await fetch(`${urlBase}comment/HAS_COMMENT`, {
                 method: "PATCH",
@@ -42,7 +42,7 @@ const CommentForm = ({post_id}) => {
                 },
                 body: JSON.stringify(post_id),
             });
-    
+
             if (!response2.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -54,17 +54,17 @@ const CommentForm = ({post_id}) => {
                 },
                 body: JSON.stringify(account_id),
             });
-    
+
             if (!response3.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-          
-              setCommentContent('');
-          
-              console.log('Comment saved successfully');
-            } catch (error) {
-              console.error('Error saving comment:', error.message);
-            }
+
+            setCommentContent('');
+
+            console.log('Comment saved successfully');
+        } catch (error) {
+            console.error('Error saving comment:', error.message);
+        }
     };
 
     return (

@@ -17,6 +17,7 @@ public class Profile {
     private String dob;
 
     private String access;
+    private String location;
 
     public String getDob() {
         return dob;
@@ -26,8 +27,9 @@ public class Profile {
         this.dob = dob;
     }
 
-    public Profile(long account_id, String img_url, String description, Gender gender, String dob, String access) {
+    public Profile(String location, long account_id, String img_url, String description, Gender gender, String dob, String access) {
         this.account_id = account_id;
+        this.location = location;
         this.img_url = img_url;
         this.description = description;
         this.gender = gender;
@@ -36,6 +38,14 @@ public class Profile {
     }
     public Profile() {
 
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public String getAccess() {
@@ -85,4 +95,5 @@ public class Profile {
     public void setGender(Gender gender) {
         this.gender = gender;
     }
+
 }

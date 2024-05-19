@@ -38,6 +38,14 @@ public class ProfileServiceImpl implements ProfileService {
 
         profileRepository.save(existingProfile);
     }
+    @Override
+    public void editLocation(Profile profile) {
+        Profile existingProfile = profileRepository.findById(profile.getProfile_id())
+                .orElseThrow(() -> new RuntimeException("Profile not found"));
+
+        existingProfile.setLocation(profile.getLocation());
+        profileRepository.save(existingProfile);
+    }
 
     public void editGender(Profile profile) {
         Profile existingProfile = profileRepository.findById(profile.getProfile_id())
@@ -59,6 +67,9 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public String getAvatarbyId(long account_id) {
         return profileRepository.getAvatar(account_id);
+    }
+    public Profile getProfileById(long profile_id) {
+        return profileRepository.getProfileById(profile_id);
     }
 
     public void editDob(Profile profile) {

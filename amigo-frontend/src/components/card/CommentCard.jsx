@@ -5,6 +5,7 @@ import Auth from '../auth/Auth';
 import PostCard from './PostCard';
 import './PostCard.css'
 import Group from '../Pages/Group';
+import { useNavigate } from 'react-router-dom';
 
 const urlBase = "http://localhost:8080/";
 
@@ -14,6 +15,8 @@ const CommentCard = ({post_id}) => {
     const [error, setError] = useState('');
     const [currentUserRoleNumber, setCurrentUserRoleNumber] = useState(0);
     const [currentUserId, setCurrentUserId] = useState('');
+    const navigate = useNavigate();
+
 
     const fetchData = async () => {
         if (defaultEmail) {
@@ -49,14 +52,16 @@ const CommentCard = ({post_id}) => {
                     }
 
                     const currentElemId = await PostCard.getAvatarProfileById(element.account_id);
-                    fetchCommentsWithAvatar.push({ comment:element, authorAvatarUrl: currentElemId, role });
+                    const commentUsername = await Auth.getUsernameById(element.account_id);
+                    fetchCommentsWithAvatar.push({ comment:element, authorAvatarUrl: currentElemId, role, commentUsername });
                 }
                 console.log("userul current are rolul nu nr", currentUserRoleNumber)
             }   
             else {
                 for (const element of fetchedComments) {
                     const currentElemId = await PostCard.getAvatarProfileById(element.account_id);
-                    fetchCommentsWithAvatar.push({ comment:element, authorAvatarUrl: currentElemId, role:0 });
+                    const commentUsername = await Auth.getUsernameById(element.account_id);
+                    fetchCommentsWithAvatar.push({ comment:element, authorAvatarUrl: currentElemId, role:0, commentUsername });
                 }
             }
         
@@ -68,6 +73,11 @@ const CommentCard = ({post_id}) => {
         }
         
     };
+
+    const handleClickContainer = (username) => {
+        navigate(`/profile/${username}`);
+    }
+    
     
     useEffect(() => {
         fetchData();
@@ -78,6 +88,9 @@ const CommentCard = ({post_id}) => {
             <div key={index} className="comment-card">
                 <div className="avatar">
                     <img src={comment.authorAvatarUrl} alt="Avatar" />
+                </div>
+                <div>
+                    <p onClick={() => handleClickContainer(comment.commentUsername)}>{comment.commentUsername}</p>
                 </div>
                 <div className="comment-content">
                     <p>{comment.comment.content}</p>
@@ -114,4 +127,4 @@ const getAllComment = async (post_id) => {
     });
 }
 
-export default CommentCard
+export default { CommentCard, getAllComment}

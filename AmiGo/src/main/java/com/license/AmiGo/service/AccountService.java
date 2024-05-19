@@ -1,6 +1,7 @@
 package com.license.AmiGo.service;
 
 import com.license.AmiGo.model.Account;
+import com.license.AmiGo.model.Message;
 import com.license.AmiGo.model.Profile;
 
 import java.util.List;
@@ -22,5 +23,6 @@ public interface AccountService {
     List<Long> getLikeAccount(long post_id);
     void deleteLikePost(long account_id, long post_id);
     Profile getProfileByAccountId(long account_id);
+    void createMessage(long sender_id, long receiver_id, String content, String timeSent);
 
 }

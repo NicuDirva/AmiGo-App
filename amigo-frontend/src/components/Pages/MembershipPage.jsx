@@ -3,9 +3,7 @@ import Group from './Group';
 import Auth from '../auth/Auth';
 import { useGlobalState } from '../state';
 import { useNavigate, useParams } from 'react-router-dom';
-import GroupPostCard from '../card/GroupPostCard';
 import Navbar from '../Navbar';
-import { Navigate } from 'react-router-dom';
 
 const MembershipPage = () => {
     const [memberData, setMemberData] = useState([]);
@@ -67,8 +65,21 @@ const MembershipPage = () => {
         navigate(`/profile/${usernameParm}`);
     };
 
+    const handleClickMemberRequest = (groupIdParm) => {
+        navigate(`/groupMemberRequest/:groupIdParm`);
+      }
+
     // Funcție pentru a elimina un membru
-    const handleRemoveMember = async (accountId) => {
+    const handleRemoveMember = async (accountId, role) => {
+        if(role == "admin") {
+            try {
+                await Group.deleteAdminRelationship(accountId, groupIdParm);
+                // Reîncărcați datele după ștergere
+                fetchData();
+            } catch (error) {
+                console.log("Error: ", error.message);
+            }
+        }
         try {
             await Group.deleteMembershipRelationship(accountId, groupIdParm);
             // Reîncărcați datele după ștergere
@@ -89,6 +100,16 @@ const MembershipPage = () => {
         }
     };
 
+    const handleRemoveAdminRole = async (account_id) =>{
+        try {
+            await Group.deleteAdminRelationship(account_id, groupIdParm);
+            // Reîncărcați datele după ștergere
+            fetchData();
+        } catch (error) {
+            console.log("Error: ", error.message);
+        }
+    } 
+
     return (
         <div>
             {defaultLoggin ? (
@@ -104,16 +125,19 @@ const MembershipPage = () => {
                             {isCreatorGroup ? (
                                 <div className="member-options">
                                     {defaultEmail !== obj.account.email && (
-                                        <button onClick={() => handleRemoveMember(obj.account.account_id)}>Remove</button>
+                                        <button onClick={() => handleRemoveMember(obj.account.account_id, obj.role)}>Remove</button>
                                     )}
                                     {obj.role !== "admin" && defaultEmail !== obj.account.email && (
                                         <button onClick={() => handleGiveAdminRole(obj.account.account_id)}>Make Admin</button>
+                                    )}
+                                    {obj.role == "admin" && defaultEmail !== obj.account.email && (
+                                        <button onClick={() => handleRemoveAdminRole(obj.account.account_id)}>Remove Admin</button>
                                     )}
                                 </div>
                             ) : isAdminGroup ? (
                                 <div className="member-options">
                                     {defaultEmail !== obj.account.email && obj.role !== "creator" && obj.role !== "admin" && (
-                                        <button onClick={() => handleRemoveMember(obj.account.account_id)}>Remove</button>
+                                        <button onClick={() => handleRemoveMember(obj.account.account_id, obj.role)}>Remove</button>
                                     )}
                                 </div>
                             ) : null}
@@ -123,7 +147,10 @@ const MembershipPage = () => {
                     ))}
                 </div>
             ) : (
-                <div>You are not logged in!</div>
+                <div>
+                    <Navbar/>
+                    You are not logged in!
+                </div>
             )}
         </div>
     );
