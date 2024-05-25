@@ -24,5 +24,8 @@ public interface AccountService {
     void deleteLikePost(long account_id, long post_id);
     Profile getProfileByAccountId(long account_id);
     void createMessage(long sender_id, long receiver_id, String content, String timeSent);
+    List<Account> getCommonFriendBy2AccountId(long accountId1, long accountId2);
+
+    void deleteAccountById(long account_id);
 
 }

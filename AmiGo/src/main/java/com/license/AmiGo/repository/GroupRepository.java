@@ -43,7 +43,7 @@ public interface GroupRepository extends Neo4jRepository<Group, Long> {
     @Query("MATCH (g:Group)\n" +
             "WHERE g.creator_id = $creator_id\n" +
             "RETURN g")
-    Group getGroupByCreatorId(@Param("creator_id") long creator_id);
+    List<Group> getGroupByCreatorId(@Param("creator_id") long creator_id);
     @Query("MATCH (a:Account)-[:MEMBERSHIP]->(g:Group)\n" +
             "WHERE id(g) = $group_id\n" +
             "RETURN id(a) as account_id, a.account_date_created as account_date_created, a.password as password, a.username as username, a.email as email")

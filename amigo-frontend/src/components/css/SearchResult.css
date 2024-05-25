@@ -1,0 +1,83 @@
+/* SearchResult.css */
+
+.search-container {
+  margin-top: 20px;
+}
+
+.toggle-buttons {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.toggle-buttons button {
+  padding: 10px 20px;
+  margin: 0 10px;
+  background-color: transparent;
+  border: 1px solid #26005E;
+  color: #26005E;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.toggle-buttons button:hover {
+  background-color: #26005E;
+  color: white;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+  padding: 10px;
+}
+
+.search-result-item:last-child {
+  border-bottom: none;
+}
+
+.avatar-profile {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+.username {
+  font-weight: bold;
+}
+
+.mutual-friends {
+  margin-top: 5px;
+  font-size: 14px;
+  color: #666;
+}
+.search-category {
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.group-details {
+  display: flex;
+  align-items: center;
+}
+
+.group-name {
+  font-weight: bold;
+}
+
+.group-info {
+  margin-top: 5px;
+  font-size: 14px;
+  color: #666;
+  margin-right: 15px;
+}
+
+/* Adăugați un margin pentru a separa grupurile */
+.search-result-item {
+  margin-bottom: 20px;
+}

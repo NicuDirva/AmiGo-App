@@ -5,7 +5,7 @@ import Navbar from '../Navbar';
 import { useNavigate } from 'react-router-dom';
 import MessageCard from '../card/MessageCard';
 import PostCard from '../card/PostCard'; // Assuming this is where getAvatarProfileById is located
-import './MessagePage.css'
+import styles from './css/MessagePage.module.css'
 
 const urlBase = "http://localhost:8080/";
 
@@ -15,10 +15,17 @@ const MessagePage = () => {
   const [userConversations, setUserConversations] = useState([]);
   const navigate = useNavigate();
   const [currentId, setCurrentId] = useState('');
+  const [currentUsername, setCurrentUsername] = useState(null);
+  const [currentAvatar, setCurrentAvatar] = useState(null);
+  const [selectedTab, setSelectedTab] = useState('friends');
 
   const fetchData = async () => {
     const currentAccountId = await Auth.getIdByEmail(defaultEmail);
     setCurrentId(currentAccountId);
+    const username = await Auth.getUsernameById(currentAccountId);
+    setCurrentUsername(username);
+    const avatar = await PostCard.getAvatarProfileById(currentAccountId);
+    setCurrentAvatar(avatar);
     const sentMessages = await MessageCard.getSentMessageById(currentAccountId);
     const receivedMessages = await MessageCard.getReceivedMessageById(currentAccountId);
     const allMessages = [...sentMessages, ...receivedMessages];
@@ -55,29 +62,44 @@ const MessagePage = () => {
     navigate(`/message/${userId}`);
   };
 
+  const handleClickContainerImg = (usernameParm) => {
+    navigate(`/profile/${usernameParm}`);
+  };
+
   return (
     <div>
-      {
-        defaultEmail ?
-          <div>
-            <Navbar />
-            <div className="conversations-container">
-              {userConversations.map(conversation => (
-                <div key={conversation.userId} className="conversation" onClick={() => handleClickContainer(conversation.userId)}>
-                  <img src={conversation.avatarUrl} alt="avatar" />
-                  <div className="conversation-info">
-                    <span>{conversation.username}</span>
-                    <p>{conversation.latestMessage.content}</p>
-                  </div>
-                </div>
-              ))}
+      {defaultEmail ? (
+        <div>
+          <Navbar />
+          <div className={styles.profileContainer}>
+            <img src={currentAvatar} alt="avatar" className={styles.profileAvatar} onClick={() => handleClickContainerImg(currentUsername)}/>
+            <div>
+              <h2>{currentUsername}</h2>
+              <p className={styles.parText}>Your conversations</p>
             </div>
           </div>
-          :
-          <div>
-            <p>Nu esti conectat</p>
+          <div className={styles.conversationsContainer}>
+            {userConversations.map(conversation => (
+              <div
+                key={conversation.userId}
+                className={styles.conversation}
+                onClick={() => handleClickContainer(conversation.userId)}
+              >
+                <img src={conversation.avatarUrl} alt="avatar" className={styles.conversationAvatar} onClick={() => handleClickContainerImg(conversation.username)}/>
+                <div className={styles.conversationInfo}>
+                  <span>{conversation.username}</span>
+                  <p>{conversation.latestMessage.content}</p>
+                  <p>{conversation.latestMessage.timeSent}</p>
+                </div>
+              </div>
+            ))}
           </div>
-      }
+        </div>
+      ) : (
+        <div>
+          <p>Nu esti conectat</p>
+        </div>
+      )}
     </div>
   );
 };

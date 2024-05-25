@@ -1,15 +1,19 @@
-import React, { useEffect, useState } from 'react'
-import './GroupCard.css'
+import React, { useEffect, useState, useCallback } from 'react';
 import Group from '../Pages/Group';
 import Auth from '../auth/Auth';
-import GroupForm from '../GroupForm';
 import GroupPostCard from './GroupPostCard';
 import { useGlobalState } from '../state';
 import Navbar from '../Navbar';
 import { useNavigate, useParams } from 'react-router-dom';
-import PostForm from '../PostForm';
-import { Navigate } from 'react-router-dom';
-import Profile from '../Pages/Profile';
+import PostForm from '../forms/PostForm';
+import PostCard from './PostCard';
+import styles from './css/GroupCard.module.css'
+import membersGroupIcon from '../Assets/group_members.png'
+import membersRequestGroupIcon from '../Assets/members_request.png'
+import editGroupIcon from '../Assets/edit_group.png'
+import newGroupImg from '../Assets/groupIcon.png';
+import exitGroupIcon from '../Assets/exit_group.png'
+import joinGroupIcon from '../Assets/join.png'
 
 const urlBase = "http://localhost:8080/";
 
@@ -23,343 +27,365 @@ const GroupCard = () => {
     const [groupAccess, setGroupAccess] = useState('');
     const [isOwner, setIsOwner] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
-    const [action, setAction] = useState('');
     const [editMode, setEditMode] = useState(false);
     const [newGroupName, setNewGroupName] = useState('');
     const [newGroupImage, setNewGroupImage] = useState('');
     const [newGroupAccess, setNewGroupAccess] = useState('');
     const [memberGroup, setMemberGroup] = useState(null);
     const [adminGroup, setAdminGroup] = useState(null);
-    const [ membershipCount, setMembershipCount] = useState(null);
+    const [membershipCount, setMembershipCount] = useState(null);
+    const [userAvatar, setUserAvatar] = useState(null);
     const navigate = useNavigate();
 
-    const fetchData = async () => {
-        const currentGroup = await Group.getGroupById(groupIdParm);
-        setMemberGroup(await Group.getMembershipsByGroupId(groupIdParm));
-        setAdminGroup(await Group.getAdminByGroupId(groupIdParm));
-        setGroup(currentGroup);
-        const memberships = await Group.getMembershipsByGroupId(groupIdParm);
-        setMembershipCount(memberships.length);
-        const currentId = await Auth.getIdByEmail(defaultEmail);
-        if(currentGroup.access == "private") {
-            setGroupAccess("private");
-        }
-        else
-        { 
-            setGroupAccess("public");
-        }
-        let is_member = await fetch(urlBase+"group/checkMembershipByAccountId",{
-          method:"POST",
-          headers:{"Content-Type":"application/json"}, 
-          body:JSON.stringify({account_id: currentId, group_id: groupIdParm})
-        });
-            
-        if (!is_member.ok) {
-          throw new Error(`HTTP error! status: ${is_member.status}`);
-        }
-        const is_member_json = await is_member.json(); // Parsați răspunsul JSON
-        let isMemberBool;
-        if(is_member_json == 0) {
-          isMemberBool = false;
-        }
-        else {
-          isMemberBool = true;
-        }
-        setIsGroupMember(isMemberBool);
-        if(isGroupMember == false) {
-            let sentRequestAlready = await fetch(urlBase+"group/checkRequestJoinByAccountId",{
-                method:"POST",
-                headers:{"Content-Type":"application/json"}, 
-                body:JSON.stringify({account_id: currentId, group_id: groupIdParm})
-                });
-                    
-            if (!sentRequestAlready.ok) {
-            throw new Error(`HTTP error! status: ${sentRequestAlready.status}`);
-            }
-            const sentRequestAlreadyJson = await sentRequestAlready.json(); // Parsați răspunsul JSON
-            let sentRequestAlreadyBool;
-            if(sentRequestAlreadyJson == 0) {
-                sentRequestAlreadyBool = false;
-            }
-            else {
-                sentRequestAlreadyBool = true;
-            }
-            setSentRequest(sentRequestAlreadyBool);
-        }
-        let is_owner = await fetch(urlBase+"group/checkOwnerGroupByAccountId",{
-            method:"POST",
-            headers:{"Content-Type":"application/json"}, 
-            body:JSON.stringify({account_id: currentId, group_id: groupIdParm})
-          });
-              
-          if (!is_owner.ok) {
-            throw new Error(`HTTP error! status: ${is_owner.status}`);
-          }
-          const is_owner_json = await is_owner.json(); // Parsați răspunsul JSON
-          let isOwnerBool;
-          if(is_owner_json == 0) {
-            isOwnerBool = false;
-          }
-          else {
-            isOwnerBool = true;
-          }
-          setIsOwner(isOwnerBool);
+    const fetchData = useCallback(async () => {
+        try {
+            const currentGroup = await Group.getGroupById(groupIdParm);
+            const memberships = await Group.getMembershipsByGroupId(groupIdParm);
+            const admins = await Group.getAdminByGroupId(groupIdParm);
+            const currentId = await Auth.getIdByEmail(defaultEmail);
+            const avatar = await PostCard.getAvatarProfileById(currentId);
 
-          let is_admin = await fetch(urlBase+"group/checkAdminGroupByAccountId",{
-            method:"POST",
-            headers:{"Content-Type":"application/json"}, 
-            body:JSON.stringify({account_id: currentId, group_id: groupIdParm})
-          });
-              
-          if (!is_admin.ok) {
-            throw new Error(`HTTP error! status: ${is_admin.status}`);
-          }
-          const is_admin_json = await is_admin.json(); // Parsați răspunsul JSON
-          let isAdminBool;
-          if(is_admin_json == 0) {
-            isAdminBool = false;
-          }
-          else {
-            isAdminBool = true;
-          }
-          setIsAdmin(isAdminBool);
-  
-    }
+            setGroup(currentGroup);
+            setMemberGroup(memberships);
+            setAdminGroup(admins);
+            setMembershipCount(memberships.length);
+            setUserAvatar(avatar);
+            setGroupAccess(currentGroup.access);
+
+            const is_member_response = await fetch(urlBase + "group/checkMembershipByAccountId", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ account_id: currentId, group_id: groupIdParm })
+            });
+            const is_member_json = await is_member_response.json();
+            setIsGroupMember(is_member_json !== 0);
+
+            if (!is_member_json) {
+                const sentRequest_response = await fetch(urlBase + "group/checkRequestJoinByAccountId", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ account_id: currentId, group_id: groupIdParm })
+                });
+                const sentRequest_json = await sentRequest_response.json();
+                setSentRequest(sentRequest_json !== 0);
+            }
+
+            const is_owner_response = await fetch(urlBase + "group/checkOwnerGroupByAccountId", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ account_id: currentId, group_id: groupIdParm })
+            });
+            const is_owner_json = await is_owner_response.json();
+            setIsOwner(is_owner_json !== 0);
+
+            const is_admin_response = await fetch(urlBase + "group/checkAdminGroupByAccountId", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ account_id: currentId, group_id: groupIdParm })
+            });
+            const is_admin_json = await is_admin_response.json();
+            setIsAdmin(is_admin_json !== 0);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    }, [groupIdParm, defaultEmail]);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
 
     const convertImgBase64 = (e) => {
-      var reader = new FileReader();
-      reader.readAsDataURL(e.target.files[0]);
-      reader.onload = () => {
-        setNewGroupImage(reader.result);
-      }
+        const reader = new FileReader();
+        reader.readAsDataURL(e.target.files[0]);
+        reader.onload = () => {
+            setNewGroupImage(reader.result);
+        }
     }
 
     const handleJoin = async () => {
-        const currentId = await Auth.getIdByEmail(defaultEmail);
-        let response = await fetch(urlBase+"group/MEMBERSHIP",{
-          method:"PATCH",
-          headers:{"Content-Type":"application/json"}, 
-          body:JSON.stringify({account_id: currentId, group_id: groupIdParm})
-        });
-            
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        try {
+            const currentId = await Auth.getIdByEmail(defaultEmail);
+            const response = await fetch(urlBase + "group/MEMBERSHIP", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ account_id: currentId, group_id: groupIdParm })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            fetchData();
+        } catch (error) {
+            console.error('Error joining group:', error);
         }
     }
 
     const handleJoinRequest = async () => {
-        const currentId = await Auth.getIdByEmail(defaultEmail);
-    
-        let response = await fetch(urlBase+"group/MEMBERSHIP_REQUEST",{
-          method:"PATCH",
-          headers:{"Content-Type":"application/json"}, 
-          body:JSON.stringify({account_id: currentId, group_id: groupIdParm})
-        });
-            
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-      }
+        try {
+            const currentId = await Auth.getIdByEmail(defaultEmail);
+            const response = await fetch(urlBase + "group/MEMBERSHIP_REQUEST", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ account_id: currentId, group_id: groupIdParm })
+            });
 
-      const handleDeleteJoin = async () => {
-        const currentId = await Auth.getIdByEmail(defaultEmail);
-        let response = await fetch(urlBase+"group/DELETE_MEMBERSHIP",{
-          method:"PATCH",
-          headers:{"Content-Type":"application/json"}, 
-          body:JSON.stringify({account_id: currentId, group_id: groupIdParm})
-        });
-            
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            fetchData();
+        } catch (error) {
+            console.error('Error requesting to join group:', error);
         }
-        if (isOwner) {
-          await Group.deleteCreateGroupRelationship(currentId, groupIdParm);
-          if (adminGroup.length !== 0) {
-              console.log("Alege un admin random")
-              // Select a random admin to be the new creator
-              const randomAdmin = adminGroup[Math.floor(Math.random() * adminGroup.length)];
-              await Group.deleteAdminRelationship(randomAdmin.account_id, groupIdParm);
-              await Group.createCreateGroupRelationship(randomAdmin.account_id, groupIdParm);
-              await handleGroupOwnership(randomAdmin.account_id);
-              fetchData();
-          } else if (memberGroup.length !== 0) {
-            console.log("Alege un membru random")
-              // Select a random member to be the new creator
-              const randomMember = memberGroup[Math.floor(Math.random() * memberGroup.length)];
-              await Group.createCreateGroupRelationship(randomMember.account_id, groupIdParm);
-              await handleGroupOwnership(randomMember.account_id);
-              fetchData();
-          } else {
-              await Group.deleteByGroupId(groupIdParm);
-              navigate(`/group`);
-          }
-      }
+    }
+
+    const handleDeleteJoin = async () => {
+        try {
+            const currentId = await Auth.getIdByEmail(defaultEmail);
+            const response = await fetch(urlBase + "group/DELETE_MEMBERSHIP", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ account_id: currentId, group_id: groupIdParm })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            if (isOwner) {
+                const members = await Group.getAdminByGroupId(groupIdParm);
+                const admins = await Group.getMembershipsByGroupId(groupIdParm);
+                if(!members && !admins) {
+                    const groupDeletedPost = await Group.getPostsByGroupId(groupIdParm);
+                    await Group.deletePostByGroupId(groupIdParm);
+                    await Group.deleteByGroupId(groupIdParm);
+                    console.log("Postari sterse", groupDeletedPost);
+                    for(const post of groupDeletedPost) {
+                        await Group.deleteCommentByPostId(post.post_id);
+                    }
+                    navigate(`/group`)
+                }
+                else {
+                    await Group.deleteCreateGroupRelationship(currentId, groupIdParm);
+                    if (adminGroup.length !== 0) {
+                        const randomAdmin = adminGroup[Math.floor(Math.random() * adminGroup.length)];
+                        await Group.deleteAdminRelationship(randomAdmin.account_id, groupIdParm);
+                        await Group.createCreateGroupRelationship(randomAdmin.account_id, groupIdParm);
+                        await handleGroupOwnership(randomAdmin.account_id);
+                    } else if (memberGroup.length !== 0) {
+                        const randomMember = memberGroup[Math.floor(Math.random() * memberGroup.length)];
+                        await Group.createCreateGroupRelationship(randomMember.account_id, groupIdParm);
+                        await handleGroupOwnership(randomMember.account_id);
+                    } else {
+                        await Group.deleteByGroupId(groupIdParm);
+                        navigate(`/group`);
+                    }
+                }
+            }
+            fetchData();
+        } catch (error) {
+            console.error('Error deleting join:', error);
+        }
     }
 
     const handleGroupOwnership = async (newCreatorId) => {
-      try {
-          const groupCopy = { ...group, creator_id: newCreatorId };
-          const response = await fetch(urlBase + "group/editGroupCreator", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(groupCopy)
-          });
-  
-          if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-          }
-      } catch (error) {
-          console.error("Error updating group creator:", error);
-      }
-  };
+        try {
+            const groupCopy = { ...group, creator_id: newCreatorId };
+            const response = await fetch(urlBase + "group/editGroupCreator", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(groupCopy)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+        } catch (error) {
+            console.error("Error updating group creator:", error);
+        }
+    };
 
     const handleDeleteJoinRequest = async () => {
-        const currentId = await Auth.getIdByEmail(defaultEmail);
-    
-        let response = await fetch(urlBase+"group/DELETE_MEMBERSHIP_REQUEST",{
-          method:"PATCH",
-          headers:{"Content-Type":"application/json"}, 
-          body:JSON.stringify({account_id: currentId, group_id: groupIdParm})
-        });
-            
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        try {
+            const currentId = await Auth.getIdByEmail(defaultEmail);
+            const response = await fetch(urlBase + "group/DELETE_MEMBERSHIP_REQUEST", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ account_id: currentId, group_id: groupIdParm })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            fetchData();
+        } catch (error) {
+            console.error('Error deleting join request:', error);
         }
-      }
+    }
 
-      const handleGroupMember = (groupIdParm) => {
+    const handleGroupMember = (groupIdParm) => {
         navigate(`/member/${groupIdParm}`);
-      }
+    }
 
-      const handleGroupMemberRequest = (groupIdParm) => {
+    const handleGroupMemberRequest = (groupIdParm) => {
         navigate(`/groupMemberRequest/${groupIdParm}`);
-      }
+    }
 
-      const handleEditGroup = () => {
+    const handleEditGroup = () => {
         setEditMode(!editMode); // Toggle editMode
     }
 
-    const handleSaveChanges = async () => {
-        setEditMode(false);
-        if (defaultEmail) { 
-          const group = await Group.getGroupById(groupIdParm);
-          if (newGroupName) {
-            group.name = newGroupName;
-          }
-          if (newGroupAccess) {
-            group.access = newGroupAccess;
-          }
-          if (newGroupImage) {
-            group.urlImg = newGroupImage;
-          }
-
-          const response = await fetch(urlBase+"group/editGroup",{
-            method:"POST",
-            headers:{"Content-Type":"application/json"}, 
-            body:JSON.stringify(group)
-          });
-
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-        }
+    const handleOnComment = () => {
         fetchData();
     }
 
-    useEffect(() => {
+    const handleCancelSave = () => {
+        setEditMode(false);
+        setNewGroupAccess('');
+        setNewGroupImage('');
+        setNewGroupName('');
         fetchData();
-    });
-  return (
-    <div>
-    <Navbar />
-    {group && (
-        <div className="group-info">
-            <img className="group-image" src={group.urlImg} alt={group.name} />
-            <h2 className="group-name">{group.name}</h2>
+    }
+    const handleSaveChanges = async () => {
+        setEditMode(false);
+        try {
+            const group = await Group.getGroupById(groupIdParm);
+            if (newGroupName) {
+                group.name = newGroupName;
+            }
+            if (newGroupAccess) {
+                group.access = newGroupAccess;
+            }
+            if (newGroupImage) {
+                group.urlImg = newGroupImage;
+            }
 
+            const response = await fetch(urlBase + "group/editGroup", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(group)
+            });
 
-            {isOwner && (
-                <button className="edit-group-button" onClick={handleEditGroup}>
-                    {editMode ? 'Cancel' : 'Edit Group'}
-                </button>
-            )}
-            {editMode && isOwner && (
-                <div className="edit-group-fields">
-                    <input
-                        type="text"
-                        value={newGroupName}
-                        onChange={(e) => setNewGroupName(e.target.value)}
-                        placeholder="New Group Name"
-                    />
-                    <br/>
-                    <div>
-                    <label htmlFor="image">New image group:</label>
-                    <input
-                      type="file"
-                      id="image"
-                      accept="image/*"
-                      onChange={convertImgBase64}
-                      required
-                    />
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            setNewGroupAccess('');
+            setNewGroupImage('');
+            setNewGroupName('');
+            fetchData();
+        } catch (error) {
+            console.error('Error saving changes:', error);
+        }
+    }
+
+    return (
+        <div>
+            <Navbar />
+            {group && (
+                <div className={styles.groupInfo}>
+                    <img className={styles.groupImage} src={group.urlImg} alt={group.name} />
+                    <div className={styles.groupContainer}>
+                        <div className={styles.groupName}>
+                            <h1>{group.name}</h1>
+                        </div>
                     </div>
-                    <select
-                        value={newGroupAccess}
-                        onChange={(e) => setNewGroupAccess(e.target.value)}
-                    >
-                        <option value="public">Public</option>
-                        <option value="private">Private</option>
-                    </select>
-                    <br/>
-                    <button onClick={handleSaveChanges}>Save Changes</button>
+    
+                    <div className={styles.buttonContainer}>
+                        {(groupAccess === 'public' || isGroupMember) && (
+                            <div>
+                                <img className={styles.iconImage} onClick={() => handleGroupMember(group.group_id)} src={membersGroupIcon} alt="Members" />
+                                <p>{membershipCount} members</p>
+                            </div>
+                        )}
+                        {(isOwner || isAdmin) && (
+                            <div>
+                                <img className={styles.iconImage} onClick={() => handleGroupMemberRequest(groupIdParm)} src={membersRequestGroupIcon} alt="Member Requests" />
+                                <p>Request members</p>
+                            </div>
+                        )}
+                        {isOwner && (
+                            <div className={styles.editGroupButton}>
+                                <img onClick={handleEditGroup} className={styles.iconImage} src={editGroupIcon} alt="Edit Group" />
+                                <p>{editMode ? 'Cancel' : 'Edit Group'}</p>
+                            </div>
+                        )}
+
+                        <div className={styles.joinButtonContainer}>
+                        {isGroupMember ? (
+                            isOwner ? (
+                                <div className={styles.exitGroupButton} onClick={handleDeleteJoin}>
+                                    <img className={styles.exitIcon} src={exitGroupIcon} alt="Exit Group" />
+                                    <p>You are the owner! Do you want to exit?</p>
+                                </div>
+                            ) : (
+                                <div className={styles.exitGroupButton} onClick={handleDeleteJoin}>
+                                    <img className={styles.exitIcon} src={exitGroupIcon} alt="Exit Group" />
+                                    <p>Joined! Do you want to exit?</p>
+                                </div>
+                            )
+                        ) : sentRequest ? (
+                            <button className={`${styles.groupButton} ${styles.exitButton}`} onClick={handleDeleteJoinRequest}>
+                                Join request sent! Do you want to cancel?
+                            </button>
+                        ) : groupAccess === "public" ? (
+                            <div className={styles.joinGroupButton} onClick={handleJoin}>
+                                <img className={styles.joinIcon} src={joinGroupIcon} alt="Join Group" />
+                                <p>Join!</p>
+                            </div>
+                        ) : (
+                            <div className={styles.joinGroupButton} onClick={handleJoinRequest}>
+                                <img className={styles.joinIcon} src={joinGroupIcon} alt="Join Request" />
+                                <p>Send join request!</p>
+                            </div>
+                            
+                        )}
+                        </div>
+                    </div>
+    
+                    {editMode && isOwner && (
+                        <div className={styles.editGroupFields}>
+                            <input
+                                type="text"
+                                value={newGroupName}
+                                onChange={(e) => setNewGroupName(e.target.value)}
+                                placeholder="New Group Name"
+                            />
+                            <br />
+                            <div className={styles.ChangeImgGroup}>
+                                <label htmlFor="image">
+                                    <img className={styles.newImageIcon} src={newGroupImg} alt="New Group" />
+                                </label>
+                                <input
+                                    type="file"
+                                    id="image"
+                                    accept="image/*"
+                                    onChange={convertImgBase64}
+                                    required
+                                />
+                            </div>
+                            <select
+                                value={newGroupAccess}
+                                onChange={(e) => setNewGroupAccess(e.target.value)}
+                            >
+                                <option value="public">Public</option>
+                                <option value="private">Private</option>
+                            </select>
+                            <br />
+                            <button className={styles.saveButton} onClick={() => handleSaveChanges()}>Save Changes</button>
+                            <button className={styles.saveButton} onClick={() => handleCancelSave()}>Cancel</button>
+                        </div>
+                    )}
+    
+                    
+                    {(isOwner || isAdmin || isGroupMember) && (
+                        <div>
+                            <PostForm group_id={groupIdParm} userAvatar={userAvatar}/>
+                            <GroupPostCard groupIdParm={groupIdParm}/>
+                        </div>
+                    )}
                 </div>
             )}
-
-
-            <div className="button-container">
-                {isGroupMember ? (
-                    isOwner ?
-                        <button className="group-button" onClick={handleDeleteJoin}>
-                            You are the owner!If you leave someone else will be the new owner!You want to exit?
-                        </button>
-                    :
-                        <button className="group-button" onClick={handleDeleteJoin}>
-                        Joined!You want to exit?
-                </button>
-                ): sentRequest ? (
-                    <button className="group-button" onClick={handleDeleteJoinRequest}>
-                        Join request sent!You want to cancell?
-                    </button>
-                ) : groupAccess === "public"?(
-                    <button className="group-button" onClick={handleJoin}>
-                        Join!
-                    </button>
-                ):
-                    <button className="group-button" onClick={handleJoinRequest}>
-                    Sent join request!
-                    </button>
-                }
-            </div>
-            {
-              groupAccess === "public"?
-              <p onClick={() => handleGroupMember(group.group_id)}>{membershipCount} members</p>
-              :
-              <p>{membershipCount} members</p>
-            }
-    
-            {(isOwner || isAdmin) && (
-                <p onClick={() => handleGroupMemberRequest(groupIdParm)}>Member request</p>
-            )}
-            {
-              isOwner || isAdmin || isGroupMember?
-                <PostForm group_id={groupIdParm} />
-              :
-              null
-            }
-            <GroupPostCard groupIdParm={groupIdParm} />
         </div>
-    )}
-</div>
-  )
-}
+    );
+    
+}    
 
-export default GroupCard
+export default GroupCard;

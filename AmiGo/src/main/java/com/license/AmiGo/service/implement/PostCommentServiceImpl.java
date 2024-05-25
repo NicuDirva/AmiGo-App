@@ -36,4 +36,7 @@ public class PostCommentServiceImpl implements PostCommentService {
     public void deleteComment(long comment_id) {
         postCommentRepository.deleteComment(comment_id);
     }
+    public void deleteCommentByPostId(long post_id) {
+        postCommentRepository.deleteCommentByPostId(post_id);
+    }
 }

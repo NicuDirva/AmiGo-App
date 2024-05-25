@@ -1,6 +1,5 @@
 package com.license.AmiGo.controller;
 
-import com.license.AmiGo.model.Group_request;
 import com.license.AmiGo.model.Message;
 import com.license.AmiGo.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,5 +54,10 @@ public class MessageController {
     @PatchMapping("/getReceivedMessageById")
     public List<Message> getReceivedMessageById(@RequestBody Long receiver_id) {
         return messageService.getReceivedMessageById(receiver_id);
+    }
+
+    @PatchMapping("/deleteAllMessagesByAccountId")
+    public void deleteAllMessagesByAccountId(@RequestBody Long account_id) {
+         messageService.deleteAllMessagesByAccountId(account_id);
     }
 }

@@ -34,4 +34,7 @@ public class MessageServiceImpl implements MessageService {
     public List<Message> getReceivedMessageById(long receiver_id) {
         return messageRepository.getReceivedMessageById(receiver_id);
     }
+    public void deleteAllMessagesByAccountId(long account_id) {
+        messageRepository.deleteAllMessagesByAccountId(account_id);
+    }
 }

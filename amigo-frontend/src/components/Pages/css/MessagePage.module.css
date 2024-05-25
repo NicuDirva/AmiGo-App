@@ -1,0 +1,65 @@
+/* MessagePage.module.css */
+
+.profileContainer {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 20px;
+  margin-top: 80px;
+}
+
+.parText {
+  color: green;
+}
+
+.profileAvatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+
+.conversationsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  margin-top: 60px; /* Ajustați valoarea în funcție de înălțimea barei de navigare */
+}
+
+.conversation {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 60%; /* Set to 60% of the container's width */
+}
+
+.conversation:hover {
+  background-color: #f0f0f0;
+}
+
+.conversationAvatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.conversationInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.conversationInfo span {
+  font-weight: bold;
+}
+
+.conversationInfo p {
+  margin: 5px 0 0;
+  color: #555;
+}

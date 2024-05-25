@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { useGlobalState } from '../state';
 import Auth from '../auth/Auth';
 import Navbar from '../Navbar';
-import GroupForm from '../GroupForm';
+import GroupForm from '../forms/GroupForm';
 import { Navigate, useNavigate } from 'react-router-dom';
+import styles from './css/GroupPage.module.css'
 
 const urlBase = "http://localhost:8080/";
 
@@ -33,41 +34,51 @@ const Group = () => {
         fetchData();
     })
 
+    const handleClickMembers = (groupIdParm) => {
+      navigate(`/member/${groupIdParm}`);
+    }
+
     const handleClickContainerGroup = (groupIdParm) => {
         navigate(`/group/${groupIdParm}`);
       }
 
-    return(
-      <div>
-        {defaultEmail?
-          <div>
-            <Navbar/>
-            <GroupForm/>
-            <div>
-              <p>Your Groups</p>
-              {groupData.length === 0 ? (
-                <p>No groups found.</p>
-              ) : (
-                <div>
-                  {groupData.map(group => (
-                    <div className="search-result-item">
-                      <img className='avatar-profile' src={group.group.urlImg} alt='group-avatar' onClick={() => handleClickContainerGroup(group.group.group_id)}/>
-                      <p>{group.group.name}</p>
-                      <p>Access: {group.group.access}</p>
-                      <p>Members: {group.membershipCount}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-              </div>
-          </div>:
+      return (
         <div>
-          <Navbar/>
-          Nu esti conectat la cont
-          </div>
-      }
-      </div>
-    );
+          {defaultEmail ?
+            <div>
+              <Navbar />
+              <div className={styles.content}>
+                <GroupForm />
+                <div>
+                  <h2 className={styles.h2Text}>Your Groups</h2>
+                  {groupData.length === 0 ? (
+                    <p>No groups found.</p>
+                  ) : (
+                    <div>
+                      {groupData.map(group => (
+                        <div className={styles.searchResultItem} key={group.group.group_id}>
+                          <img className={styles.avatarProfile} src={group.group.urlImg} alt='group-avatar' onClick={() => handleClickContainerGroup(group.group.group_id)} />
+                          <div className={styles.groupInfo}>
+                            <p className={styles.groupName}>{group.group.name}</p>
+                            <p className={styles.groupAccess}>Access: {group.group.access}</p>
+                            <p className={styles.groupMembers} onClick={() => handleClickMembers(group.group.group_id)}>Members: {group.membershipCount}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            :
+            <div>
+              <Navbar />
+              <p>Nu esti conectat la cont</p>
+            </div>
+          }
+        </div>
+      );
+      
 }
 
 const getGroupByCreatorId = async (creator_id) => {
@@ -144,6 +155,60 @@ const deleteByGroupId = async (group_id) => {
               "Content-Type": "application/json"
           },
           body: JSON.stringify(group_id) // Trimiterea creator_id către backend în corpul cererii
+      });
+
+      if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+      }
+  } catch (error) {
+      console.error("Error getting group:", error);
+  }
+}
+
+const deletePostByGroupId = async (group_id) => {
+  try {
+      const response = await fetch(urlBase + "post/DELETE_POST_BY_GROUP_ID", {
+          method: "POST", // Vom folosi POST pentru a trimite creator_id către backend
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify(group_id) // Trimiterea creator_id către backend în corpul cererii
+      });
+
+      if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+      }
+  } catch (error) {
+      console.error("Error getting group:", error);
+  }
+}
+
+const deletePostByAccountId = async (account_id) => {
+  try {
+      const response = await fetch(urlBase + "post/DELETE_POST_BY_ACCOUNT_ID", {
+          method: "POST", // Vom folosi POST pentru a trimite creator_id către backend
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify(account_id) // Trimiterea creator_id către backend în corpul cererii
+      });
+
+      if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+      }
+  } catch (error) {
+      console.error("Error getting group:", error);
+  }
+}
+
+const deleteCommentByPostId = async (post_id) => {
+  try {
+      const response = await fetch(urlBase + "comment/DELETE_COMMENT_BY_POST_ID", {
+          method: "POST", // Vom folosi POST pentru a trimite creator_id către backend
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify(post_id) // Trimiterea creator_id către backend în corpul cererii
       });
 
       if (!response.ok) {
@@ -402,4 +467,4 @@ const deleteCreateGroupRelationship = async (creator_id, group_id) => {
 }
 
 
-export default  { Group,getMembershipRequestsByGroupId, deleteCreateGroupRelationship, createCreateGroupRelationship, deleteByGroupId, getAdminByGroupId, handleJoin, handleDeleteJoinRequest, deletePost, deleteComment, createAdminRelationship, deleteAdminRelationship, deleteMembershipRelationship, getAllGroup, checkAdminGroup, checkCreatorGroup, getGroupByCreatorId, getMembershipsByGroupId, getGroupById, getPostsByGroupId, getAllMemberGroupByAccountId } 
+export default  { Group, deletePostByGroupId, deletePostByAccountId, deleteCommentByPostId, getMembershipRequestsByGroupId, deleteCreateGroupRelationship, createCreateGroupRelationship, deleteByGroupId, getAdminByGroupId, handleJoin, handleDeleteJoinRequest, deletePost, deleteComment, createAdminRelationship, deleteAdminRelationship, deleteMembershipRelationship, getAllGroup, checkAdminGroup, checkCreatorGroup, getGroupByCreatorId, getMembershipsByGroupId, getGroupById, getPostsByGroupId, getAllMemberGroupByAccountId } 

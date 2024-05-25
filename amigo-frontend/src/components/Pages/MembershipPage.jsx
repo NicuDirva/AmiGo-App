@@ -4,6 +4,7 @@ import Auth from '../auth/Auth';
 import { useGlobalState } from '../state';
 import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from '../Navbar';
+import styles from './css/MembershipPage.module.css'
 
 const MembershipPage = () => {
     const [memberData, setMemberData] = useState([]);
@@ -115,45 +116,47 @@ const MembershipPage = () => {
             {defaultLoggin ? (
                 <div>
                     <Navbar />
-                    {memberData.map(obj => (
-                        <div className="member-item" key={obj.account.account_id}>
-                            <img className='avatar-profile' src={obj.profile.img_url} alt='avatar' onClick={() => handleClickContainer(obj.account.username)} />
-                            <div className="member-info">
-                                <p>Username: {obj.account.username}</p>
-                                <p>Role: {obj.role}</p>
+                    <div className={styles.container}>
+                        <h2>Members:</h2>
+                        {memberData.map(obj => (
+                            <div className={styles.memberItem} key={obj.account.account_id}>
+                                <img className={styles.avatarProfile} src={obj.profile.img_url} alt='avatar' onClick={() => handleClickContainer(obj.account.username)} />
+                                <div className={styles.memberInfo}>
+                                    <p className={styles.username}>{obj.account.username}</p>
+                                    <p className={styles.role}>{obj.role}</p>
+                                </div>
+                                {isCreatorGroup ? (
+                                    <div className={styles.memberOptions}>
+                                        {defaultEmail !== obj.account.email && (
+                                            <button className={styles.removeButton} onClick={() => handleRemoveMember(obj.account.account_id, obj.role)}>Remove</button>
+                                        )}
+                                        {obj.role !== "admin" && defaultEmail !== obj.account.email && (
+                                            <button className={styles.makeAdminButton} onClick={() => handleGiveAdminRole(obj.account.account_id)}>Make Admin</button>
+                                        )}
+                                        {obj.role === "admin" && defaultEmail !== obj.account.email && (
+                                            <button className={styles.removeAdminButton} onClick={() => handleRemoveAdminRole(obj.account.account_id)}>Remove Admin</button>
+                                        )}
+                                    </div>
+                                ) : isAdminGroup ? (
+                                    <div className={styles.memberOptions}>
+                                        {defaultEmail !== obj.account.email && obj.role !== "creator" && obj.role !== "admin" && (
+                                            <button className={styles.removeButton} onClick={() => handleRemoveMember(obj.account.account_id, obj.role)}>Remove</button>
+                                        )}
+                                    </div>
+                                ) : null}
                             </div>
-                            {isCreatorGroup ? (
-                                <div className="member-options">
-                                    {defaultEmail !== obj.account.email && (
-                                        <button onClick={() => handleRemoveMember(obj.account.account_id, obj.role)}>Remove</button>
-                                    )}
-                                    {obj.role !== "admin" && defaultEmail !== obj.account.email && (
-                                        <button onClick={() => handleGiveAdminRole(obj.account.account_id)}>Make Admin</button>
-                                    )}
-                                    {obj.role == "admin" && defaultEmail !== obj.account.email && (
-                                        <button onClick={() => handleRemoveAdminRole(obj.account.account_id)}>Remove Admin</button>
-                                    )}
-                                </div>
-                            ) : isAdminGroup ? (
-                                <div className="member-options">
-                                    {defaultEmail !== obj.account.email && obj.role !== "creator" && obj.role !== "admin" && (
-                                        <button onClick={() => handleRemoveMember(obj.account.account_id, obj.role)}>Remove</button>
-                                    )}
-                                </div>
-                            ) : null}
-
-
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             ) : (
                 <div>
-                    <Navbar/>
-                    You are not logged in!
+                    <Navbar />
+                    <p>You are not logged in!</p>
                 </div>
             )}
         </div>
     );
+    
 };
 
 export default MembershipPage;

@@ -1,0 +1,45 @@
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    margin-top: 120px;
+    margin-left: 20px;
+    
+  }
+  
+  .searchResultItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .h2Text {
+    align-items: start;
+    margin-left: 0px;
+  }
+  
+  .avatarProfile {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 20px;
+    cursor: pointer;
+  }
+  
+  .groupInfo {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .groupName {
+    font-weight: bold;
+  }
+  
+  .groupAccess {
+    font-weight: bold;
+  }
+  
+  .groupMembers {
+    cursor: pointer;
+  }
+  

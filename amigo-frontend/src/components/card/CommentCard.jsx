@@ -3,7 +3,7 @@ import { useGlobalState } from '../state';
 import { useEffect } from 'react';
 import Auth from '../auth/Auth';
 import PostCard from './PostCard';
-import './PostCard.css'
+import styles from './css/CommentCard.module.css'
 import Group from '../Pages/Group';
 import { useNavigate } from 'react-router-dom';
 
@@ -82,33 +82,40 @@ const CommentCard = ({post_id}) => {
     useEffect(() => {
         fetchData();
     }, []);
-  return (
-    <div className="comment-container">
-        {comments.map((comment, index) => (
-            <div key={index} className="comment-card">
-                <div className="avatar">
-                    <img src={comment.authorAvatarUrl} alt="Avatar" />
+    return (
+        <div className={styles.commentContainer}>
+          {comments.map((comment, index) => (
+            <div key={index} className={styles.commentCard}>
+              <div className={styles.avatar}>
+                <img src={comment.authorAvatarUrl} alt="Avatar" />
+              </div>
+              <div className={styles.commentBody}>
+                <p className={styles.commentUsername} onClick={() => handleClickContainer(comment.commentUsername)}>
+                  {comment.commentUsername}
+                </p>
+                <div className={styles.commentContent}>
+                  <p>{comment.comment.content}</p>
                 </div>
-                <div>
-                    <p onClick={() => handleClickContainer(comment.commentUsername)}>{comment.commentUsername}</p>
-                </div>
-                <div className="comment-content">
-                    <p>{comment.comment.content}</p>
-                </div>
-                <div>
-                    {comment.comment.created_date}
+                <div className={styles.commentDate}>
+                  {comment.comment.created_date}
                 </div>
                 {(comment.comment.account_id === currentUserId || comment.role < currentUserRoleNumber) && (
-                        <button onClick={() => {
-                            Group.deleteComment(comment.comment.comment_id);
-                            fetchData();
-                        }}>Delete Comment</button>
-                         
-                    )}
+                  <button
+                    className={styles.deleteButton}
+                    onClick={() => {
+                      Group.deleteComment(comment.comment.comment_id);
+                      fetchData();
+                    }}
+                  >
+                    Delete Comment
+                  </button>
+                )}
+              </div>
             </div>
-        ))}
-    </div>
-  )
+          ))}
+        </div>
+      );
+      
 }
 
 const getAllComment = async (post_id) => {

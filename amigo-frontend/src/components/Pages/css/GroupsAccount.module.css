@@ -1,0 +1,62 @@
+.profileContainer {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 20px;
+    margin-top: 80px;
+  }
+  
+  .parText {
+    color: green;
+  }
+  
+  .profileAvatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+  }
+
+  .searchResultItem {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    padding: 10px;
+  }
+  
+  .searchResultItem:lastChild {
+    border-bottom: none;
+  }
+  
+  .avatarProfile {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 20px;
+    cursor: pointer;
+  }
+  
+  .username {
+    font-weight: bold;
+  }
+  .groupDetails {
+    display: flex;
+    align-items: center;
+  }
+  
+  .groupName {
+    font-weight: bold;
+  }
+  
+  .groupInfo {
+    margin-top: 5px;
+    font-size: 14px;
+    color: #666;
+    margin-right: 15px;
+  }
+  
+  /* Adăugați un margin pentru a separa grupurile */
+  .searchResultItem {
+    margin-bottom: 20px;
+  }

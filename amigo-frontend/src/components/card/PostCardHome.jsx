@@ -4,13 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import Profile from '../Pages/Profile';
 import Auth from '../auth/Auth';
 import PostCard from './PostCard';
-import './PostCard.css';
 import likeIcon from '../Assets/heart_7469375.png';
 import commentIcon from '../Assets/chat_4663336.png';
 import CommentCard from './CommentCard';
-import CommentForm from '../CommentForm';
+import CommentForm from '../forms/CommentForm';
 import dislikeIcon from '../Assets/broken-heart_9195088.png';
-import Group from '../Pages/Group';
+import styles from './css/GroupPostCard.module.css'
 
 const urlBase = "http://localhost:8080/";
 
@@ -26,14 +25,16 @@ const PostCardHome = () => {
     const [showLikePost, setShowLikePost] = useState('');
     const [showCommentPostId, setShowCommentPostId] = useState('');
     const [firstRandom, setFirstRandom] = useState(true);
+    const [ userAvatar, setUserAvatar] = useState(null);
     const navigate = useNavigate();
 
     const fetchData = async () => {
         if (defaultUsername) {
             const account_id = await Auth.getIdByEmail(defaultEmail);
+            const currentAvatar = await PostCard.getAvatarProfileById(account_id);
+            setUserAvatar(currentAvatar);
             setCurrentUserId(account_id);
             const friends = await Profile.getFriendshipById(account_id);
-            console.log("Prieteni::::::", friends);
             let fetchedPostWithIcon = []
             for (const account of friends) {
                 const img_url = await PostCard.getAvatarProfileById(account.account_id);
@@ -75,7 +76,6 @@ const PostCardHome = () => {
                     }
                 }
             }
-            console.log("Postarii::::::", fetchedPostWithIcon);
             
             // Amestecăm postările doar la prima randare
             if (firstRandom) {
@@ -122,6 +122,10 @@ const PostCardHome = () => {
     const handleClickContainer = (usernameParm) => {
         navigate(`/profile/${usernameParm}`);
     }
+
+    const handleCommentFetch = () => {
+        fetchData();
+      }
 
     const handleLikeButton = async (post_id, authorId) => {
         try {
@@ -174,49 +178,44 @@ const PostCardHome = () => {
     }
 
     return (
-        <div>
+        <div className={styles.postContainer}>
             {posts ? posts.map((pst, index) => (
-                <div key={index} className="post-card">
-                    <div className="top-row">
-                        <div className="avatar">
-                            <img src={pst.img_url} alt="Avatar" onClick={() => handleClickContainer(pst.username)} />
+                <div key={index} className={styles.postCard}>
+              <div className={styles.topRow}>
+                        <div className={styles.avatar}>
+                            <img src={pst.img_url} alt="Avatar" className={styles.avatarImg} onClick={() => handleClickContainer(pst.username)} />
                         </div>
-                        <div className="username">
-                            <h3>{pst.username}</h3>
+                            <div className={styles.username}>
+                                <h3 className={styles.usernameH3}>{pst.username}</h3>
+                            </div>
+                    </div>
+                    <div className={styles.middleRow}>
+                        {pst.post.urlImgPost && <img src={pst.post.urlImgPost} className={styles.middleRowImg} alt="Post" />}
+                    </div>
+                    <div className={styles.contentRow}>
+                        <div className={styles.postContent}>
+                            <p className={styles.postContentP}>{pst.post.contentPost}</p>
                         </div>
                     </div>
-                    <div className="middle-row">
-                        {pst.post.urlImgPost && <img src={pst.post.urlImgPost} alt="Post" />}
-                    </div>
-                    <div className="content-row">
-                        <div className="post-content">
-                            <p>{pst.post.contentPost}</p>
+                    <div className={styles.bottomRow}>
+                        <div className={styles.likeComment}>
+                            <img className={styles.likeCommentImg} src={pst.like ? likeIcon : dislikeIcon} alt='Like' onClick={() => handleLikeButton(pst.post.post_id, pst.post.account_id)} />
+                            <p onClick={() => handleDisplayLike(pst.post.post_id)}>{pst.likeProfile ? pst.likeProfile.length : 0} like</p>
                         </div>
-                    </div>
-                    <div className="bottom-row">
-                        <div className='react-icons'>
-                            {
-                                pst.like ?
-                                    <img src={likeIcon} alt='Like' onClick={() => handleLikeButton(pst.post.post_id, pst.post.account_id)} />
-                                    :
-                                    <img src={dislikeIcon} alt='Like' onClick={() => handleLikeButton(pst.post.post_id, pst.post.account_id)} />
-                            }
-                        </div>
-                        <p onClick={() => handleDisplayLike(pst.post.post_id)}>{pst.likeProfile ? pst.likeProfile.length : 0} like</p>
-                        <div className='react-icons'>
-                            <img src={commentIcon} alt='Comment' onClick={() => handleCommentButton(pst.post.post_id)} />
+                        <div className={styles.likeComment}>
+                            <img className={styles.likeCommentImg} src={commentIcon} alt='Comment' onClick={() => handleCommentButton(pst.post.post_id)} />
                         </div>
                     </div>
                     <div>
-                        {pst.post.post_date_created}
+                    <p className={styles.postDate}>{pst.post.post_date_created}</p>
                     </div>
                     {
                         showLikesModal && pst.post.post_id === showLikePost && (
                             <div className="likes-modal">
                                 {pst.likeProfile.map((profile, index) => {
                                     return (
-                                        <div className='search-result-item' key={index}>
-                                            <img className='avatar-profile' src={profile.img_url} alt={profile.username} onClick={() => handleClickContainer(profile.username)} />
+                                        <div className={styles.searchResultItem} key={index}>
+                                            <img className={styles.avatarProfile} src={profile.img_url} alt={profile.username} onClick={() => handleClickContainer(profile.username)} />
                                             <p>{profile.username}</p>
                                         </div>
                                     );
@@ -224,15 +223,8 @@ const PostCardHome = () => {
                             </div>
                         )
                     }
-                    <CommentForm post_id={pst.post.post_id} />
+                    <CommentForm post_id={pst.post.post_id} userAvatar={userAvatar} onComment={handleCommentFetch}/>
                     {displayComments && pst.post.post_id === showCommentPostId ? <CommentCard.CommentCard post_id={pst.post.post_id} /> : <div></div>}
-                    {(pst.post.account_id === currentUserId) && (
-                        <button onClick={() => {
-                            Group.deletePost(pst.post.post_id);
-                            fetchData();
-                        }}>Delete Post</button>
-
-                    )}
                 </div>
             )) :
                 <div>You are not connected!</div>}

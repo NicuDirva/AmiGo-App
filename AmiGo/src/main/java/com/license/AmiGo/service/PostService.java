@@ -16,4 +16,6 @@ public interface PostService {
     List<Account> getLikeAccount(Post post);
     void createPostedRelationship(long account_id);
     void deletePost(long post_id);
+    void deletePostByGroupId(long group_id);
+    void deletePostByAccountId(long account_id);
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useGlobalState } from '../state';
 import Auth from '../auth/Auth';
 import Profile from '../Pages/Profile';
-import './PostCard.css';
+import styles from './css/PostCardGallery.module.css';
 import { useNavigate } from 'react-router-dom';
 
 const urlBase = "http://localhost:8080/";
@@ -22,9 +22,15 @@ const PostCard = ({usernameParm}) => {
             const account_id = await Auth.getIdByEmail(defaultEmail);
             setCurrentUserId(account_id);
             const fetchedPosts = await getAllPost(account_id);
-            console.log("Postarile luate din functie", fetchedPosts)
+            console.log("IN Profile avem toate postarile", fetchedPosts)
+            let profilePost = []
+            for(const post of fetchedPosts) {
+                if(post.group_id == -1) {
+                    profilePost.push(post);
+                }
+            }
+            setPosts(profilePost);
             setAvatarUrl(await getAvatarProfileById(account_id))
-            setPosts(fetchedPosts);
             setFriend(true);
         }
         else {
@@ -41,7 +47,13 @@ const PostCard = ({usernameParm}) => {
             const isFriend = friendships.some(account => account.account_id == account_id);
             setAvatarUrl(await getAvatarProfileById(account_id))
             if (isFriend == true || profilePublic) {
-                setPosts(fetchedPosts);
+                let profilePost = []
+                for(const post of fetchedPosts) {
+                    if(post.group_id == -1) {
+                        profilePost.push(post);
+                    }
+                }
+                setPosts(profilePost);
                 setFriend(true);
                 console.log("Profile is public", profilePublic)
             } else {
@@ -59,23 +71,22 @@ const PostCard = ({usernameParm}) => {
         navigate(`/post/${postIdParm}`);
     }
     return (
-        <div>
-            {
-            posts?posts.map((post, index) => (
-                <div key={index} className="post-card" onClick={() => handleViewPost(post.post_id)}>
-                    <div className="middle-row">
-                        {post.urlImgPost && <img src={post.urlImgPost} alt="Post" />}
+        <div className={styles.galleryContainer}>
+            {posts ? posts.map((post, index) => (
+                <div key={index} className={styles.postCard} onClick={() => handleViewPost(post.post_id)}>
+                    <div className={styles.middleRow}>
+                        {post.urlImgPost ? <img src={post.urlImgPost} alt="Post" /> : <div className={styles.noImage}></div>}
                     </div>
-                    <div className="content-row">
-                        <div className="post-content">
+                    <div className={styles.contentRow}>
+                        <div className={styles.postContent}>
                             <p>{post.contentPost}</p>
                         </div>
                     </div>
                 </div>
-            )):
-                friend?
+            )) :
+                friend ?
                     <div>No posts to display</div>
-                :
+                    :
                     <div>This profile is private</div>
             }
         </div>
@@ -130,5 +141,20 @@ const getAvatarProfileById = async (account_id) => {
     });
 }
 
+const getAllPostsFromDB = () => {
+    return fetch(`${urlBase}post/getAll`, {
+        method: "GET",
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+        }
+        return response.json();
+    }).then(data => {
+        return data;
+    }).catch(error => {
+        console.error("Error getting posts:", error);
+        return [];
+    });
+}
 
-export default { PostCard, getAllPost, getAvatarProfileById, getPost};
+export default { PostCard, getAllPost, getAvatarProfileById, getPost, getAllPostsFromDB};

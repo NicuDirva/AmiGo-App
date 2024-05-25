@@ -1,0 +1,84 @@
+.memberItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.avatarProfile {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.memberInfo {
+    flex-grow: 1;
+}
+
+.username {
+    font-weight: bold;
+}
+
+.role {
+    font-size: 14px;
+    color: #666;
+}
+
+.memberOptions {
+    display: flex;
+    align-items: center;
+}
+
+.removeButton {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin-right: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.removeButton:hover {
+    background-color: darkred;
+}
+
+.makeAdminButton {
+    background-color: #6b0df9; /* Mov */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin-right: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+.container {
+    margin-top: 90px;
+}
+.container h2 {
+    margin-left: 0px;
+}
+
+.makeAdminButton:hover {
+    background-color: #4a0b9f; /* Nuanta mai inchisa de mov */
+}
+
+.removeAdminButton {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.removeAdminButton:hover {
+    background-color: darkred;
+}

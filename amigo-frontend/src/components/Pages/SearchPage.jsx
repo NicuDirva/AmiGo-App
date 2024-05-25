@@ -4,6 +4,7 @@ import SearchResult from '../SearchResult'
 import { useParams } from 'react-router-dom'
 import Navbar from '../Navbar'
 import { useGlobalState } from '../state'
+import styles from './css/SearchPage.module.css'
 
 const SearchPage = () => {
   const { searchText } = useParams();
@@ -13,7 +14,9 @@ const SearchPage = () => {
         {defaultLoggin?
           <div>
           <Navbar/>
-          <SearchResult searchText={searchText}/>
+          <div className={styles.container}>
+            <SearchResult searchText={searchText}/>
+          </div>
           </div>
         :
         <div>

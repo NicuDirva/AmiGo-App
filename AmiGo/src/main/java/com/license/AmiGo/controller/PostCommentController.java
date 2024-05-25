@@ -41,4 +41,8 @@ public class PostCommentController {
     public void deleteComment(@RequestBody Long comment_id) {
         postCommentService.deleteComment(comment_id);
     }
+    @PostMapping("/DELETE_COMMENT_BY_POST_ID")
+    public void deleteCommentByPostId(@RequestBody Long post_id) {
+        postCommentService.deleteCommentByPostId(post_id);
+    }
 }

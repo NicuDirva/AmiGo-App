@@ -4,6 +4,7 @@ import { useGlobalState } from '../state';
 import Auth from '../auth/Auth';
 import Group from './Group';
 import Navbar from '../Navbar';
+import styles from './css/GroupMemberRequest.module.css'
 
 const GroupMemberRequest = () => {
     const { groupIdParm } = useParams();
@@ -50,32 +51,36 @@ const GroupMemberRequest = () => {
         Group.handleDeleteJoinRequest(account_id, groupIdParm);
         fetchData();
     }
-  return (
-    <div>
-        {loggin? (
-            <div>
-            <Navbar/>
-            {memberRequestData.map(obj => (
-                <div className="member-item" key={obj.account.account_id}>
-                    <img className='avatar-profile' src={obj.profile.img_url} alt='avatar' onClick={() => handleClickContainer(obj.account.username)} />
-                    <div className="member-info">
-                        <p>Username: {obj.account.username}</p>
+    return (
+        <div>
+            {loggin ? (
+                <div>
+                    <Navbar />
+                    <div className={styles.groupMemberRequestContainer}>
+                    <h2>Members request</h2>
+                    {memberRequestData.map(obj => (
+                        <div className={styles.memberItem} key={obj.account.account_id}>
+                            <img className={styles.avatarProfile} src={obj.profile.img_url} alt='avatar' onClick={() => handleClickContainer(obj.account.username)} />
+                            <div className={styles.memberInfo}>
+                                <p className={styles.username}>Username: {obj.account.username}</p>
+                            </div>
+                            <div className={styles.actionButtons}>
+                                <button className={styles.acceptButton} onClick={() => handleClickAcceptRequest(obj.account.account_id)}>Accept request!</button>
+                                <button className={styles.ignoreButton} onClick={() => handleClickDeleteRequest(obj.account.account_id)}>Delete request!</button>
+                            </div>
+                        </div>
+                    ))}
                     </div>
-                    <p onClick={() => handleClickAcceptRequest(obj.account.account_id)}>Accept request!</p>
-                    <p onClick={() => handleClickDeleteRequest(obj.account.account_id)}>Delete request!</p>
                 </div>
-            ))}
-            </div>
-        )
-            :
-            <div>
-                <Navbar/>
-                Nu esti conectat!
-            </div>
-
-        }
-    </div>
-  )
+            ) : (
+                <div>
+                    <Navbar />
+                    <p>Nu esti conectat!</p>
+                </div>
+            )}
+        </div>
+    );
+    
 }
 
 export default GroupMemberRequest

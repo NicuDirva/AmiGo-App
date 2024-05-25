@@ -31,4 +31,9 @@ public interface PostCommentRepository extends Neo4jRepository<Post_comment, Lon
             "WHERE id(p) = $post_id\n" +
             "DETACH DELETE p")
     void deleteComment(@Param("post_id") long post_id);
+
+    @Query("MATCH (c:Post_comment)\n" +
+            "WHERE c.post_id = $post_id\n" +
+            "DETACH DELETE c")
+    void deleteCommentByPostId(@Param("post_id") long post_id);
 }

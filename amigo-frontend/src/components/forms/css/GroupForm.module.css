@@ -1,0 +1,102 @@
+.groupFormMainContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.createGroupButton {
+    color: #26005E;
+    cursor: pointer;
+    padding: 10px;
+    border: 2px solid #26005E;
+    border-radius: 5px;
+    font-weight: bold;
+    margin: 0px 0px 15px 0px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.createGroupButton:hover {
+    background-color: #26005E;
+    color: #fff;
+}
+
+.groupFormContainer {
+    border: 2px solid #26005E;
+    border-radius: 10px;
+    padding: 20px;
+    width: 400px;
+    background-color: #f9f9f9;
+    margin: 20px 0;
+}
+
+h2 {
+    color: #26005E;
+    text-align: center;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.formGroup label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #26005E;
+}
+
+.formGroup input[type="text"],
+.formGroup select {
+    padding: 10px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.formGroup input[type="text"]::placeholder {
+    color: #888;
+}
+
+.formGroup input[type="file"] {
+    display: none;
+}
+
+.formGroup img {
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+}
+
+.submitText {
+    color: #888;
+    cursor: not-allowed;
+    text-align: center;
+    padding: 10px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.submitText.enabled {
+    color: #26005E;
+    cursor: pointer;
+    border-color: #26005E;
+}
+
+.cancelText {
+    color: #26005E;
+    cursor: pointer;
+    text-align: center;
+    padding: 10px;
+    border: 2px solid #26005E;
+    border-radius: 5px;
+    font-weight: bold;
+    margin-top: 10px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.cancelText:hover {
+    background-color: #26005E;
+    color: #fff;
+}

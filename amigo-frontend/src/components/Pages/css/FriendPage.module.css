@@ -1,0 +1,77 @@
+.friendContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 100px;
+  }
+  
+  /* Stilurile pentru butoanele de tab */
+  .tabButtons {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  .tabButton {
+    background-color: grey;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    outline: none;
+  }
+  
+  .selectedTab {
+    background-color: #6b0df9; /* Mov */
+    color: white;
+  }
+  
+  /* Stilurile pentru elementele listei de prieteni */
+  .friendListContainer {
+    width: 80%;
+  }
+  
+  .friendItem,
+  .friendRequestItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .avatarProfile {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 20px;
+    cursor: pointer;
+  }
+  
+  .actionButtons {
+    margin-left: auto;
+  }
+
+  .boldParag {
+    font-weight: bold;
+  }
+  
+  /* Stilurile pentru butoanele de acțiune */
+  button {
+    border: none;
+    padding: 5px 10px;
+    margin-left: 10px;
+    cursor: pointer;
+  }
+  
+  /* Stilurile pentru butoanele de accept/ignore/unfriend/unsent */
+  button.accept {
+    background-color: #26005E; /* Mov */
+    color: white;
+  }
+  
+  button.ignore,
+  button.unfriend,
+  button.unsend {
+    background-color: red; /* Roșu */
+    color: white;
+  }

@@ -34,5 +34,13 @@ public interface PostRepository extends Neo4jRepository<Post, Long> {
             "WHERE id(p) = $post_id\n" +
             "DETACH DELETE p")
     void deletePost(@Param("post_id") long post_id);
+    @Query("MATCH (p:Post) " +
+            "WHERE p.group_id = $group_id " +
+            "DETACH DELETE p ")
+    void deletePostByGroupId(@Param("group_id") long group_id);
 
+    @Query("MATCH (p:Post) " +
+            "WHERE p.account_id = $account_id " +
+            "DETACH DELETE p")
+    void deletePostByAccountId(@Param("account_id") long account_id);
 }

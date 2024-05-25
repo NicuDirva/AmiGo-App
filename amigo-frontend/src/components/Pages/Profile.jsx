@@ -3,8 +3,19 @@ import { useGlobalState, setGlobalState } from '../state';
 import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from '../Navbar';
 import Auth from '../auth/Auth'
-import './Profile.css'
+import styles from './css/Profile.module.css'
 import PostCard from '../card/PostCard';
+import settingsIcon from '../Assets/options_3574375.png'
+import saveIcon from '../Assets/save.png'
+import avatarIcon from '../Assets/groupIcon.png'
+import acceptFriendIcon from '../Assets/follow.png'
+import ignoreFriendIcon from '../Assets/delete.png'
+import UnfriendIcon from '../Assets/unfriend.png'
+import UnsendFriendRequestIcon from '../Assets/unsend.png'
+import friendsIconProfile from '../Assets/FriendsIconProfile.png'
+import groupsIconProfile from '../Assets/groupsIconProfile.png'
+import messageIconProfile from '../Assets/messageIconProfile.png'
+import Group from './Group';
 const urlBase = "http://localhost:8080/";
 
 const Profile = () => {
@@ -35,6 +46,8 @@ const Profile = () => {
     const [friendStatus, setFriendStatus] = useState(false);
     const [sendedFriendRequest, setSendedFriendRequest] = useState(false);
     const [receivedFriendRequest, setReceivedFriendRequest] = useState(false);
+    const [emailInput, setEmailInput] = useState('');
+    const [emailVerified, setEmailVerified] = useState(false);
     const judete = [
       "ALBA", "ARAD", "ARGES", "BACAU", "BIHOR", "BISTRITA-NASAUD", "BOTOSANI",
       "BRASOV", "BRAILA", "BUZAU", "CARAS-SEVERIN", "CALARASI", "CLUJ", "CONSTANTA",
@@ -96,12 +109,8 @@ const Profile = () => {
               setReceivedFriendRequest(true);
             }
           });
-          console.log("Friendship status", friendStatus);
-          console.log("SendFriendRequest status", sendedFriendRequest);
-          console.log("ReceiverFriendRequest status", receivedFriendRequest);
         }
         const profile = await getProfileById(account_id_visit);
-        console.log("In functia Profile avem profilul setat/cautat:::::::::::::::::::::::::::::::::::::::::::::::", profile)
         if (profile) {
             setDescription(profile.description);
             setImgUrl(profile.img_url);
@@ -308,10 +317,12 @@ const Profile = () => {
       headers:{"Content-Type":"application/json"}, 
       body:JSON.stringify({accountId1, accountId2})
     });
+    setFriendStatus(false);
         
     if (!response2.ok) {
       throw new Error(`HTTP error! status: ${response2.status}`);
     }
+    setFriendStatus(false);
     fetchData();
   }
 
@@ -344,165 +355,280 @@ const Profile = () => {
     if (!response2.ok) {
       throw new Error(`HTTP error! status: ${response2.status}`);
     }
+    setSendedFriendRequest(false);
     fetchData();
   }
 
   const handleSentMessage = (accountIdParm) => {
     navigate(`/message/${accountIdParm}`);
   }
-      
+
+  const handleAccountGroups = (accountIdParm) => {
+    navigate(`/account/groups/${accountIdParm}`);
+  }
+
+  const handleAccountFriends = (accountIdParm) => {
+    navigate(`/account/friendships/${accountIdParm}`);
+  }
+
+  const handleSignOut = () => {
+    setGlobalState("email", "");
+    setGlobalState("loggin", false);
+    setGlobalState("username", "");
+    navigate("/");
+  };
+
+  const handleSaveChange = () => {
+    setNewAvatar('');
+    setNewDescription('');
+    setNewDob('');
+    setAction('connected')
+    setEmailInput('');
+    setEmailVerified(false);
+    fetchData();
+  } 
+
+  const handleEmailChange = (e) => {
+    const email = e.target.value;
+    setEmailInput(email);
+    setEmailVerified(email === defaultEmail);
+  };
+
+  const handleDeleteAccount = async () => {
+    handleSignOut();
+    await handleDeleteAccountById(accountId);
+  }
+
 
   return (
     <div>
-        {defaultLoggin&&defaultUsername===usernameParm?
-            <div>
-              <Navbar/>
-              <div>
-              <div className='avatar-profile-container'>
-                  {imgUrl && <img className='avatar-profile' src={imgUrl} alt="Profile" />}
-                  <h2>{currentUsernameView}</h2>
-                  {action === 'editProfile' ? (
-                      <div className="upload-avatar">
-                          <label htmlFor="image" className="upload-label">New avatar:</label>
-                          <div className="upload-input">
-                              <input
-                                  type="file"
-                                  id="image"
-                                  accept="image/*"
-                                  onChange={convertImgBase64}
-                                  required
-                              />
-                              <button onClick={handleAvatarChange} className="upload-button">Upload</button>
-                          </div>
-                      </div>
+      {defaultLoggin && defaultUsername === usernameParm ? (
+        <div className={styles.containerParent}>
+          <Navbar />
+          <div className={styles.parentOf2}>
+            <div className={styles.leftContainer}>
+              <div className={styles.profileDetails}>
+                {imgUrl && <img className={styles.avatarProfile} src={imgUrl} alt="Profile" />}
+                <h2 className={styles.username}>{currentUsernameView}</h2>
+                <div className={styles.settingsButton}>
+                  {action === 'connected' ? (
+                    <img src={settingsIcon} className={styles.settingsIcon} onClick={() => { setAction('editProfile') }} />
                   ) : null}
-              </div>
-                {action==='connected'?
-                <p onClick={(e) => {setAction('editProfile')}}>Edit profile</p>
-                :<div></div>}
-                <div>
-                <div>
-                  <p>Description: {description}</p>
-                  {action==="editProfile"?<div><input type='text' placeholder='New Description' value={newDescription} onChange={(e) => setNewDescription(e.target.value)} />
-                  <button onClick={handleDescriptionChange}>Change Description</button></div>
-                  :<div></div>}
                 </div>
-                <div>
-                  <p>Gender: {gender}</p>
-                  {action==="editProfile"?
-                  <div><select value={gender} onChange={(e) => handleGenderChange(e.target.value)}>
-                    <option value={genderType.MALE}>Male</option>
-                    <option value={genderType.FEMALE}>Female</option>
-                    <option value={genderType.OTHER}>Other</option>
+              </div>
+              {action === 'editProfile' && (
+                <div className={styles.uploadAvatar}>
+                  <label htmlFor="image" className={styles.uploadLabel}>
+                    <img src={avatarIcon} alt="New Group" className={styles.settingsIcon} />
+                  </label>
+                  <div className={styles.uploadInput}>
+                    <input
+                      type="file"
+                      id="image"
+                      accept="image/*"
+                      onChange={convertImgBase64}
+                      required
+                    />
+                    <button onClick={handleAvatarChange} className={styles.uploadButton}>Upload</button>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className={styles.detailsContainer}>
+              <div className={styles.detail}>
+                <p>Description: {description}</p>
+                {action === "editProfile" ? (
+                  <div className={styles.editField}>
+                    <input
+                      type='text'
+                      placeholder='New Description'
+                      value={newDescription}
+                      onChange={(e) => setNewDescription(e.target.value)}
+                      className={styles.input}
+                    />
+                    <button onClick={handleDescriptionChange} className={styles.saveButton}>Change Description</button>
+                  </div>
+                ) : null}
+              </div>
+              <div className={styles.detail}>
+                <p>Gender: {gender}</p>
+                {action === "editProfile" ? (
+                  <div className={styles.editField}>
+                    <select value={gender} onChange={(e) => handleGenderChange(e.target.value)} className={styles.select}>
+                      <option value={genderType.MALE}>Male</option>
+                      <option value={genderType.FEMALE}>Female</option>
+                      <option value={genderType.OTHER}>Other</option>
                     </select>
                   </div>
-                  :<div></div>}
-                </div>
-                <div>
-                  <p>Date of Birth: {dob}</p>
-                  {action==="editProfile"?<div>
-                  <input type='date' value={newDob} onChange={(e) => setNewDob(e.target.value)} />
-                  <button onClick={handleDOBChange}>Change DOB</button></div>
-                  :<div></div>}
-                </div>
-
+                ) : null}
+              </div>
+              <div className={styles.detail}>
+                <p>Date of Birth: {dob}</p>
                 {action === "editProfile" ? (
-                <div>
+                  <div className={styles.editField}>
+                    <input
+                      type='date'
+                      value={newDob}
+                      onChange={(e) => setNewDob(e.target.value)}
+                      className={styles.input}
+                    />
+                    <button onClick={handleDOBChange} className={styles.saveButton}>Change DOB</button>
+                  </div>
+                ) : null}
+              </div>
+              <div className={styles.detail}>
+                {action === "editProfile" ? (
+                  <div className={styles.editField}>
                     <label htmlFor="access">Access:</label>
                     <select
-                        id="access"
-                        value={access}
-                        onChange={handleAccessChange}
+                      id="access"
+                      value={access}
+                      onChange={handleAccessChange}
+                      className={styles.select}
                     >
-                        <option value="public">Public</option>
-                        <option value="private">Private</option>
+                      <option value="public">Public</option>
+                      <option value="private">Private</option>
                     </select>
-                </div>
+                  </div>
                 ) : (
-                <div>
-                    <p>Access: {access}</p>
-                </div>
+                  <p>Profile: {access}</p>
                 )}
+              </div>
+              <div className={styles.detail}>
                 {action === "editProfile" ? (
-                <div>                    
-                  <form onChange={handleLocationChange}>
-                    <select name="location" defaultValue={location}>
-                      <option value="">Select County</option>
-                      {judete.map((judet, index) => (
-                        <option key={index} value={judet}>{judet}</option>
-                      ))}
-                    </select>
-                  </form>
-                </div>
+                  <div className={styles.editField}>
+                    <form onChange={handleLocationChange}>
+                      <select name="location" defaultValue={location} className={styles.select}>
+                        <option value="">Select County</option>
+                        {judete.map((judet, index) => (
+                          <option key={index} value={judet}>{judet}</option>
+                        ))}
+                      </select>
+                    </form>
+                  </div>
                 ) : (
-                <div>
-                    <p>Location: {location}</p>
-                </div>
+                  <p>From: {location}</p>
                 )}
-
-
-
-                </div>
-                {action==='editProfile'?
-                <p onClick={(e) => {setAction('connected')}}>Save profile</p>
-                :<div></div>}
-                <div>
               </div>
+              {action === 'editProfile' && (
+                <div className={styles.deleteAccountContainer}>
+                  <input
+                    type="email"
+                    placeholder="Enter your email to delete"
+                    value={emailInput}
+                    onChange={handleEmailChange}
+                    className={styles.input}
+                  />
+                  <button
+                    className={emailVerified ? styles.deleteButton : styles.deleteButtonDisabled}
+                    onClick={() => handleDeleteAccount()}
+                    disabled={!emailVerified}
+                  >
+                    Delete Account
+                  </button>
+                </div>
+              )}
+              {action === 'editProfile' && (
+                <div className={styles.actionButtons}>
+                  <img src={saveIcon} className={styles.saveIcon} onClick={() => handleSaveChange()} />
+                  <img src={UnsendFriendRequestIcon} className={styles.settingsIcon} onClick={() => handleSaveChange()} />
+                </div>
+              )}
+            </div>
+          </div>
+          <PostCard.PostCard usernameParm={usernameParm} />
+        </div>
+      ) : defaultLoggin ? (
+        <div className={styles.containerParent}>
+          <Navbar />
+          <div className={styles.parentOf2}>
+            <div className={styles.leftContainer}>
+              <div className={styles.profileDetails}>
+                {imgUrl && <img className={styles.avatarProfile} src={imgUrl} alt="Profile" />}
+                <h2 className={styles.username}>{currentUsernameView}</h2>
               </div>
-              <PostCard.PostCard usernameParm={usernameParm}/>
             </div>
-        : defaultLoggin?
-            <div>
-              <Navbar/>
-                <div className='avatar-profile-container'>
-                    {imgUrl && <img className='avatar-profile' src={imgUrl} alt="Profile" />}
-                </div>
-                <div className="friendship-buttons">
-                  {friendStatus && <button>You are friends</button> && (
-                    <>
-                      <button onClick={handleUnfriend}>Unfriend</button>
-                    </>
-                  )}
-                  {!friendStatus && sendedFriendRequest && <button onClick={handleUnsentSentRequest}>Friend request sent</button>}
-                  {!friendStatus && receivedFriendRequest && (
-                    <>
-                      <button onClick={handleAcceptRequest}>Accept friend request</button>
-                      <button onClick={handleIgnoreRequest}>Ignore friend request</button>
-                    </>
-                  )}
-                  {!friendStatus && !sendedFriendRequest && !receivedFriendRequest && (
-                    <button onClick={handleSendRequest}>Send friend request</button>
-                  )}
-                </div>
-                <div>
-                  <p>Description: {description}</p>
-                </div>
-                <div>
-                  <p>Gender: {gender}</p>
-                </div>
-                <div>
-                  <p>Date of Birth: {dob}</p>
-                </div>
-                <div>
-                  {
-                    location != "No location selected"?
-                      <p>Location: {location}</p>
-                    :
-                      <null/>
-                  }
-                </div>
-                <div>
-                  <button onClick={() => handleSentMessage(accountId)}>Sent Message</button>
-                </div>
-                <PostCard.PostCard usernameParm={usernameParm}/>
+            <div className={styles.detailsContainer}>
+              <div className={styles.detail}>
+                <p>Description: {description}</p>
+              </div>
+              <div className={styles.detail}>
+                <p>Gender: {gender}</p>
+              </div>
+              <div className={styles.detail}>
+                <p>Date of Birth: {dob}</p>
+              </div>
+              <div className={styles.detail}>
+                {location && <p>From: {location}</p>}
+              </div>
+              <div>
+                <p>Profile: {access}</p>
+              </div>
             </div>
-        :
+          </div>
+          <div className={styles.friendshipButtons}>
+            {friendStatus ? (
+              <>
+                <div className={styles.friendOption} onClick={() => handleUnfriend()}>
+                  <img src={acceptFriendIcon} alt='accept-friend' />
+                  <p>Unfriend</p>
+                </div>
+              </>
+            ) : (
+              <>
+                {sendedFriendRequest ? (
+                  <div className={styles.friendOption} onClick={() => handleUnsentSentRequest()}>
+                    <img src={UnsendFriendRequestIcon} alt='accept-friend' />
+                    <p>Unsend</p>
+                  </div>
+                ) : (
+                  <>
+                    {receivedFriendRequest ? (
+                      <>
+                        <div className={styles.friendOption} onClick={() => handleAcceptRequest()}>
+                          <img src={acceptFriendIcon} alt='accept-friend' />
+                          <p>Accept</p>
+                        </div>
+                        <div className={styles.friendOption} onClick={() => handleIgnoreRequest()}>
+                          <img src={ignoreFriendIcon} alt='ignore-friend' />
+                          <p>Ignore</p>
+                        </div>
+                      </>
+                    ) : (
+                      <div className={styles.friendOption} onClick={() => handleSendRequest()}>
+                        <img src={acceptFriendIcon} alt='accept-friend' />
+                        <p>Add Friend</p>
+                      </div>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+            <div className={styles.friendOption} onClick={() => handleAccountFriends(accountId)}>
+              <img src={friendsIconProfile} alt='friends' />
+              <p>Friends</p>
+            </div>
+            <div className={styles.friendOption} onClick={() => handleAccountGroups(accountId)}>
+              <img src={groupsIconProfile} alt='groups' />
+              <p>Groups</p>
+            </div>
+            <div className={styles.friendOption} onClick={() => handleSentMessage(accountId)}>
+              <img src={messageIconProfile} alt='message' />
+              <p>Send message</p>
+            </div>
+          </div>
+          <PostCard.PostCard usernameParm={usernameParm} />
+        </div>
+      ) : (
         <div>
-        <Navbar/>
-        Nu esti conectat la cont
-    </div>}
+          <Navbar />
+          <p>You are not logged in!</p>
+        </div>
+      )}
     </div>
-  )
+);
+  
+  
 }
 
 const getAllProfile = () => {
@@ -542,6 +668,25 @@ const getFriendshipById = async (account_id) => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(account_id)
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error("Error fetching friendship data:", error);
+    throw error; // Aruncă eroarea mai departe pentru a fi gestionată în altă parte
+  }
+};
+
+const getCommonFriendBy2AccountId = async (accountId1, accountId2) => {
+  try {
+    const response = await fetch(urlBase + "account/getCommonFriendBy2AccountId", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({accountId1, accountId2})
     });
 
     if (!response.ok) {
@@ -630,5 +775,129 @@ const getPostByAccountId = async (account_id) => {
   });
 };
 
+const handleGroupOwnership = async (group ,newCreatorId) => {
+  try {
+      const groupCopy = { ...group, creator_id: newCreatorId };
+      const response = await fetch(urlBase + "group/editGroupCreator", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(groupCopy)
+      });
 
-export default { Profile,getPostByAccountId, getAllFriendRequest,getFriendshipById, getFriendRequestById, FriendRequestReceivedById, getProfileById}
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  } catch (error) {
+      console.error("Error updating group creator:", error);
+  }
+};
+
+const handleDeleteAccountById = async (accountId) => {
+  try {
+    const groupsCreator = await Group.getGroupByCreatorId(accountId);
+    
+    for(const group of groupsCreator) {
+
+        const response = await fetch(urlBase + "group/DELETE_MEMBERSHIP", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ account_id: accountId, group_id: group.group_id })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const members = await Group.getAdminByGroupId(group.group_id);
+        const admins = await Group.getMembershipsByGroupId(group.group_id);
+        if(members.length == 0 && admins.length == 0) {
+            const groupDeletedPost = await Group.getPostsByGroupId(group.group_id);
+            await Group.deletePostByGroupId(group.group_id);
+            await Group.deleteByGroupId(group.group_id);
+            for(const post of groupDeletedPost) {
+                await Group.deleteCommentByPostId(post.post_id);
+            }
+          }
+          else {
+            await Group.deleteCreateGroupRelationship(accountId, group.group_id);
+            if (admins.length !== 0) {
+                const randomAdmin = admins[Math.floor(Math.random() * admins.length)];
+                await Group.deleteAdminRelationship(randomAdmin.account_id, group.group_id);
+                await Group.createCreateGroupRelationship(randomAdmin.account_id, group.group_id);
+                await handleGroupOwnership(group, randomAdmin.account_id);
+            } else if (members.length !== 0) {
+                const randomMember = members[Math.floor(Math.random() * members.length)];
+                await Group.createCreateGroupRelationship(randomMember.account_id, group.group_id);
+                await handleGroupOwnership(group, randomMember.account_id);
+            } else {
+                await Group.deleteByGroupId(group.group_id);
+            }
+          }
+      }
+
+      const currentUserPosts = await PostCard.getAllPostsFromDB();
+      for(const post of currentUserPosts) {
+        await Group.deleteCommentByPostId(post.post_id);
+      }
+      await Group.deletePostByAccountId(accountId);
+      await deleteAllMessageByAccountId(accountId);
+      await deleteProfileByAccountId(accountId);
+      await deleteAccountById(accountId);
+  } catch (error) {
+    console.error('Error deleting join:', error);
+  }
+}
+
+const deleteAllMessageByAccountId = async (account_id) => {
+  try {
+    const response = await fetch(urlBase + "message/deleteAllMessagesByAccountId", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(account_id)
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error deleting messages:", error);
+    throw error; // Aruncă eroarea mai departe pentru a fi gestionată în altă parte
+  }
+};
+
+const deleteAccountById = async (account_id) => {
+  try {
+    const response = await fetch(urlBase + "account/deleteAccountById", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(account_id)
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error deleting account:", error);
+    throw error; // Aruncă eroarea mai departe pentru a fi gestionată în altă parte
+  }
+};
+
+const deleteProfileByAccountId = async (account_id) => {
+  try {
+    const response = await fetch(urlBase + "profile/deleteProfileByAccountId", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(account_id)
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Error deleting profile:", error);
+    throw error; // Aruncă eroarea mai departe pentru a fi gestionată în altă parte
+  }
+}
+
+
+export default { Profile,getPostByAccountId, deleteAccountById, handleGroupOwnership, deleteProfileByAccountId,  handleDeleteAccountById,  getCommonFriendBy2AccountId, deleteAllMessageByAccountId,  getAllFriendRequest,getFriendshipById, getFriendRequestById, FriendRequestReceivedById, getProfileById}

@@ -63,4 +63,9 @@ public class ProfileController {
     public String getAvatarById(@RequestParam("account_id") long account_id) {
         return profileService.getAvatarbyId(account_id);
     }
+
+    @PatchMapping("/deleteProfileByAccountId")
+    void deleteProfileByAccountId(@RequestBody Long account_id) {
+        profileService.deleteProfileByAccountId(account_id);
+    }
 }

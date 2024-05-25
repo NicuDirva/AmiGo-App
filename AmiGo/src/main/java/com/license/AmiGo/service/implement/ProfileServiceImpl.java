@@ -85,4 +85,8 @@ public class ProfileServiceImpl implements ProfileService {
     public List<Profile> getAllProfile() {
         return profileRepository.findAll();
     }
+
+    public void deleteProfileByAccountId(long account_id) {
+        profileRepository.deleteProfileByAccountId(account_id);
+    }
 }

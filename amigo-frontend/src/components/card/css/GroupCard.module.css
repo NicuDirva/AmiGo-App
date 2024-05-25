@@ -1,0 +1,133 @@
+/* Group.module.css */
+.groupInfo {
+    margin-top: 100px;
+}
+
+.groupImage {
+    display: block;
+    margin: 0 auto;
+    border-radius: 0; /* Elimină rotunjirea colțurilor */
+    width: 700px; /* Setează lățimea dorită pentru imagine */
+    height: 350px; /* Setează înălțimea dorită pentru imagine */
+    object-fit: cover;
+}
+
+.iconImage {
+    width: 40px; /* Set a smaller size for the icons */
+    height: 40px; /* Ensure aspect ratio is maintained */
+    cursor: pointer;
+}
+
+.newImageIcon {
+    width: 50px; /* Set a size for the new image upload icon */
+    height: 50px; /* Ensure aspect ratio is maintained */
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.joinButtonContainer {
+    margin-bottom: 40px;
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.editGroupButton, .exitGroupButton, .joinGroupButton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+
+
+.exitIcon, .joinIcon {
+    width: 40px; /* Set a smaller size for the icons */
+    height: 40px; /* Ensure aspect ratio is maintained */
+}
+
+.joinGroupButton {
+    background-color: #6200ea; /* Purple color for join buttons */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.groupButton {
+    background-color: #6200ea; /* Purple color for join buttons */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.exitButton {
+    background-color: #d32f2f; /* Red color for exit buttons */
+}
+
+.saveButton {
+    background-color: #6200ea; /* Purple color for save button */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.saveButton:hover {
+    background-color: #3700b3;
+}
+
+.editGroupFields input, .editGroupFields select {
+    width: 20%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.editGroupFields {
+    margin-left: 245px;
+}
+.groupNameContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0; /* Margini pentru a spaționa elementul */
+    margin-bottom: 20px;
+}
+
+.groupContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0; /* Margini pentru a adăuga spațiu în jurul containerului */
+    margin-bottom: 50px;
+    margin-top: 30px;
+}
+
+.groupName {
+    background-color: #800080; /* Fundal mov */
+    color: white; /* Culoarea textului albă */
+    padding: 10px 20px; /* Spațiu interior */
+    border-radius: 50px; /* Crearea formei ovale */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center; /* Alinierea textului pe centru */
+}
+
+.groupName h1 {
+    margin: 0; /* Eliminarea marginilor implicite */
+    font-size: 24px; /* Ajustarea dimensiunii fontului */
+    line-height: 1; /* Ajustarea înălțimii liniei */
+}
+
+.ChangeImgGroup input[type="file"] {
+    display: none;
+}

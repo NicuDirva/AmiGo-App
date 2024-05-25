@@ -56,5 +56,13 @@ public class PostController {
     public void deletePost(@RequestBody Long post_id) {
         postService.deletePost(post_id);
     }
+    @PostMapping("/DELETE_POST_BY_GROUP_ID")
+    public void deletePostByGroupId(@RequestBody Long group_id) {
+         postService.deletePostByGroupId(group_id);
+    }
+    @PostMapping("/DELETE_POST_BY_ACCOUNT_ID")
+    public void deletePostByAccountId(@RequestBody Long account_id) {
+         postService.deletePostByAccountId(account_id);
+    }
 
 }

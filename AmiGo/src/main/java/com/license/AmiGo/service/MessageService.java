@@ -13,4 +13,5 @@ public interface MessageService {
     List<Message> getReceivedMessageByAccountId(long receiver_id, long sender_id);
     List<Message> getSentMessageById(long sender_id);
     List<Message> getReceivedMessageById(long receiver_id);
+    void deleteAllMessagesByAccountId(long account_id);
 }

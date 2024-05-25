@@ -15,7 +15,7 @@ public interface GroupService {
     void createRequestMembershipRelationship(long account_id, long group_id);
     void deleteMembershipRelationship(long account_id, long group_id);
     void deleteRequestMembershipRelationship(long account_id, long group_id);
-    Group getGroupByCreatorId(long creator_id);
+    List<Group> getGroupByCreatorId(long creator_id);
     List<Account> getMembersByGroupId(long group_id);
     List<Account> getAdminByGroupId(long group_id);
     void deleteByGroupId(long group_id);

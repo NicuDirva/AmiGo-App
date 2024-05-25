@@ -68,4 +68,10 @@ public class AccountServiceImpl implements AccountService {
     public void createMessage(long sender_id, long receiver_id, String content, String timeSent) {
         accountRepository.createMessage(sender_id, receiver_id, content, timeSent);
     }
+    public List<Account> getCommonFriendBy2AccountId(long accountId1, long accountId2) {
+        return accountRepository.getCommonFriendBy2AccountId(accountId1, accountId2);
+    }
+    public void deleteAccountById(long account_id) {
+        accountRepository.deleteAccountById(account_id);
+    }
 }

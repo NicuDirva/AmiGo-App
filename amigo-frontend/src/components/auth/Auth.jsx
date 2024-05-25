@@ -5,7 +5,7 @@
     import user_icon from '../Assets/person.png'
     import { useNavigate } from 'react-router-dom';
     import { useGlobalState, setGlobalState } from '../state';
-    import './Auth.css'
+    import styles from './Auth.module.css'
     import NavBar from '../Navbar';
     const urlBase = "http://localhost:8080/";
 
@@ -212,56 +212,57 @@
             return re.test(password);
         };
 
-    return (
-        <div className='auth-page'>
-            <NavBar/>
-            <div className='container'>
-                <div className='header'>
-                        <div className='text'>{action}</div>
-                        <div className='underline'></div>
-                </div>
-                <div className='inputs'>
-                    {action==="Sign In"?<div></div>:<div className='input'>
-                                                    <img src={user_icon} alt=''/>
-                                                    <input type='text' placeholder='Username' onChange={(e) => setUsername(e.target.value)}/>
-                                                    </div>}
-                    <div className='input'>
-                        <img src={email_icon} alt=''/>
-                        <input type='email' placeholder='Email' onChange={(e) => setEmail(e.target.value)}/>
+        return (
+            <div className={styles.authPage}>
+                <NavBar />
+                <div className={styles.container}>
+                    <div className={styles.header}>
+                        <div className={styles.text}>{action}</div>
+                        <div className={styles.underline}></div>
                     </div>
-                    {action==='Sign Up'?
-                    <div className='input-data'>
-                        <div className='data-container'>
-                            <label htmlFor="birthDate">Date of Birth:</label>
-                            <input type="date" id="birthDate" name="birthDate" max="2024-03-16" required onChange={(e) => setDob(e.target.value)}/>
+                    <div className={styles.inputs}>
+                        {action === "Sign In" ? <div></div> : 
+                            <div className={styles.input}>
+                                <img src={user_icon} alt='' />
+                                <input type='text' placeholder='Username' onChange={(e) => setUsername(e.target.value)} />
+                            </div>
+                        }
+                        <div className={styles.input}>
+                            <img src={email_icon} alt='' />
+                            <input type='email' placeholder='Email' onChange={(e) => setEmail(e.target.value)} />
                         </div>
+                        {action === 'Sign Up' ?
+                            <div className={styles.inputData}>
+                                <div className={styles.dataContainer}>
+                                    <label htmlFor="birthDate">Date of Birth:</label>
+                                    <input type="date" id="birthDate" name="birthDate" max="2024-03-16" required onChange={(e) => setDob(e.target.value)} />
+                                </div>
+                            </div> : <div></div>
+                        }
+                        <div className={styles.input}>
+                            <img src={password_icon} alt='' />
+                            <input type='password' placeholder='Password' onChange={(e) => setPassword(e.target.value)} />
+                        </div>
+                        {action === "Sign Up" ? 
+                            <div className={styles.input}>
+                                <img src={password_icon} alt='' />
+                                <input type='password' placeholder='Repeat Password' onChange={(e) => setRepeatPassword(e.target.value)} />
+                            </div> : <div></div>
+                        }
+                        <div className={styles.connect} onClick={action === "Sign In" ? handleClickSignIn : handleClickSignUp}>Connect</div>
                     </div>
-                    :<div></div>}
- 
-
-                    <div className='input'>
-                        <img src={password_icon} alt=''/>
-                        <input type='password' placeholder='Password' onChange={(e) => setPassword(e.target.value)}/>
+                    {error && <div className={styles.error}>{error}</div>}
+                    {action === "Sign Up" ? <div></div> : 
+                        <div className={styles.forgotPassword}>Forgot password?<span>Click Here!</span></div>
+                    }
+                    <div className={styles.submitContainer}>
+                        <div className={action === "Sign In" ? styles.submitGray : styles.submit} onClick={() => { handleCleanData(); setAction("Sign Up"); }}>Sign Up</div>
+                        <div className={action === "Sign Up" ? styles.submitGray : styles.submit} onClick={() => { handleCleanData(); setAction("Sign In"); }}>Sign In</div>
                     </div>
-                    {action==="Sign Up"?<div className='input'>
-                        <img src={password_icon} alt=''/>
-                        <input type='password' placeholder='Repeat Password' onChange={(e) => setRepeatPassword(e.target.value)}/>
-                    </div>:<div></div>}
-
-                    <div className='connect' onClick={action === "Sign In" ? handleClickSignIn : handleClickSignUp}>Connect</div>
                 </div>
-
-                {error && <div className="error">{error}</div>}
-
-                {action==="Sign Up"?<div></div>:<div className='forgot-password'>Forgot password?<span>Click Here!</span></div>}
-                <div className='submit-container'>
-                    <div className={action==="Sign In"?"submit gray":"submit"} onClick={()=>{ handleCleanData();setAction("Sign Up");}}>Sign Up</div>
-                    <div className={action==="Sign Up"?"submit gray":"submit"} onClick={()=>{handleCleanData();setAction("Sign In");}}>Sign In</div>
-                </div>
-
             </div>
-        </div>
-    )
+        );
+        
 
     };
 

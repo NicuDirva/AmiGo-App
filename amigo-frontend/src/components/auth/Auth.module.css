@@ -1,0 +1,184 @@
+.authPage {
+    width: 100%;
+    height: 100%;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    margin-top: 100px;
+    margin-bottom: 100px;
+    width: 600px;
+    background: #fff;
+    padding-bottom: 30px;
+    border: 2px solid #3c009d;
+    border-radius: 10px;
+    margin-top: 150px;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    margin-top: 30px;
+}
+
+.text {
+    color: #3c009d;
+    font-size: 48px;
+    font-weight: 700;
+}
+
+.underline {
+    width: 61px;
+    height: 6px;
+    background: #3c009d;
+    border-radius: 9px;
+}
+
+.inputs {
+    margin-top: 55px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.input {
+    display: flex; 
+    align-items: center;
+    margin: auto;
+    width: 480px;
+    height: 80px;
+    background: #eaeaea;
+    border-radius: 6px;
+}
+
+.connect {
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    width: 150px;
+    height: 59px;
+    color: #fff;
+    background-color: #4c00b4;
+    border-radius: 50px;
+    font-size: 19px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.input img {
+    margin: 0px 30px;
+}
+
+.input input {
+    height: 50px;
+    width: 400px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #797979;
+    font-size: 19px;
+}
+
+.inputData {
+    display: flex; 
+    align-items: center;
+    margin: auto;
+    width: 480px;
+    height: 80px;
+    background: #eaeaea;
+    border-radius: 6px;
+}
+
+.dataContainer {
+    margin-left: 27px;
+}
+
+.dataContainer label {
+    height: 50px;
+    width: 100px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #797979;
+    font-size: 19px;
+    margin-right: 60px;
+}
+
+.dataContainer input {
+    height: 50px;
+    width: 200px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #797979;
+    font-size: 19px;
+    margin-left: 0px;
+}
+
+.forgotPassword {
+    padding-left: 62px;
+    margin-top: 27px;
+    color: #79797979;
+    font-size: 18px;
+}
+
+.forgotPassword span {
+    color: #4c00b4;
+    cursor: pointer;
+}
+
+.submitContainer {
+    display: flex;
+    gap: 30px;
+    margin: 60px auto;
+}
+
+.submit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 220px;
+    height: 59px;
+    color: #fff;
+    background-color: #4c00b4;
+    border-radius: 50px;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.submitGray {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 220px;
+    height: 59px;
+    color: #676767;
+    background: #EAEAEA;
+    border-radius: 50px;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.error {
+    color: #ff0000;
+    background-color: #f8d7da;
+    padding: 8px 16px;
+    margin-top: 8px;
+    border-radius: 4px;
+    width: fit-content;
+    margin-left: 60px;
+}
+
+input[type="date"]::-webkit-datetime-edit, 
+input[type="date"]::-webkit-inner-spin-button, 
+input[type="date"]::-webkit-clear-button {
+    display: none;
+}

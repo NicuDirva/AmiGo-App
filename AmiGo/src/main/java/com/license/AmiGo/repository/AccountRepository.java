@@ -92,5 +92,14 @@ public interface AccountRepository extends Neo4jRepository<Account, Long> {
             "SET msg.sender_id = $sender_id, msg.receiver_id = $receiver_id, msg.content = $content, msg.timeSent = $timeSent")
     void createMessage(@Param("sender_id") long sender_id, @Param("receiver_id") long receiver_id, @Param("content") String content, @Param("timeSent") String timeSent);
 
+    @Query("MATCH (a1:Account)-[:FRIENDSHIP]->(common:Account)<-[:FRIENDSHIP]-(a2:Account)\n" +
+            "WHERE id(a1) = $accountId1 AND id(a2) = $accountId2\n" +
+            "AND a1 <> common AND a2 <> common\n" +
+            "RETURN common\n")
+    List<Account> getCommonFriendBy2AccountId(@Param("accountId1") long accountId1, @Param("accountId2") long accountId2);
 
+    @Query("MATCH (a:Account)\n" +
+            "WHERE id(a) = $account_id\n" +
+            "DETACH DELETE a")
+    void deleteAccountById(@Param("account_id") long account_id);
 }

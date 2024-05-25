@@ -46,4 +46,10 @@ public class PostServiceImpl implements PostService {
     public void deletePost(long post_id) {
         postRepository.deletePost(post_id);
     }
+    public void deletePostByGroupId(long group_id) {
+         postRepository.deletePostByGroupId(group_id);
+    }
+    public void deletePostByAccountId(long account_id) {
+         postRepository.deletePostByAccountId(account_id);
+    }
 }

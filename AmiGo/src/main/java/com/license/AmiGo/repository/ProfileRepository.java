@@ -14,4 +14,9 @@ public interface ProfileRepository extends Neo4jRepository<Profile, Long> {
             "WHERE id(p) = $profile_id\n" +
             "RETURN id(p) as profile_id, p.location as location, p.access as access, p.account_id as account_id, p.img_url as img_url, p.description as description, p.gender as gender, p.dob as dob")
     Profile getProfileById(@Param("profile_id") long profile_id);
+
+    @Query("MATCH (p:Profile)\n" +
+            "WHERE p.account_id = $account_id\n" +
+            "DETACH DELETE p")
+    void deleteProfileByAccountId(@Param("account_id") long account_id);
 }

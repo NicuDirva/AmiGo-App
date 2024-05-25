@@ -12,5 +12,6 @@ public interface PostCommentService {
     void createHasCommentRelationship(long post_id);
     void createHasPostRelationship(long account_id);
     void deleteComment(long comment_id);
+    void deleteCommentByPostId(long post_id);
 
 }

@@ -80,7 +80,7 @@ public class GroupController {
         groupService.deleteRequestMembershipRelationship(account_id, group_id);
     }
     @PostMapping("/getGroupByCreatorId")
-    public Group getGroupByCreatorId(@RequestBody Long creator_id) {
+    public List<Group> getGroupByCreatorId(@RequestBody Long creator_id) {
         return groupService.getGroupByCreatorId(creator_id);
     }
     @PostMapping("/getGroupById")

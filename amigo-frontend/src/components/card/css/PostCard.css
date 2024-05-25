@@ -1,0 +1,84 @@
+.post-container {
+    width: 70%;
+    margin: 0;
+}
+
+.post-card {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    margin-left: 20px; /* Adaugare margine la stânga */
+}
+
+.top-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.avatar {
+    margin-right: 10px;
+}
+
+.avatar img {
+    width: 80px; /* Ajustați dimensiunea la nevoie */
+    height: 80px; /* Ajustați dimensiunea la nevoie */
+    border-radius: 50%;
+}
+
+.username h3 {
+    margin: 0;
+    line-height: 40px;
+}
+
+.post-date {
+    font-weight: bold;
+    margin: 0 10px 0 0; /* Adaugare spațiu între data și username */
+}
+
+.middle-row {
+    text-align: center; /* Aliniere imagine pe mijloc */
+    margin-bottom: 10px;
+    max-width: 80%; /* Lățime maximă pentru imagine */
+    margin-left: auto; /* Aliniere la dreapta */
+    margin-right: auto; /* Aliniere la stânga */
+}
+
+.middle-row img {
+    max-width: 100%;
+    height: auto;
+}
+
+.post-content p {
+    margin: 0;
+}
+
+.bottom-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.like-comment img {
+    width: 30px;
+    height: 30px;
+    margin-left: 10px;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.avatar-profile {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+    border-radius: 50%;
+}
+
+p {
+    margin: 0;
+}

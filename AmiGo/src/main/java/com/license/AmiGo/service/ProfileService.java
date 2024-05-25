@@ -19,4 +19,6 @@ public interface ProfileService {
 
     String getAvatarbyId(long account_id);
 
+    void deleteProfileByAccountId(long account_id);
+
 }

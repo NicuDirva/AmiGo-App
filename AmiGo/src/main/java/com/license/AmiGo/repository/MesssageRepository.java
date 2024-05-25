@@ -38,4 +38,9 @@ public interface MesssageRepository extends Neo4jRepository<Message, Long> {
             "WHERE m.receiver_id = $receiver_id\n" +
             "RETURN m")
     List<Message> getReceivedMessageById(@Param("receiver_id") long receiver_id);
+
+    @Query("MATCH(m:Message)\n" +
+            "WHERE m.sender_id = $account_id OR m.receiver_id = $account_id\n" +
+            "DETACH DELETE m")
+    void deleteAllMessagesByAccountId(@Param("account_id") long account_id);
 }

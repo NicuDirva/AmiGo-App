@@ -2,17 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useGlobalState } from '../state';
 import Auth from '../auth/Auth';
 import Profile from '../Pages/Profile';
-import './PostCard.css';
+import './css/PostCard.css';
 import likeIcon from '../Assets/heart_7469375.png'
 import dislikeIcon from '../Assets/broken-heart_9195088.png'
-import commentIcon from '../Assets/messenger_1370907.png'
+import commentIcon from '../Assets/chat_4663336.png';
 import CommentCard from './CommentCard';
-import CommentForm from '../CommentForm';
+import CommentForm from '../forms/CommentForm';
 import { useNavigate } from 'react-router-dom';
 import Group from '../Pages/Group';
 import { useParams } from 'react-router-dom';
 import PostCard from './PostCard';
 import Navbar from '../Navbar';
+import styles from './css/SinglePostCard.module.css';
 
 const urlBase = "http://localhost:8080/";
 
@@ -32,17 +33,18 @@ const SinglePostCard = () => {
     const { postIdParm} = useParams();
     const [currentPost, setCurrentPost] = useState(null);
     const [currentPostWithData, setCurrentPostWithData] = useState(null);
+    const [ userAvatar, setUserAvatar] = useState(null);
 
     const fetchData = async () => {
         const crtPost = await PostCard.getPost(postIdParm);
+        const account_id = await Auth.getIdByEmail(defaultEmail);
         setCurrentPost(crtPost);
-        console.log("IN FUNCTIA SINGLEPOST AVEM ID UL", postIdParm)
-        console.log("IN FUNCTIA SINGLEPOST AVEM POST UL", crtPost)
-        if (defaultUsername == crtPost.account_id) {
-            const account_id = await Auth.getIdByEmail(defaultEmail);
+        if (account_id == crtPost.account_id) {
             setCurrentUserId(account_id);
-            setAvatarUrl(await PostCard.getAvatarProfileById(account_id))
-            setUsernameSearch(await Profile.getUsernameById(account_id))
+            const currAvatar = await PostCard.getAvatarProfileById(account_id);
+            setAvatarUrl(currAvatar)
+            const currUsername = await Auth.getUsernameById(account_id);
+            setUsernameSearch(currUsername);
             let alreadyLike = await fetch(urlBase+"account/CHECK_LIKE_POST",{
                 method:"PATCH",
                 headers:{"Content-Type":"application/json"}, 
@@ -94,8 +96,10 @@ const SinglePostCard = () => {
             const currentId = await Auth.getIdByEmail(defaultEmail);
             const friendships = await Profile.getFriendshipById(currentId);
             const isFriend = friendships.some(account => account.account_id == account_id);
-            setAvatarUrl(await PostCard.getAvatarProfileById(account_id))
-            setUsernameSearch(await Auth.getUsernameById(account_id))
+            const currAvatar = await PostCard.getAvatarProfileById(account_id);
+            setAvatarUrl(currAvatar)
+            const currUsername = await Auth.getUsernameById(account_id);
+            setUsernameSearch(currUsername);
             if (isFriend == true || profilePublic) {
                 let alreadyLike = await fetch(urlBase+"account/CHECK_LIKE_POST",{
                     method:"PATCH",
@@ -145,6 +149,11 @@ const SinglePostCard = () => {
         fetchData();
     }, []);
 
+    const handleDeletePost = (post_id) => {
+        Group.deletePost(post_id);
+        navigate(`/profile/${usernameSearch}`);
+    }
+
 
     const handleCommentButton = (post_id) => {
         if(!displayComments) {
@@ -176,7 +185,7 @@ const SinglePostCard = () => {
             let alreadyLike = await fetch(urlBase+"account/CHECK_LIKE_POST",{
                 method:"PATCH",
                 headers:{"Content-Type":"application/json"}, 
-                body:JSON.stringify({post_id, account_id})
+                body:JSON.stringify({post_id, account_id: authorId})
               });
                   
               if (!alreadyLike.ok) {
@@ -196,7 +205,7 @@ const SinglePostCard = () => {
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ post_id, account_id }),
+                    body: JSON.stringify({ post_id, account_id: authorId }),
                 });
         
                 if (!response.ok) {
@@ -211,7 +220,7 @@ const SinglePostCard = () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ post_id, authorId: account_id }),
+                body: JSON.stringify({ post_id, authorId }),
             });
     
             if (!response.ok) {
@@ -225,83 +234,77 @@ const SinglePostCard = () => {
         }
     }
 
+    const handleCommentFetch = () => {
+        fetchData();
+      }
+
     return (
-        <div>
+        <div className={styles.container}>
             <Navbar/>
-            {
-            currentPostWithData?
-                <div key={currentPostWithData.crtPost.post_id} className="post-card">
-                    <div className="top-row">
-                        <div className="avatar">
-                            <img src={avatarUrl} alt="Avatar" onClick={() => handleClickContainer(usernameSearch)}/>
+            {currentPostWithData ? (
+                <div key={currentPostWithData.crtPost.post_id} className={styles.postCard}>
+                    <div className={styles.topRow}>
+                        <div className={styles.avatarSingle}>
+                            <img src={avatarUrl} alt="Avatar" onClick={() => handleClickContainer(usernameSearch)} />
                         </div>
-                        <div className="username">
+                        <div className={styles.username}>
                             <h3>{usernameSearch}</h3>
                         </div>
+                        {(currentPostWithData.crtPost.account_id === currentUserId) && (
+                        <button className={styles.deleteButton} onClick={() => handleDeletePost(currentPostWithData.crtPost.post_id)}>Delete Post</button>
+                        )}
                     </div>
-                    <div className="middle-row">
+                    <div className={styles.middleRow}>
                         {currentPostWithData.crtPost.urlImgPost && <img src={currentPostWithData.crtPost.urlImgPost} alt="Post" />}
                     </div>
-                    <div className="content-row">
-                        <div className="post-content">
+                    <div className={styles.contentRow}>
+                        <div className={styles.postContent}>
                             <p>{currentPostWithData.crtPost.contentPost}</p>
                         </div>
                     </div>
-                    <div className="bottom-row">
-                        <div className='react-icons'>
-                            {
-                                currentPostWithData.like?
-                                <img src={likeIcon} alt='Like' onClick={() => handleLikeButton(currentPostWithData.crtPost.post_id, currentPostWithData.crtPost.account_id)}/>
-                                :
-                                <img src={dislikeIcon} alt='Like' onClick={() => handleLikeButton(currentPostWithData.crtPost.post_id, currentPostWithData.crtPost.account_id)}/>
-                            }
+                    <div className={styles.bottomRow}>
+                        <div className={styles.likeComment}>
+                            {currentPostWithData.like ? (
+                                <img className={styles.reactIcon} src={likeIcon} alt='Like' onClick={() => handleLikeButton(currentPostWithData.crtPost.post_id, currentPostWithData.crtPost.account_id)} />
+                            ) : (
+                                <img src={dislikeIcon} className={styles.reactIcon}  alt='Like' onClick={() => handleLikeButton(currentPostWithData.crtPost.post_id, currentPostWithData.crtPost.account_id)} />
+                            )}
+                            <p onClick={() => handleDisplayLike(currentPostWithData.crtPost.post_id)}>{currentPostWithData.likeProfile ? currentPostWithData.likeProfile.length : 0} like</p>
                         </div>
-                        <p onClick={() => handleDisplayLike(currentPostWithData.crtPost.post_id)}>{currentPostWithData.likeProfile ? currentPostWithData.likeProfile.length : 0} like</p>
-                        <div className='react-icons'>
-                            <img src={commentIcon} alt='Comment' onClick={() => handleCommentButton(currentPostWithData.crtPost.post_id)}/>
+                        <div className={styles.likeComment}>
+                            <img src={commentIcon} alt='Comment' onClick={() => handleCommentButton(currentPostWithData.crtPost.post_id)} />
                         </div>
                     </div>
-                    <div>
+                    <div className={styles.postDate}>
                         {currentPostWithData.crtPost.post_date_created}
                     </div>
-                    {
-                    showLikesModal && currentPostWithData.crtPost.post_id === showLikePost && (
-                        <div className="likes-modal">
-                            {currentPostWithData.likeProfile.map((profile, index) => {
-                                    return (
-                                        <div className='search-result-item' key={index}>
-                                            <img className='avatar-profile' src={profile.img_url} alt={profile.username} onClick={() => handleClickContainer(profile.username)}/>
-                                            <p>{profile.username}</p>
-                                        </div>
-                                    ); 
-                            })}
+                    {showLikesModal && currentPostWithData.crtPost.post_id === showLikePost && (
+                        <div className={styles.likesModal}>
+                            {currentPostWithData.likeProfile.map((profile, index) => (
+                                <div className={styles.searchResultItem} key={index}>
+                                    <img className={styles.avatarProfile} src={profile.img_url} alt={profile.username} onClick={() => handleClickContainer(profile.username)} />
+                                    <p>{profile.username}</p>
+                                </div>
+                            ))}
                         </div>
-                    )
-                    }
-                    <CommentForm post_id={currentPostWithData.crtPost.post_id}/>
-                    {displayComments && currentPostWithData.crtPost.post_id === showCommentPostId?<CommentCard.CommentCard post_id={currentPostWithData.crtPost.post_id}/>:<div></div>}
-                    {(currentPostWithData.crtPost.account_id === currentUserId) && (
-                        <button onClick={() => {
-                            Group.deletePost(currentPostWithData.crtPost.post_id);
-                            fetchData();
-                        }}>Delete Post</button>
-                         
                     )}
+                    <CommentForm post_id={currentPostWithData.crtPost.post_id} userAvatar={avatarUrl} onComment={handleCommentFetch}/>
+                    {displayComments && currentPostWithData.crtPost.post_id === showCommentPostId ? <CommentCard.CommentCard post_id={currentPostWithData.crtPost.post_id} /> : <div></div>}
                 </div>
-            :
-                friend?
-                    <div>
-                        <Navbar/>
-                        No posts to display
-                    </div>
-                :
-                    <div>
-                        <Navbar/>
-                        This profile is private
-                    </div>
-            }
+            ) : friend ? (
+                <div>
+                    <Navbar />
+                    No posts to display
+                </div>
+            ) : (
+                <div>
+                    <Navbar />
+                    This profile is private
+                </div>
+            )}
         </div>
     );
+
 };
 
 export default SinglePostCard;

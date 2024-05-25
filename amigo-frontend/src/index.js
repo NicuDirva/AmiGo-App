@@ -19,6 +19,8 @@ import GroupMemberRequest from './components/Pages/GroupMemberRequest';
 import MessagePage from './components/Pages/MessagePage';
 import MessageCard from './components/card/MessageCard';
 import SinglePostCard from './components/card/SinglePostCard';
+import GroupsAccount from './components/Pages/GroupsAccount';
+import FriendshipsAccount from './components/Pages/FriendshipsAccount';
 
 const router = createBrowserRouter([
   {
@@ -44,6 +46,14 @@ const router = createBrowserRouter([
   {
     path: `/message/:accountIdParm`,
     element: <MessageCard.MessageCard/>
+  },
+  {
+    path: `/account/friendships/:accountIdParm`,
+    element: <FriendshipsAccount/>
+  },
+  {
+    path: `/account/groups/:accountIdParm`,
+    element: <GroupsAccount/>
   },
   {
     path: `/post/:postIdParm`,

@@ -3,6 +3,8 @@ package com.license.AmiGo.controller;
 import com.license.AmiGo.model.*;
 import com.license.AmiGo.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.neo4j.repository.query.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -113,5 +115,17 @@ public class AccountController {
         String content = (String) message.get("content");
         String timeSent = (String) message.get("timeSent");
         accountService.createMessage(sender_id, receiver_id, content, timeSent);
+    }
+
+    @PatchMapping("/getCommonFriendBy2AccountId")
+    public List<Account> getCommonFriendBy2AccountId(@RequestBody Map<String, Long> request) {
+        Long accountId1 = request.get("accountId1");
+        Long accountId2 = request.get("accountId2");
+        return accountService.getCommonFriendBy2AccountId(accountId1, accountId2);
+    }
+
+    @PatchMapping("/deleteAccountById")
+    public void deleteAccountById(@RequestBody Long account_id) {
+        accountService.deleteAccountById(account_id);
     }
 }

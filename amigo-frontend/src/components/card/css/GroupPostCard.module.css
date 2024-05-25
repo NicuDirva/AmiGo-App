@@ -1,0 +1,115 @@
+.postContainer {
+  width: 70%;
+  margin: 0 auto;
+}
+
+.postCard {
+  border: 1px solid #ccc;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  position: relative;
+  margin-left: 15px;
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.avatar {
+  margin-right: 10px;
+}
+
+.avatarImg {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
+
+.username {
+  flex-grow: 1;
+}
+
+.usernameH3 {
+  margin: 0;
+  line-height: 40px;
+}
+
+.deleteButton {
+  background-color: #d9534f;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.deleteButton:hover {
+  background-color: #c9302c;
+}
+
+.deleteButton:active {
+  background-color: #26005E; /* Culoarea mov la click */
+}
+
+.middleRow {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.middleRowImg {
+  max-width: 100%;
+  height: auto;
+}
+
+.contentRow {
+  margin-bottom: 10px;
+}
+
+.postContentP {
+  margin: 0;
+}
+
+.bottomRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.likeComment {
+  display: flex;
+  align-items: center;
+}
+
+.likeCommentImg {
+  width: 30px;
+  height: 30px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.postDate {
+  font-weight: bold;
+  margin: 0 10px 0 0;
+}
+
+.searchResultItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.avatarProfile {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  border-radius: 50%;
+}
+
+p {
+  margin: 0;
+}

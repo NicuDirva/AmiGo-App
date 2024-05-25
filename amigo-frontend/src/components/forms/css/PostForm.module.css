@@ -1,0 +1,91 @@
+/* PostForm.css */
+
+.postFormContainer {
+    border: 2px solid #26005E;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex;
+    width: 600px; /* Modificat pentru a extinde lungimea containerului */
+    background-color: #f9f9f9;
+    margin: 20px 20px 20px 245px; /* Modificare aici */
+  }
+  
+  .textareaContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    width: 100%;
+    margin-bottom: 0px;
+  }
+  
+  .avatar {
+    cursor: pointer;
+  }
+  
+  .avatar img {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+  }
+  
+  .textareaContainer textarea {
+    margin-left: 10px;
+    width: calc(100% - 70px); /* Ajustat pentru a se extinde */
+    padding: 10px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    resize: none;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    height: 60px; /* Opțional, pentru a face text area mai mare */
+  }
+  
+  .textareaContainer textarea::placeholder {
+    color: #888;
+  }
+  
+  .textarea-container textarea:focus {
+    border-color: #26005E;
+    outline: none;
+  }
+  
+  .icon-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .iconContainer input[type="file"] {
+    display: none;
+}
+  
+  .icon-container img {
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+  }
+  
+  .submit-text {
+    color: #888;
+    cursor: not-allowed;
+  }
+  
+  .submit-text.enabled {
+    color: #26005E;
+    cursor: pointer;
+  }
+  
+  #image {
+    display: none;
+  }
+
+  .imageIcon {
+    width: 30px; /* Set a size for the new image upload icon */
+    height: 30px; /* Ensure aspect ratio is maintained */
+    cursor: pointer;
+    border-radius: 5px;
+}
+  

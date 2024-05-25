@@ -1,0 +1,118 @@
+.container{
+    width: 70%;
+    margin: 0 auto;
+}
+
+.postCard {
+    margin-top: 100px;
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    position: relative; /* Pentru poziționarea absolută a butonului de ștergere */
+}
+
+.topRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.reactIcon {
+    margin-right: 10px;
+}
+
+.avatar {
+    margin-right: 10px;
+}
+
+.avatarSingle img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+}
+
+.username {
+    flex-grow: 1;
+}
+
+.username h3 {
+    margin: 0;
+    line-height: 40px;
+}
+
+.deleteButton {
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.deleteButton:hover {
+    background-color: #c9302c;
+}
+
+.deleteButton:active {
+    background-color: #26005E; /* Culoarea mov la click */
+}
+
+.middleRow {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.middleRow img {
+    max-width: 100%;
+    height: auto;
+}
+
+.contentRow {
+    margin-bottom: 10px;
+}
+
+.postContent p {
+    margin: 0;
+}
+
+.bottomRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.likeComment {
+    display: flex;
+    align-items: center;
+}
+
+.likeComment img {
+    width: 30px;
+    height: 30px;
+    margin-left: 10px;
+}
+
+.postDate {
+    font-weight: bold;
+    margin: 0 10px 0 0;
+}
+
+.searchResultItem {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.avatarProfile {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+    border-radius: 50%;
+}
+
+p {
+    margin: 0;
+}

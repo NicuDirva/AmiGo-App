@@ -41,7 +41,7 @@ public class GroupServiceImpl implements GroupService {
     public void deleteRequestMembershipRelationship(long account_id, long group_id) {
         groupRepository.deleteRequestMembershipRelationship(account_id, group_id);
     }
-    public Group getGroupByCreatorId(long creator_id) {
+    public List<Group> getGroupByCreatorId(long creator_id) {
         return groupRepository.getGroupByCreatorId(creator_id);
     }
     public List<Account> getMembersByGroupId(long group_id) {

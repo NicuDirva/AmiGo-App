@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useGlobalState } from '../state';
 import Auth from '../auth/Auth';
-import Profile from '../Pages/Profile';
-import './PostCard.css';
+import styles from './css/GroupPostCard.module.css';
 import likeIcon from '../Assets/heart_7469375.png'
 import dislikeIcon from '../Assets/broken-heart_9195088.png'
-import commentIcon from '../Assets/messenger_1370907.png'
+import commentIcon from '../Assets/chat_4663336.png';
 import CommentCard from './CommentCard';
-import CommentForm from '../CommentForm';
+import CommentForm from '../forms/CommentForm';
 import { useNavigate } from 'react-router-dom';
 import Group from '../Pages/Group';
 import PostCard from './PostCard';
@@ -26,12 +25,15 @@ const GroupPostCard = ({groupIdParm}) => {
     const [currentUserId, setCurrentUserId] = useState('');
     const [showLikePost, setShowLikePost] = useState('');
     const [showCommentPostId, setShowCommentPostId] = useState('');
+    const [ userAvatar, setUserAvatar] = useState(null);
     const navigate = useNavigate();
 
     const fetchData = async () => {
         if(defaultEmail) {
             const fetchedPosts = await Group.getPostsByGroupId(groupIdParm);
             const currentId = await Auth.getIdByEmail(defaultEmail);
+            const currentAvatar = await PostCard.getAvatarProfileById(currentId);
+            setUserAvatar(currentAvatar);
             setCurrentUserId(currentId);
             const creatorStatus = await Group.checkCreatorGroup(currentId, groupIdParm);
             const adminStatus = await Group.checkAdminGroup(currentId, groupIdParm); // Verificați dacă utilizatorul este admin
@@ -98,8 +100,16 @@ const GroupPostCard = ({groupIdParm}) => {
         }else {
                 setError('Error fetching posts');
             }
-    
     };
+
+    const handleCommentFetch = () => {
+      fetchData();
+    }
+
+    const handleDeletePost = (post_id) => {
+      Group.deletePost(post_id);
+      fetchData();
+    }
 
     useEffect(() => {
         fetchData();
@@ -187,70 +197,89 @@ const GroupPostCard = ({groupIdParm}) => {
     }
 
     return (
-        <div>
-            {posts?posts.map((pst, index) => (
-                <div key={index} className="post-card">
-                    <div className="top-row">
-                        <div className="avatar">
-                            <img src={pst.img_url} alt="Avatar" onClick={() => handleClickContainer(pst.username)}/>
-                        </div>
-                        <div className="username">
-                            <h3>{pst.username}</h3>
-                        </div>
-                    </div>
-                    <div className="middle-row">
-                        {pst.post.urlImgPost && <img src={pst.post.urlImgPost} alt="Post" />}
-                    </div>
-                    <div className="content-row">
-                        <div className="post-content">
-                            <p>{pst.post.contentPost}</p>
-                        </div>
-                    </div>
-                    <div className="bottom-row">
-                        <div className='react-icons'>
-                            {
-                                pst.like?
-                                <img src={likeIcon} alt='Like' onClick={() => handleLikeButton(pst.post.post_id, pst.post.account_id)}/>
-                                :
-                                <img src={dislikeIcon} alt='Like' onClick={() => handleLikeButton(pst.post.post_id, pst.post.account_id)}/>
-                            }
-                        </div>
-                        <p onClick={() => handleDisplayLike(pst.post.post_id)}>{pst.likeProfile ? pst.likeProfile.length : 0} like</p>
-                        <div className='react-icons'>
-                            <img src={commentIcon} alt='Comment' onClick={() => handleCommentButton(pst.post.post_id)}/>
-                        </div>
-                    </div>
-                    <div>
-                        {pst.post.post_date_created}
-                    </div>
-                    {
-                    showLikesModal && pst.post.post_id === showLikePost && (
-                        <div className="likes-modal">
-                            {pst.likeProfile.map((profile, index) => {
-                                    return (
-                                        <div className='search-result-item' key={index}>
-                                            <img className='avatar-profile' src={profile.img_url} alt={profile.username} onClick={() => handleClickContainer(profile.username)}/>
-                                            <p>{profile.username}</p>
-                                        </div>
-                                    ); 
-                            })}
-                        </div>
-                    )
-                    }
-                    <CommentForm post_id={pst.post.post_id}/>
-                    {displayComments && pst.post.post_id === showCommentPostId?<CommentCard.CommentCard post_id={pst.post.post_id}/>:<div></div>}
-                    {(pst.post.account_id === currentUserId || pst.role < currentUserRoleNumber) && (
-                        <button onClick={() => {
-                            Group.deletePost(pst.post.post_id);
-                            fetchData();
-                        }}>Delete Post</button>
-                         
-                    )}
+        <div className={styles.postContainer}>
+          {posts ? posts.map((pst, index) => (
+            <div key={index} className={styles.postCard}>
+              <div className={styles.topRow}>
+                <div className={styles.avatar}>
+                  <img
+                    src={pst.img_url}
+                    alt="Avatar"
+                    className={styles.avatarImg}
+                    onClick={() => handleClickContainer(pst.username)}
+                  />
                 </div>
-            )):
-            <div>No posts to display!</div>}
+                <div className={styles.username}>
+                  <h3 className={styles.usernameH3}>{pst.username}</h3>
+                </div>
+                {(pst.post.account_id === currentUserId || pst.role < currentUserRoleNumber) && (
+                  <button
+                    className={styles.deleteButton}
+                    onClick={() => handleDeletePost(pst.post.post_id)}
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
+              <div className={styles.middleRow}>
+                {pst.post.urlImgPost && <img src={pst.post.urlImgPost} alt="Post" className={styles.middleRowImg} />}
+              </div>
+              <div className={styles.contentRow}>
+                <div className={styles.postContent}>
+                  <p className={styles.postContentP}>{pst.post.contentPost}</p>
+                </div>
+              </div>
+              <div className={styles.bottomRow}>
+                <div className={styles.likeComment}>
+                  <img
+                    src={pst.like ? likeIcon : dislikeIcon}
+                    alt="Like"
+                    className={styles.likeCommentImg}
+                    onClick={() => handleLikeButton(pst.post.post_id, pst.post.account_id)}
+                  />
+                  <p onClick={() => handleDisplayLike(pst.post.post_id)}>
+                    {pst.likeProfile ? pst.likeProfile.length : 0} like
+                  </p>
+                </div>
+                <div className={styles.likeComment}>
+                  <img
+                    src={commentIcon}
+                    alt="Comment"
+                    className={styles.likeCommentImg}
+                    onClick={() => handleCommentButton(pst.post.post_id)}
+                  />
+                </div>
+              </div>
+              <div className={styles.postDate}>
+                {pst.post.post_date_created}
+              </div>
+              {showLikesModal && pst.post.post_id === showLikePost && (
+                <div className="likes-modal">
+                  {pst.likeProfile.map((profile, index) => (
+                    <div className={styles.searchResultItem} key={index}>
+                      <img
+                        src={profile.img_url}
+                        alt={profile.username}
+                        className={styles.avatarProfile}
+                        onClick={() => handleClickContainer(profile.username)}
+                      />
+                      <p>{profile.username}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <CommentForm post_id={pst.post.post_id} userAvatar={userAvatar} onComment={handleCommentFetch}/>
+
+              {displayComments && pst.post.post_id === showCommentPostId ?
+               <CommentCard.CommentCard post_id={pst.post.post_id} /> :
+                <div></div>}    
+            </div>
+          )) : (
+            <div>No posts to display!</div>
+          )}
         </div>
-    );
+      );
+    
 };
 
 
