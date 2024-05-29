@@ -19,8 +19,8 @@ public class PostController {
     private PostService postService;
 
     @PostMapping("/add")
-    public void add(@RequestBody Post post) {
-        postService.savePost(post);
+    public Post add(@RequestBody Post post) {
+        return postService.savePost(post);
     }
 
     @GetMapping("/getAll")

@@ -21,6 +21,7 @@ import MessageCard from './components/card/MessageCard';
 import SinglePostCard from './components/card/SinglePostCard';
 import GroupsAccount from './components/Pages/GroupsAccount';
 import FriendshipsAccount from './components/Pages/FriendshipsAccount';
+import PlacePage from './components/Pages/PlacePage';
 
 const router = createBrowserRouter([
   {
@@ -58,6 +59,10 @@ const router = createBrowserRouter([
   {
     path: `/post/:postIdParm`,
     element: <SinglePostCard/>
+  },
+  {
+    path: `/place/:placeIdParm`,
+    element: <PlacePage.PlacePage/>
   },
   {
     path: `/message`,

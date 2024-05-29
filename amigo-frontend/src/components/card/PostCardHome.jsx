@@ -10,6 +10,7 @@ import CommentCard from './CommentCard';
 import CommentForm from '../forms/CommentForm';
 import dislikeIcon from '../Assets/broken-heart_9195088.png';
 import styles from './css/GroupPostCard.module.css'
+import PlaceMention from '../PlaceMention';
 
 const urlBase = "http://localhost:8080/";
 
@@ -17,6 +18,7 @@ const PostCardHome = () => {
     const [posts, setPosts] = useState([]);
     const [defaultEmail] = useGlobalState("email");
     const [defaultUsername] = useGlobalState("username");
+    const [currentUserProfile, setCurrentUserProfile] = useState(null);
     const [error, setError] = useState(null);
     const [avatarUrl, setAvatarUrl] = useState('');
     const [displayComments, setDisplayComment] = useState(false);
@@ -26,15 +28,21 @@ const PostCardHome = () => {
     const [showCommentPostId, setShowCommentPostId] = useState('');
     const [firstRandom, setFirstRandom] = useState(true);
     const [ userAvatar, setUserAvatar] = useState(null);
+    const [ places, setPlaces] = useState([]);
+    const [ selectedPlace, setSelectedPlace] = useState(null);
     const navigate = useNavigate();
 
     const fetchData = async () => {
         if (defaultUsername) {
             const account_id = await Auth.getIdByEmail(defaultEmail);
             const currentAvatar = await PostCard.getAvatarProfileById(account_id);
+            const currentProfile = await Auth.getProfileByAccountId(account_id);
             setUserAvatar(currentAvatar);
             setCurrentUserId(account_id);
+            setCurrentUserProfile(currentProfile);
             const friends = await Profile.getFriendshipById(account_id);
+            const currPlaces = await PlaceMention.getPlacesByCounty(currentProfile.location);
+            setPlaces(currPlaces);
             let fetchedPostWithIcon = []
             for (const account of friends) {
                 const img_url = await PostCard.getAvatarProfileById(account.account_id);
@@ -43,6 +51,24 @@ const PostCardHome = () => {
                 console.log("Postarile unui prieten", currentFriendPosts)
                 for (const post of currentFriendPosts) {
                     if (post.group_id === -1) {
+                        
+                        const post_id = post.post_id;
+                        console.log("Post id", post_id);
+                        const response3 = await fetch(urlBase + "place/getPlaceByPostId", {
+                            method: "PATCH",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(post_id)
+                        });
+
+                        if (!response3.ok) {
+                            throw new Error(`HTTP error! status: ${response3.status}`);
+                        }
+                        let postMentionedPlace;
+                        try {
+                            postMentionedPlace = await response3.json();
+                        } catch (error) {
+                            console.error('Error parsing JSON getPlace:', error);
+                        }
                         let alreadyLike = await fetch(urlBase + "account/CHECK_LIKE_POST", {
                             method: "PATCH",
                             headers: { "Content-Type": "application/json" },
@@ -72,7 +98,7 @@ const PostCardHome = () => {
                             const img_url = await PostCard.getAvatarProfileById(id);
                             likeProfile.push({ username, img_url });
                         }
-                        fetchedPostWithIcon.push({ post, like: alreadyLikeBool, likeProfile, img_url, username: currentUsername });
+                        fetchedPostWithIcon.push({ post, like: alreadyLikeBool, likeProfile, img_url, username: currentUsername, postMentionedPlace });
                     }
                 }
             }
@@ -82,6 +108,12 @@ const PostCardHome = () => {
                 fetchedPostWithIcon.sort(() => Math.random() - 0.5);
                 setFirstRandom(false);
                 setPosts(fetchedPostWithIcon);
+                console.log("Locuri gasite", currPlaces)
+                if (currPlaces.length > 0) {
+                    console.log("A intrat in if ul de random place")
+                    const randomIndex = Math.floor(Math.random() * currPlaces.length);
+                    setSelectedPlace(currPlaces[randomIndex]);
+                }
             } else {
                 // Actualizăm postările păstrând ordinea
                 const updatedPosts = posts.map(oldPost => {
@@ -90,6 +122,8 @@ const PostCardHome = () => {
                 });
                 setPosts(updatedPosts);
             }
+
+            console.log("Loc selectat", selectedPlace)
         } else {
             setError('Error fetching posts');
         }
@@ -108,6 +142,10 @@ const PostCardHome = () => {
             setDisplayComment(false);
         }
     }
+
+    const handleClickContainerPlace = (placeIdParm) => {
+        navigate(`/place/${placeIdParm}`);
+      }
 
     const handleDisplayLike = (post_id) => {
         if (!showLikesModal) {
@@ -177,17 +215,37 @@ const PostCardHome = () => {
         }
     }
 
+
     return (
         <div className={styles.postContainer}>
+            <div className={styles.recommandationPlace}>
+            {selectedPlace && (
+                <div className={styles.placeDetails}>
+                <p>We recommend you to visit <span onClick={() => handleClickContainerPlace(selectedPlace.place_id)} className={styles.highlight}>{selectedPlace.placeName}</span> located in <span className={styles.highlight}>{selectedPlace.county}</span>. This place has been mentioned <span className={styles.highlight}>{selectedPlace.mentionsNumber}</span> times.</p>
+                </div>
+            )}
+            </div>
             {posts ? posts.map((pst, index) => (
                 <div key={index} className={styles.postCard}>
-              <div className={styles.topRow}>
+                    <div className={styles.topRow}>
                         <div className={styles.avatar}>
                             <img src={pst.img_url} alt="Avatar" className={styles.avatarImg} onClick={() => handleClickContainer(pst.username)} />
                         </div>
-                            <div className={styles.username}>
-                                <h3 className={styles.usernameH3}>{pst.username}</h3>
+                        <div className={styles.username}>
+                            <h3 className={styles.usernameH3}>{pst.username}</h3>
+                        </div>
+                        {pst.postMentionedPlace ?
+                            <div className={styles.mentioned}>
+                                <p>Mentioned{' '}
+                                    <span className={`${styles.highlight} ${styles.word}`} onClick={() => handleClickContainerPlace(pst.postMentionedPlace.place_id)}>{pst.postMentionedPlace.placeName}</span> 
+                                    {' '}from{' '}
+                                    <span className={`${styles.highlight} ${styles.word}`}>{pst.postMentionedPlace.county}</span>
+                                </p>
                             </div>
+                            :
+                            null
+                        }
+
                     </div>
                     <div className={styles.middleRow}>
                         {pst.post.urlImgPost && <img src={pst.post.urlImgPost} className={styles.middleRowImg} alt="Post" />}

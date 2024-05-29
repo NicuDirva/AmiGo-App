@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useGlobalState } from '../state/index';
 import Auth from '../auth/Auth';
 import addImageIcon from '../Assets/postIcon.png';
 import PostCard from '../card/PostCard';
 import { useNavigate } from 'react-router-dom';
 import styles from './css/PostForm.module.css';
+import PlaceMention from '../PlaceMention';
 
 const urlBase = "http://localhost:8080/";
 
@@ -13,7 +14,13 @@ const PostForm = ({ group_id, userAvatar }) => {
   const [content, setContent] = useState('');
   const [image, setImage] = useState(null);
   const [defaultEmail] = useGlobalState("email");
+  const [placeIdMention, setPlaceIdMention] = useState(null);
+  const [resetMentionForm, setResetMentionForm] = useState(false);
   const navigate = useNavigate();
+  
+  useEffect(() => {
+    
+  }, [resetMentionForm])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,6 +51,18 @@ const PostForm = ({ group_id, userAvatar }) => {
         throw new Error('Failed to save post');
       }
 
+      let current_post_create;
+      try {
+        current_post_create = await response.json();
+          console.log("Post created:", current_post_create);
+      } catch (error) {
+          console.error('Error parsing JSON:', error);
+      }
+
+      if(placeIdMention) {
+          PlaceMention.createAccountVisitPlaceRelationship(current_post_create.post_id, placeIdMention);
+      }
+
       const response2 = await fetch(`${urlBase}post/HAS_POST`, {
         method: "PATCH",
         headers: {
@@ -59,6 +78,7 @@ const PostForm = ({ group_id, userAvatar }) => {
       // Resetăm valorile câmpurilor
       setContent('');
       setImage(null);
+      setResetMentionForm(true);
 
       // Afișăm un mesaj de succes sau redirecționăm utilizatorul
       console.log('Post saved successfully');
@@ -80,43 +100,49 @@ const PostForm = ({ group_id, userAvatar }) => {
     }
   }
 
+  const handleCreatePlaceMention = (place_id) => {
+    setPlaceIdMention(place_id);
+    console.log("s a mentionat ceva")
+
+  }
+
   return (
     <div className={styles.postFormContainer}>
-      <form onSubmit={handleSubmit}>
-        <div className={styles.textareaContainer}>
-          <div className={styles.avatar} onClick={() => handleClickContainer(username)}>
-            <img src={userAvatar} alt="Avatar" />
-          </div>
-          <textarea
-            id="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Add a post"
-            required
-          />
-        </div>
-        <div className={styles.iconContainer}>
-            <label htmlFor="image">
-                <img className={styles.imageIcon} src={addImageIcon} alt="Add Image" />
-            </label>
-            <input
-                type="file"
-                id="image"
-                accept="image/*"
-                onChange={convertImgBase64}
-                required
-            />
-        </div>
-
-
-          <div
-            className={`${styles.submitText} ${content ? 'enabled' : ''}`}
-            onClick={content ? handleSubmit : null}
-          >
-            Submit
-          </div>
-
-      </form>
+        <form onSubmit={handleSubmit}>
+            <div className={styles.textareaContainer}>
+                <div className={styles.avatar} onClick={() => handleClickContainer(username)}>
+                    <img src={userAvatar} alt="Avatar" />
+                </div>
+                <textarea
+                    id="content"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    placeholder="Add a post"
+                    required
+                    className={styles.textarea}
+                />
+                <PlaceMention.PlaceMention createPlaceMention={handleCreatePlaceMention} resetMentionForm={resetMentionForm} 
+                className={styles.mentionContainer}/>
+            </div>
+            <div className={styles.iconContainer}>
+                <label htmlFor="image">
+                    <img className={styles.imageIcon} src={addImageIcon} alt="Add Image" />
+                </label>
+                <input
+                    type="file"
+                    id="image"
+                    accept="image/*"
+                    onChange={convertImgBase64}
+                    required
+                />
+            </div>
+            <div
+                className={`${styles.submitText} ${content ? styles.enabled : ''}`}
+                onClick={content ? handleSubmit : null}
+            >
+                Submit
+            </div>
+        </form>
     </div>
   );
 }

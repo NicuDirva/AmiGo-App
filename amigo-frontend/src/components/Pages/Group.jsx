@@ -257,6 +257,22 @@ const getAllGroup = async () => {
   });
 }
 
+const getAllPlaces = async () => {
+  return fetch(urlBase+"place/getAll", {
+    method: "GET",
+}).then(response => {
+    if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+    }
+    return response.json();
+}).then(data => {
+    return data;
+}).catch(error => {
+    console.error("Error getting accounts:", error);
+    return [];
+});
+}
+
 const getGroupById = async (group_id) => {
   try {
     const groups = await getAllGroup();
@@ -467,4 +483,4 @@ const deleteCreateGroupRelationship = async (creator_id, group_id) => {
 }
 
 
-export default  { Group, deletePostByGroupId, deletePostByAccountId, deleteCommentByPostId, getMembershipRequestsByGroupId, deleteCreateGroupRelationship, createCreateGroupRelationship, deleteByGroupId, getAdminByGroupId, handleJoin, handleDeleteJoinRequest, deletePost, deleteComment, createAdminRelationship, deleteAdminRelationship, deleteMembershipRelationship, getAllGroup, checkAdminGroup, checkCreatorGroup, getGroupByCreatorId, getMembershipsByGroupId, getGroupById, getPostsByGroupId, getAllMemberGroupByAccountId } 
+export default  { Group, deletePostByGroupId, getAllPlaces, deletePostByAccountId, deleteCommentByPostId, getMembershipRequestsByGroupId, deleteCreateGroupRelationship, createCreateGroupRelationship, deleteByGroupId, getAdminByGroupId, handleJoin, handleDeleteJoinRequest, deletePost, deleteComment, createAdminRelationship, deleteAdminRelationship, deleteMembershipRelationship, getAllGroup, checkAdminGroup, checkCreatorGroup, getGroupByCreatorId, getMembershipsByGroupId, getGroupById, getPostsByGroupId, getAllMemberGroupByAccountId } 

@@ -81,3 +81,8 @@
 .search-result-item {
   margin-bottom: 20px;
 }
+
+.highlight {
+  font-weight: bold;
+  margin-right: 5px; /* Adăugați spațiu între cuvinte */
+}

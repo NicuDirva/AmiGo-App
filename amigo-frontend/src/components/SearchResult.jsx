@@ -9,7 +9,9 @@ import Profile from './Pages/Profile';
 const SearchResult = ({ searchText }) => {
   const [searchAccountResults, setSearchAccountResults] = useState([]);
   const [searchGroupResults, setSearchGroupResults] = useState([]);
+  const [searchPlaceResults, setSearchPlaceResults] = useState([]);
   const [showAccounts, setShowAccounts] = useState(true);
+  const [showPlaces, setShowPlaces] = useState(false);
   const [ defaultEmail] = useGlobalState("email");
   const [ currentUserId, setCurrentUserId] = useState(null);
   const navigate = useNavigate();
@@ -22,15 +24,21 @@ const SearchResult = ({ searchText }) => {
     navigate(`/group/${groupIdParm}`);
   }
 
+  const handleClickContainerPlace = (placeIdParm) => {
+    navigate(`/place/${placeIdParm}`);
+  }
+
   useEffect(() => {
     if (searchText) {
       if (showAccounts) {
         searchAccounts();
+      } else if (showPlaces) {
+        searchPlace(); // Adăugarea funcției de căutare pentru locuri
       } else {
         searchGroups();
       }
     }
-  }, [searchText, showAccounts]);
+  }, [searchText, showAccounts, showPlaces]);
 
   const searchAccounts = async () => {
     try {
@@ -65,6 +73,18 @@ const SearchResult = ({ searchText }) => {
     }
   };
 
+  const searchPlace = async () => {
+    try {
+      const places = await Group.getAllPlaces();
+      const filteredPlace = places.filter(place =>
+        place.placeName.toLowerCase().includes(searchText.toLowerCase())
+      );
+      setSearchPlaceResults(filteredPlace);
+    } catch (error) {
+      console.error("Error searching places:", error);
+    }
+  }
+
   const searchGroups = async () => {
     try {
       const groups = await Group.getAllGroup();
@@ -87,10 +107,11 @@ const SearchResult = ({ searchText }) => {
 
   return (
     <div className="search-container">
-  <div className="toggle-buttons">
-    <button className={showAccounts ? 'active' : ''} onClick={() => setShowAccounts(true)}>Accounts</button>
-    <button className={!showAccounts ? 'active' : ''} onClick={() => setShowAccounts(false)}>Groups</button>
-  </div>
+      <div className="toggle-buttons">
+        <button className={showAccounts ? 'active' : ''} onClick={() => { setShowAccounts(true); setShowPlaces(false); }}>Accounts</button>
+        <button className={!showAccounts && !showPlaces ? 'active' : ''} onClick={() => { setShowAccounts(false); setShowPlaces(false); }}>Groups</button>
+        <button className={!showAccounts && showPlaces ? 'active' : ''} onClick={() => { setShowAccounts(false); setShowPlaces(true); }}>Places</button> {/* Adăugarea butonului pentru căutarea după locuri */}
+      </div>
   {showAccounts ? (
     <div>
       <h2 className="search-category">Accounts</h2>
@@ -110,7 +131,32 @@ const SearchResult = ({ searchText }) => {
         </div>
       )}
     </div>
-  ) : (
+  ) : showPlaces ? (
+    <div>
+      <h2 className="search-category">Places</h2>
+      {searchPlaceResults.length === 0 ? (
+        <p>No places found.</p>
+      ) : (
+        <div>
+          {searchPlaceResults.map(postMentionedPlace => (
+            <div className="search-result-item" key={postMentionedPlace.place_id} onClick={() => handleClickContainerPlace(postMentionedPlace.place_id)}>
+              <div>
+              <p>
+                  <span className='highlight'>{postMentionedPlace.placeName},</span> 
+                  {'        '}County:{' '}
+                  <span className='highlight'>{postMentionedPlace.county},</span>
+                  {'        '}Visitors:{' '}
+                  <span className='highlight'>{postMentionedPlace.mentionsNumber}</span>
+              </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  
+  )
+  : (
     <div>
       <h2 className="search-category">Groups</h2>
       {searchGroupResults.length === 0 ? (

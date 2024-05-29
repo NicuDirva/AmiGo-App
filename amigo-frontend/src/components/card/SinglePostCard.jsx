@@ -40,6 +40,22 @@ const SinglePostCard = () => {
         const account_id = await Auth.getIdByEmail(defaultEmail);
         setCurrentPost(crtPost);
         if (account_id == crtPost.account_id) {
+            const post_id = crtPost.post_id
+            const response3 = await fetch(urlBase + "place/getPlaceByPostId", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(post_id)
+            });
+
+            if (!response3.ok) {
+                throw new Error(`HTTP error! status: ${response3.status}`);
+            }
+            let postMentionedPlace;
+            try {
+                postMentionedPlace = await response3.json();
+            } catch (error) {
+                console.error('Error parsing JSON getPlace:', error);
+            }
             setCurrentUserId(account_id);
             const currAvatar = await PostCard.getAvatarProfileById(account_id);
             setAvatarUrl(currAvatar)
@@ -82,10 +98,26 @@ const SinglePostCard = () => {
                 const img_url = await PostCard.getAvatarProfileById(id);
                 likeProfile.push({username, img_url});
             }
-            setCurrentPostWithData({crtPost,like:alreadyLikeBool, likeProfile})
+            setCurrentPostWithData({crtPost,like:alreadyLikeBool, likeProfile, postMentionedPlace})
             setFriend(true);
         }
         else {
+            const post_id = crtPost.post_id
+            const response3 = await fetch(urlBase + "place/getPlaceByPostId", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(post_id)
+            });
+
+            if (!response3.ok) {
+                throw new Error(`HTTP error! status: ${response3.status}`);
+            }
+            let postMentionedPlace;
+            try {
+                postMentionedPlace = await response3.json();
+            } catch (error) {
+                console.error('Error parsing JSON getPlace:', error);
+            }
             const account_id = crtPost.account_id;
             const currentProfile = await Profile.getProfileById(account_id);
             let profilePublic = true;
@@ -104,7 +136,7 @@ const SinglePostCard = () => {
                 let alreadyLike = await fetch(urlBase+"account/CHECK_LIKE_POST",{
                     method:"PATCH",
                     headers:{"Content-Type":"application/json"}, 
-                    body:JSON.stringify({post_id:crtPost.post_id, account_id:account_id})
+                    body:JSON.stringify({post_id:crtPost.post_id, account_id:account_id, postMentionedPlace})
                 });
                     
                 if (!alreadyLike.ok) {
@@ -138,7 +170,7 @@ const SinglePostCard = () => {
                     const img_url = await PostCard.getAvatarProfileById(id);
                     likeProfile.push({username, img_url});
                 }
-                setCurrentPostWithData({crtPost,like:alreadyLikeBool, likeProfile})
+                setCurrentPostWithData({crtPost,like:alreadyLikeBool, likeProfile,postMentionedPlace})
                 setFriend(true);
                 console.log("Profile is public", profilePublic)
             }
@@ -153,6 +185,10 @@ const SinglePostCard = () => {
         Group.deletePost(post_id);
         navigate(`/profile/${usernameSearch}`);
     }
+
+      const handleClickContainerPlace = (placeIdParm) => {
+    navigate(`/place/${placeIdParm}`);
+  }
 
 
     const handleCommentButton = (post_id) => {
@@ -250,6 +286,17 @@ const SinglePostCard = () => {
                         <div className={styles.username}>
                             <h3>{usernameSearch}</h3>
                         </div>
+                        {currentPostWithData.postMentionedPlace ?
+                            <div className={styles.mentioned}>
+                                <p>Mentioned{' '}
+                                    <span  className={`${styles.highlight} ${styles.word}`} onClick={() => handleClickContainerPlace(currentPostWithData.postMentionedPlace.place_id)}>{currentPostWithData.postMentionedPlace.placeName}</span> 
+                                    {' '}from{' '}
+                                    <span className={`${styles.highlight} ${styles.word}`}>{currentPostWithData.postMentionedPlace.county}</span>
+                                </p>
+                            </div>
+                            :
+                            null
+                        }
                         {(currentPostWithData.crtPost.account_id === currentUserId) && (
                         <button className={styles.deleteButton} onClick={() => handleDeletePost(currentPostWithData.crtPost.post_id)}>Delete Post</button>
                         )}

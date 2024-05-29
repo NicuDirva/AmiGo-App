@@ -1,91 +1,165 @@
-/* PostForm.css */
-
 .postFormContainer {
-    border: 2px solid #26005E;
-    border-radius: 10px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex;
-    width: 600px; /* Modificat pentru a extinde lungimea containerului */
-    background-color: #f9f9f9;
-    margin: 20px 20px 20px 245px; /* Modificare aici */
-  }
-  
-  .textareaContainer {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    width: 100%;
-    margin-bottom: 0px;
-  }
-  
-  .avatar {
-    cursor: pointer;
-  }
-  
-  .avatar img {
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-  }
-  
-  .textareaContainer textarea {
-    margin-left: 10px;
-    width: calc(100% - 70px); /* Ajustat pentru a se extinde */
-    padding: 10px;
-    border: 2px solid #ccc;
-    border-radius: 5px;
-    resize: none;
-    font-family: Arial, sans-serif;
-    font-size: 14px;
-    height: 60px; /* Opțional, pentru a face text area mai mare */
-  }
-  
-  .textareaContainer textarea::placeholder {
-    color: #888;
-  }
-  
-  .textarea-container textarea:focus {
-    border-color: #26005E;
-    outline: none;
-  }
-  
-  .icon-container {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-
-  .iconContainer input[type="file"] {
-    display: none;
+  border: 2px solid #26005E;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Modificat pentru alinierea corectă */
+  width: 800px; /* Modificat pentru a extinde lungimea containerului */
+  background-color: #f9f9f9;
+  margin: 20px auto;
+  margin-left: 238px;
 }
-  
-  .icon-container img {
-    cursor: pointer;
-    width: 24px;
-    height: 24px;
-    margin-right: 10px;
-  }
-  
-  .submit-text {
-    color: #888;
-    cursor: not-allowed;
-  }
-  
-  .submit-text.enabled {
-    color: #26005E;
-    cursor: pointer;
-  }
-  
-  #image {
-    display: none;
-  }
 
-  .imageIcon {
-    width: 30px; /* Set a size for the new image upload icon */
-    height: 30px; /* Ensure aspect ratio is maintained */
-    cursor: pointer;
-    border-radius: 5px;
+.textareaContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: 10px;
 }
-  
+
+.avatar {
+  cursor: pointer;
+}
+
+.avatar img {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+}
+
+.textarea {
+  margin-left: 10px;
+  width: calc(100% - 70px - 250px); /* Ajustat pentru a include spațiu pentru PlaceMention */
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  resize: none;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  height: 60px; /* Opțional, pentru a face text area mai mare */
+}
+
+.textarea::placeholder {
+  color: #888;
+}
+
+.textarea:focus {
+  border-color: #26005E;
+  outline: none;
+}
+
+.iconContainer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.iconContainer input[type="file"] {
+  display: none;
+}
+
+.iconContainer img {
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+.submitText {
+  color: #888;
+  cursor: not-allowed;
+}
+
+.submitText.enabled {
+  color: #26005E;
+  cursor: pointer;
+}
+
+#image {
+  display: none;
+}
+
+.imageIcon {
+  width: 30px; /* Set a size for the new image upload icon */
+  height: 30px; /* Ensure aspect ratio is maintained */
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+/* Stiluri specifice pentru PlaceMention */
+.placeMentionContainer {
+  flex: 1;
+  margin-left: 20px;
+}
+
+.mentionIcon {
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+}
+
+.placeMention {
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 10px;
+}
+
+.select, .input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.suggestions {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+}
+
+.mentionContainer {
+  margin-left: 15px;
+}
+
+.suggestionItem {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.suggestionItem:hover {
+  background-color: #f0f0f0;
+}
+
+.submitText {
+  text-align: center;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: not-allowed;
+}
+
+.submitText.enabled {
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+}
+
+.confirmationMessage {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  border-radius: 5px;
+}

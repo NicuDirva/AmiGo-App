@@ -46,6 +46,23 @@ const GroupPostCard = ({groupIdParm}) => {
             }
                 let fetchedPostWithIcon = []
                 for (const post of fetchedPosts) {
+                        const post_id = post.post_id
+                        const response3 = await fetch(urlBase + "place/getPlaceByPostId", {
+                            method: "PATCH",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(post_id)
+                        });
+
+                        if (!response3.ok) {
+                            throw new Error(`HTTP error! status: ${response3.status}`);
+                        }
+                        let postMentionedPlace;
+                        try {
+                            postMentionedPlace = await response3.json();
+                        } catch (error) {
+                            console.error('Error parsing JSON getPlace:', error);
+                        }
+
                         const currentUsername = await Auth.getUsernameById(post.account_id);
                         const img_url = await PostCard.getAvatarProfileById(post.account_id);           
                         let alreadyLike = await fetch(urlBase+"account/CHECK_LIKE_POST",{
@@ -94,7 +111,7 @@ const GroupPostCard = ({groupIdParm}) => {
                                 role = 0;
                             }
                         }
-                        fetchedPostWithIcon.push({post,like:alreadyLikeBool, likeProfile, username: currentUsername, img_url, role})
+                        fetchedPostWithIcon.push({post,like:alreadyLikeBool, likeProfile, username: currentUsername, img_url, role, postMentionedPlace})
                 }
                 setPosts(fetchedPostWithIcon);
         }else {
@@ -115,6 +132,9 @@ const GroupPostCard = ({groupIdParm}) => {
         fetchData();
     }, [displayComments, defaultEmail]);
 
+    const handleClickContainerPlace = (placeIdParm) => {
+      navigate(`/place/${placeIdParm}`);
+    }
 
     const handleCommentButton = (post_id) => {
         if(!displayComments) {
@@ -212,12 +232,23 @@ const GroupPostCard = ({groupIdParm}) => {
                 <div className={styles.username}>
                   <h3 className={styles.usernameH3}>{pst.username}</h3>
                 </div>
+                {pst.postMentionedPlace ?
+                    <div className={styles.mentioned}>
+                        <p>Mentioned{' '}
+                            <span className={`${styles.highlight} ${styles.word}`} onClick={() => handleClickContainerPlace(pst.postMentionedPlace.place_id)}>{pst.postMentionedPlace.placeName} </span> 
+                            {' '}from{' '}
+                            <span className={`${styles.highlight} ${styles.word}`}>{pst.postMentionedPlace.county}</span>
+                        </p>
+                    </div>
+                    :
+                    null
+                }
                 {(pst.post.account_id === currentUserId || pst.role < currentUserRoleNumber) && (
                   <button
                     className={styles.deleteButton}
                     onClick={() => handleDeletePost(pst.post.post_id)}
                   >
-                    Delete
+                    Delete Post
                   </button>
                 )}
               </div>

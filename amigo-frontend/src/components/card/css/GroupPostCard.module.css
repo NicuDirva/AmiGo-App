@@ -23,6 +23,10 @@
   margin-right: 10px;
 }
 
+.mentioned {
+  margin-left: 10px;
+}
+
 .avatarImg {
   width: 60px;
   height: 60px;
@@ -113,3 +117,31 @@
 p {
   margin: 0;
 }
+
+.highlight {
+  font-weight: bold;
+}
+
+.word {
+  margin-right: 5px; /* Adăugați spațiu între cuvinte */
+}
+
+.recommandationPlace {
+  margin: 20px 0px 20px 13px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  text-align: center;
+}
+
+.placeDetails {
+  font-size: 18px;
+  color: #333;
+}
+
+.highlight {
+  font-weight: bold;
+  color: #800080; /* Purple color */
+}
+

@@ -1,0 +1,70 @@
+.galleryContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+.parentContainer {
+    margin-top: 100px;
+}
+
+.postCard {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    width: calc(25% - 20px);
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+}
+
+.middleRow img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.contentRow {
+    margin-top: 10px;
+    width: 100%;
+    text-align: center;
+}
+
+.postContent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.postContent p {
+    margin: 0;
+}
+
+.noImage .postContent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+}
+
+.topContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    background-color: #f0f0f0;
+    margin-bottom: 20px;
+}
+
+.topContainer h1 {
+    color: purple;
+    font-size: 1.5em;
+    text-align: center;
+}
+
+.highlight {
+    color: purple;
+}
