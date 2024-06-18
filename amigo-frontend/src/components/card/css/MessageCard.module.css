@@ -5,15 +5,17 @@
     flex-direction: column;
     align-items: center;
     gap: 20px;
-    margin-top: 80px;
+    margin-top: 70px;
+    padding: 0px 20px;
   }
   
   .topRow {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 15px;
-    border-bottom: solid;
+    margin: 10px;
+    margin-bottom: 0px;
+
   }
   
   .topAvatar {
@@ -43,8 +45,10 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    max-height: 70vh; /* Ajustați înălțimea maximă după preferințe */
+    max-height: 40vh; /* Ajustați înălțimea maximă după preferințe */
     overflow-y: auto;
+    border: 1px solid #800080; /* Border fin de culoarea mov */
+    border-radius: 5px; /* Optional: colțuri ușor rotunjite */
   }
   
   .message {
@@ -52,6 +56,8 @@
     flex-direction: column;
     padding: 10px;
     margin-bottom: 10px;
+    margin-right: 10px;
+    margin-left: 10px;
     border-radius: 10px;
   }
   

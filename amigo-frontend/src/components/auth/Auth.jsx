@@ -252,9 +252,10 @@
                         <div className={styles.connect} onClick={action === "Sign In" ? handleClickSignIn : handleClickSignUp}>Connect</div>
                     </div>
                     {error && <div className={styles.error}>{error}</div>}
-                    {action === "Sign Up" ? <div></div> : 
-                        <div className={styles.forgotPassword}>Forgot password?<span>Click Here!</span></div>
-                    }
+
+                    {/* {action === "Sign Up" ? <div></div> : 
+                        <div className={styles.forgotPassword}>Forgot password?{ }<span>Click Here!</span></div>
+                    } */}
                     <div className={styles.submitContainer}>
                         <div className={action === "Sign In" ? styles.submitGray : styles.submit} onClick={() => { handleCleanData(); setAction("Sign Up"); }}>Sign Up</div>
                         <div className={action === "Sign Up" ? styles.submitGray : styles.submit} onClick={() => { handleCleanData(); setAction("Sign In"); }}>Sign In</div>

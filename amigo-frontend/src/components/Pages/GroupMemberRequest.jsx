@@ -75,7 +75,7 @@ const GroupMemberRequest = () => {
             ) : (
                 <div>
                     <Navbar />
-                    <p>Nu esti conectat!</p>
+                    <p>You are not connected!</p>
                 </div>
             )}
         </div>

@@ -530,7 +530,6 @@ const Profile = () => {
               )}
               {action === 'editProfile' && (
                 <div className={styles.actionButtons}>
-                  <img src={saveIcon} className={styles.saveIcon} onClick={() => handleSaveChange()} />
                   <img src={UnsendFriendRequestIcon} className={styles.settingsIcon} onClick={() => handleSaveChange()} />
                 </div>
               )}
@@ -597,21 +596,28 @@ const Profile = () => {
                     ) : (
                       <div className={styles.friendOption} onClick={() => handleSendRequest()}>
                         <img src={acceptFriendIcon} alt='accept-friend' />
-                        <p>Add Friend</p>
+                        <p>Add</p>
                       </div>
                     )}
                   </>
                 )}
               </>
             )}
-            <div className={styles.friendOption} onClick={() => handleAccountFriends(accountId)}>
-              <img src={friendsIconProfile} alt='friends' />
-              <p>Friends</p>
-            </div>
-            <div className={styles.friendOption} onClick={() => handleAccountGroups(accountId)}>
-              <img src={groupsIconProfile} alt='groups' />
-              <p>Groups</p>
-            </div>
+            {
+              access==='public' || friendStatus?(
+              <div className={styles.friendOption}>
+                <div className={styles.friendOption} onClick={() => handleAccountFriends(accountId)}>
+                  <img src={friendsIconProfile} alt='friends' />
+                  <p>Friends</p>
+                </div>
+                <div className={styles.friendOption} onClick={() => handleAccountGroups(accountId)}>
+                  <img src={groupsIconProfile} alt='groups' />
+                  <p>Groups</p>
+                </div>
+              </div>)
+              :
+              null
+            }
             <div className={styles.friendOption} onClick={() => handleSentMessage(accountId)}>
               <img src={messageIconProfile} alt='message' />
               <p>Send message</p>
@@ -622,7 +628,7 @@ const Profile = () => {
       ) : (
         <div>
           <Navbar />
-          <p>You are not logged in!</p>
+          <p>You are not connected!</p>
         </div>
       )}
     </div>

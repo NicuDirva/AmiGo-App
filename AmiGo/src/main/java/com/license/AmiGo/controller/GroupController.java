@@ -2,7 +2,6 @@ package com.license.AmiGo.controller;
 
 import com.license.AmiGo.model.Account;
 import com.license.AmiGo.model.Group;
-import com.license.AmiGo.model.Profile;
 import com.license.AmiGo.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -139,8 +138,12 @@ public class GroupController {
         return groupService.getCommonMembersGroupByAccountId(account_id);
     }
 
-    @PostMapping("/editGroup")
+    @PatchMapping("/editGroup")
     public void editGroup(@RequestBody Group group) {
         groupService.editGroup(group);
+    }
+    @PatchMapping("/countPostInGroup")
+    public List<Long> countPostInGroup(@RequestBody Long group_id) {
+        return groupService.countPostInGroup(group_id);
     }
 }

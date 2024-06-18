@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useGlobalState } from '../state';
 import Auth from '../auth/Auth';
 import Profile from '../Pages/Profile';
-import './css/PostCard.css';
 import likeIcon from '../Assets/heart_7469375.png'
 import dislikeIcon from '../Assets/broken-heart_9195088.png'
 import commentIcon from '../Assets/chat_4663336.png';
@@ -136,7 +135,7 @@ const SinglePostCard = () => {
                 let alreadyLike = await fetch(urlBase+"account/CHECK_LIKE_POST",{
                     method:"PATCH",
                     headers:{"Content-Type":"application/json"}, 
-                    body:JSON.stringify({post_id:crtPost.post_id, account_id:account_id, postMentionedPlace})
+                    body:JSON.stringify({post_id:crtPost.post_id, account_id:account_id})
                 });
                     
                 if (!alreadyLike.ok) {
@@ -302,7 +301,7 @@ const SinglePostCard = () => {
                         )}
                     </div>
                     <div className={styles.middleRow}>
-                        {currentPostWithData.crtPost.urlImgPost && <img src={currentPostWithData.crtPost.urlImgPost} alt="Post" />}
+                        {currentPostWithData.crtPost.urlImgPost && <img className={styles.postImage} src={currentPostWithData.crtPost.urlImgPost} alt="Post" />}
                     </div>
                     <div className={styles.contentRow}>
                         <div className={styles.postContent}>
@@ -322,9 +321,6 @@ const SinglePostCard = () => {
                             <img src={commentIcon} alt='Comment' onClick={() => handleCommentButton(currentPostWithData.crtPost.post_id)} />
                         </div>
                     </div>
-                    <div className={styles.postDate}>
-                        {currentPostWithData.crtPost.post_date_created}
-                    </div>
                     {showLikesModal && currentPostWithData.crtPost.post_id === showLikePost && (
                         <div className={styles.likesModal}>
                             {currentPostWithData.likeProfile.map((profile, index) => (
@@ -335,13 +331,16 @@ const SinglePostCard = () => {
                             ))}
                         </div>
                     )}
+                    <div className={styles.postDate}>
+                        {currentPostWithData.crtPost.post_date_created}
+                    </div>
                     <CommentForm post_id={currentPostWithData.crtPost.post_id} userAvatar={avatarUrl} onComment={handleCommentFetch}/>
                     {displayComments && currentPostWithData.crtPost.post_id === showCommentPostId ? <CommentCard.CommentCard post_id={currentPostWithData.crtPost.post_id} /> : <div></div>}
                 </div>
             ) : friend ? (
                 <div>
                     <Navbar />
-                    No posts to display
+                    <p>You are not connected!</p>
                 </div>
             ) : (
                 <div>

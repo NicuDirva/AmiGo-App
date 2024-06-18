@@ -21,24 +21,26 @@ const PlacePage = () => {
 
     useEffect(() => {
         fetchData();
-    })
+    }, [])
     return (
         <div>
             {defaultEmail?
                 <div className={styles.parentContainer}>
                     <Navbar/>
                     <div className={styles.topContainer}>
-                        {currentPlace?
-                            <h1 className={styles.highlight}>
-                                <span>{currentPlace.placeName},</span> 
-                                {' County: '}
-                                <span>{currentPlace.county},</span>
-                                {' Check-ins: '}
-                                <span>{currentPlace.mentionsNumber}</span>
-                            </h1>
-                        :
+                    {currentPlace ?
+                        <h1 className={styles.highlight}>
+                            {' Place:'}
+                            <span className={styles.dynamicValue}>{currentPlace.placeName}</span> 
+                            {' County:'}
+                            <span className={styles.dynamicValue}>{currentPlace.county}</span>
+                            {' Check-ins:'}
+                            <span className={styles.dynamicValue}>{currentPlace.mentionsNumber}</span>
+                        </h1>
+                    :
                         null
-                        }
+                    }
+
                     </div>
                     <div className={styles.galleryContainer}>
                     {currentPosts ? currentPosts.map((post, index) => (

@@ -151,7 +151,7 @@ const MembershipPage = () => {
             ) : (
                 <div>
                     <Navbar />
-                    <p>You are not logged in!</p>
+                    <p>You are not connected!</p>
                 </div>
             )}
         </div>

@@ -77,11 +77,6 @@ const PostCard = ({usernameParm}) => {
                     <div className={styles.middleRow}>
                         {post.urlImgPost ? <img src={post.urlImgPost} alt="Post" /> : <div className={styles.noImage}></div>}
                     </div>
-                    <div className={styles.contentRow}>
-                        <div className={styles.postContent}>
-                            <p>{post.contentPost}</p>
-                        </div>
-                    </div>
                 </div>
             )) :
                 friend ?
@@ -91,6 +86,7 @@ const PostCard = ({usernameParm}) => {
             }
         </div>
     );
+    
 };
 
 const getAllPost = async (account_id) => {

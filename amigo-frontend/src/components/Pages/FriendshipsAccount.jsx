@@ -76,7 +76,7 @@ const FriendshipsAccount = () => {
                     </div>
                 </div>
                 {searchAccountFriends.length === 0 ? (
-                    <p>No friends found.</p>
+                    <p className={styles.paragrafNoFriend}>No friends found.</p>
                 ) : (
                     <div>
                     {searchAccountFriends.map(account => (
@@ -95,7 +95,7 @@ const FriendshipsAccount = () => {
         :
         <div>
             <Navbar/>
-            You are not connected!
+            <p>You are not connected!</p>
         </div>
         
         }

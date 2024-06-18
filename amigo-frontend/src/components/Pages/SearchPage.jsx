@@ -21,7 +21,7 @@ const SearchPage = () => {
         :
         <div>
           <Navbar/>
-          Nu esti conectat la cont
+          <p>You are not connected!</p>
         </div>
         }
     </div>

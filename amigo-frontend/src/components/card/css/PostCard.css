@@ -82,3 +82,12 @@
 p {
     margin: 0;
 }
+
+.postImage {
+    width: 100%;
+    max-width: 500px; /* sau orice dimensiune dorită */
+    height: auto; /* păstrează aspectul imaginii */
+    object-fit: cover; /* opțional: pentru a acoperi complet spațiul fără a distorsiona imaginea */
+    border: 2px solid #ccc; /* border de 2px cu culoarea #ccc */
+    border-radius: 8px; /* colțuri rotunjite pentru un aspect mai plăcut */
+}

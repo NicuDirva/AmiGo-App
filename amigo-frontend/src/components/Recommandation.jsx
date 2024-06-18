@@ -3,7 +3,10 @@ import Auth from './auth/Auth';
 import Profile from './Pages/Profile';
 import { useGlobalState } from './state';
 import { useNavigate } from 'react-router-dom';
-import './css/Recommandation.css';
+import styles from './css/Recommandation.module.css';
+import ageIcon from './Assets/age.png'
+import locationIcon from './Assets/location.png'
+import groupIcon from './Assets/group.png'
 
 const urlBase = "http://localhost:8080/";
 
@@ -34,7 +37,15 @@ const Recommandation = () => {
             const isSentRequestAlready = checkIfIdIsInArray(member.account_id, currentAccountSentRequest);
             const profile = await Profile.getProfileById(member.account_id);
             const dfAge = areDatesWithinFiveYears(profile.dob, currentProfile.dob);
-            if ((dfAge || (profile.location === currentProfile.location && profile.location !== "No location selected"))
+            const isSameLocation = profile.location === currentProfile.location && profile.location !== "No location selected";
+
+            const matchCriteria = {
+                age: dfAge,
+                location: isSameLocation,
+                group: false // Assume no group match by default
+            };
+
+            if ((dfAge || isSameLocation)
                 && !isFriendship && !isSentRequestAlready && !seenAccountIds.has(member.account_id) && member.account_id !== currentId) {
                 seenAccountIds.add(member.account_id);
                 const receiveRequest = checkIfIdIsInArray(member.account_id, friendRequestReceived);
@@ -43,6 +54,7 @@ const Recommandation = () => {
                     avatar: profile.img_url,
                     username: member.username,
                     friendRequestReceive: receiveRequest,
+                    matchCriteria
                 };
                 accountsWithProfile.push(obj);
             }
@@ -54,19 +66,38 @@ const Recommandation = () => {
             const isFriendship = checkIfIdIsInArray(member.account_id, currentAccountFriendships);
             const isSentRequestAlready = checkIfIdIsInArray(member.account_id, currentAccountSentRequest);
             const profile = await Profile.getProfileById(member.account_id);
-            if (!isFriendship && !isSentRequestAlready && !seenAccountIds.has(member.account_id) && member.account_id !== currentId) {
-                seenAccountIds.add(member.account_id);
-                const receiveRequest = checkIfIdIsInArray(member.account_id, friendRequestReceived);
-                const obj = {
-                    account_id: profile.account_id,
-                    avatar: profile.img_url,
-                    username: member.username,
-                    friendRequestReceive: receiveRequest,
-                };
-                accountsWithProfile.push(obj);
-                console.log(obj);
+        
+            const matchCriteria = {
+                age: areDatesWithinFiveYears(profile.dob, currentProfile.dob),
+                location: profile.location === currentProfile.location && profile.location !== "No location selected",
+                group: true
+            };
+        
+            if (!isFriendship && !isSentRequestAlready) {
+                if (seenAccountIds.has(member.account_id)) {
+                    // If account is already in seenAccountIds, update the group criteria
+                    accountsWithProfile.forEach(account => {
+                        if (account.account_id === member.account_id) {
+                            account.matchCriteria.group = true;
+                        }
+                    });
+                } else {
+                    // Add new account to the list
+                    seenAccountIds.add(member.account_id);
+                    const receiveRequest = checkIfIdIsInArray(member.account_id, friendRequestReceived);
+                    const obj = {
+                        account_id: profile.account_id,
+                        avatar: profile.img_url,
+                        username: member.username,
+                        friendRequestReceive: receiveRequest,
+                        matchCriteria
+                    };
+                    accountsWithProfile.push(obj);
+                    console.log(obj);
+                }
             }
         }
+        
 
         // Shuffle the array and select up to 5 random accounts
         const shuffledAccounts = shuffleArray(accountsWithProfile);
@@ -120,27 +151,31 @@ const Recommandation = () => {
 
     const handleClickContainer = (usernameParm) => {
         navigate(`/profile/${usernameParm}`);
-    }
+    };
 
     return (
         <div>
             {defaultEmail ? (
-                <div className="recommendation-container">
-                    <div className='MaybeYouKnowContainer'>
-                        <h2 className="recommendation-title">Maybe you know</h2>
-                    </div>
+                <div className={styles.recommendation_container}>
                     {memberRecommand ? memberRecommand.map(member => (
-                        <div key={member.account_id} className="recommendation-item">
-                            <img src={member.avatar} alt={member.username} onClick={() => handleClickContainer(member.username)} />
-                            <h3>{member.username}</h3>
-                            <div className="action-buttons">
+                        <div key={member.account_id} className={styles.recommendation_item}>
+                            <div className={styles.profile_section}>
+                                <img src={member.avatar} alt={member.username} className={styles.avatarProfile} onClick={() => handleClickContainer(member.username)} />
+                                <div className={styles.match_icons}>
+                                    {member.matchCriteria.age && <img src={ageIcon} alt="age match" className={styles.match_icon} />}
+                                    {member.matchCriteria.location && <img src={locationIcon} alt="location match" className={styles.match_icon} />}
+                                    {member.matchCriteria.group && <img src={groupIcon} alt="group match" className={styles.match_icon} />}
+                                </div>
+                            </div>
+                            <h3 className={styles.username}>{member.username}</h3>
+                            <div className={styles.action_buttons}>
                                 {member.friendRequestReceive ? (
                                     <>
-                                        <div className="action-button" onClick={() => { handleAcceptRequest(member.account_id, accountIdParm); fetchData() }}>Accept</div>
-                                        <div className="action-button" onClick={() => { handleIgnoreRequest(member.account_id, accountIdParm); fetchData() }}>Ignore</div>
+                                        <div className={styles.action_button} onClick={() => { handleAcceptRequest(member.account_id, accountIdParm); fetchData() }}>Accept</div>
+                                        <div className={styles.action_button} onClick={() => { handleIgnoreRequest(member.account_id, accountIdParm); fetchData() }}>Ignore</div>
                                     </>
                                 ) : (
-                                    <div className="action-button" onClick={() => { handleSendRequest(accountIdParm, member.account_id); fetchData() }}>Send Friend Request</div>
+                                    <div className={styles.action_button} onClick={() => { handleSendRequest(accountIdParm, member.account_id); fetchData() }}>Add</div>
                                 )}
                             </div>
                         </div>
@@ -151,6 +186,7 @@ const Recommandation = () => {
             )}
         </div>
     );
+    
 };
 
 const handleSendRequest = async (senderId, receiverId) => {

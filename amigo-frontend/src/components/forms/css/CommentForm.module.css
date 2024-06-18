@@ -1,0 +1,53 @@
+.commentFormContainer {
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  margin: 10px 0;
+}
+
+.avatar {
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.avatar img {
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - 70px);
+}
+
+.textarea {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  resize: none;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+.textarea::placeholder {
+  color: #888;
+}
+
+.textarea:focus {
+  border-color: #26005E;
+  outline: none;
+}
+
+.submitText {
+  color: #330066;
+  cursor: not-allowed;
+  margin-top: 10px;
+}
+
+.submitText.enabled {
+  color: #26005E;
+  cursor: pointer;
+}

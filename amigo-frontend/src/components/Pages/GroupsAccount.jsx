@@ -62,7 +62,7 @@ const FriendshipsAccount = () => {
                     </div>
                 </div>
                 {searchAccountGroups.length === 0 ? (
-                    <p>No groups found.</p>
+                    <p className={styles.paragrafNoGroup}>No groups found.</p>
                 ) : (
                     <div>
                     {searchAccountGroups.map(group => (
@@ -84,7 +84,7 @@ const FriendshipsAccount = () => {
         :
         <div>
             <Navbar/>
-            You are not connected!
+            <p>You are not connected!</p>
         </div>
         
         }

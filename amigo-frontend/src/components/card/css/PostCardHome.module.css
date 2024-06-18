@@ -1,15 +1,30 @@
 .postContainer {
-  width: 63%;
-  margin: 0 auto;
+  margin: 0;
+  width: 100%; /* Ensure the container takes full width */
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
 }
 
 .postCard {
   border: 1px solid #ccc;
   padding: 20px;
   margin-bottom: 20px;
+  margin-left: 340px;
   border-radius: 5px;
   position: relative;
-  margin-left: 63px;
+  /* width: calc(100% - 40px); Adjust width to account for padding */
+  width: 60%;
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+.recommandationPlace {
+  margin: 0px 0px 20px 0; /* Adjust margins as needed */
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  text-align: center;
+  width: 57%;
+  margin-left: 340px;
 }
 
 .topRow {
@@ -23,27 +38,14 @@
   margin-right: 10px;
 }
 
-.starIcon {
-  display: flex;
-  align-items: center;
-  margin-right: 15px;
+.mentioned {
+  margin-left: 10px;
 }
 
 .avatarImg {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-}
-
-.startImg {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-}
-
-.activeMemberText {
-  color: #800080; /* Purple color */
-  margin-left: 5px;
 }
 
 .username {
@@ -120,30 +122,15 @@
   margin-bottom: 10px;
 }
 
+.avatarProfile {
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+  border-radius: 50%;
+}
+
 p {
   margin: 0;
-}
-
-.highlight {
-  font-weight: bold;
-}
-
-.word {
-  margin-right: 5px; /* Adăugați spațiu între cuvinte */
-}
-
-.recommandationPlace {
-  margin: 20px 0px 20px 13px;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  background-color: #f9f9f9;
-  text-align: center;
-}
-
-.placeDetails {
-  font-size: 18px;
-  color: #333;
 }
 
 .highlight {
@@ -151,13 +138,17 @@ p {
   color: #800080; /* Purple color */
 }
 
+.word {
+  margin-right: 5px; /* Add space between words */
+}
+
 .postImage {
-  width: 80%;
-  max-width: 800px; /* sau orice dimensiune dorită */
-  height: 500px !important; /* păstrează aspectul imaginii */
-  object-fit: cover; /* opțional: pentru a acoperi complet spațiul fără a distorsiona imaginea */
-  border: 2px solid #ccc; /* border de 2px cu culoarea #ccc */
-  border-radius: 8px; /* colțuri rotunjite pentru un aspect mai plăcut */
+  width: 100%;
+  max-width: 700px; /* or any desired size */
+  height: 500px !important; /* maintain aspect ratio */
+  object-fit: cover; /* optional: to cover the space without distorting the image */
+  border: 2px solid #ccc; /* 2px border with #ccc color */
+  border-radius: 8px; /* rounded corners for a nicer look */
 }
 
 .likesModal {
@@ -165,11 +156,4 @@ p {
   border-radius: 5px;
   padding: 10px;
   margin: 10px 0;
-}
-
-.avatarProfile {
-  width: 50px;
-  height: 50px;
-  margin-right: 10px;
-  border-radius: 50%;
 }

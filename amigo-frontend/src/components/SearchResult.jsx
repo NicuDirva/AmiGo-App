@@ -15,6 +15,7 @@ const SearchResult = ({ searchText }) => {
   const [ defaultEmail] = useGlobalState("email");
   const [ currentUserId, setCurrentUserId] = useState(null);
   const navigate = useNavigate();
+  const [toShortText, setToShortText] = useState(false);
 
   const handleClickContainer = (usernameParm) => {
     navigate(`/profile/${usernameParm}`);
@@ -38,7 +39,13 @@ const SearchResult = ({ searchText }) => {
         searchGroups();
       }
     }
-  }, [searchText, showAccounts, showPlaces]);
+    if(searchText.length < 3) {
+      setToShortText(true);
+    }
+    else {
+      setToShortText(false);
+    }
+  }, [searchText, showAccounts, showPlaces, toShortText]);
 
   const searchAccounts = async () => {
     try {
@@ -110,77 +117,84 @@ const SearchResult = ({ searchText }) => {
       <div className="toggle-buttons">
         <button className={showAccounts ? 'active' : ''} onClick={() => { setShowAccounts(true); setShowPlaces(false); }}>Accounts</button>
         <button className={!showAccounts && !showPlaces ? 'active' : ''} onClick={() => { setShowAccounts(false); setShowPlaces(false); }}>Groups</button>
-        <button className={!showAccounts && showPlaces ? 'active' : ''} onClick={() => { setShowAccounts(false); setShowPlaces(true); }}>Places</button> {/* Adăugarea butonului pentru căutarea după locuri */}
+        <button className={!showAccounts && showPlaces ? 'active' : ''} onClick={() => { setShowAccounts(false); setShowPlaces(true); }}>Places</button>
       </div>
-  {showAccounts ? (
-    <div>
-      <h2 className="search-category">Accounts</h2>
-      {searchAccountResults.length === 0 ? (
-        <p>No accounts found.</p>
-      ) : (
+      {toShortText ? (
         <div>
-          {searchAccountResults.map(account => (
-            <div className="search-result-item" key={account.account.account_id}>
-              <img className='avatar-profile' src={account.profile.img_url} alt='avatar' onClick={() => handleClickContainer(account.account.username)} />
-              <div>
-                <p className="username">{account.account.username}</p>
-                <p className="mutual-friends">Mutual friends: {account.commonFriend === 0 ? 0 : account.commonFriend}</p>
-              </div>
-            </div>
-          ))}
+          <span>The text entered is too short.</span>
         </div>
-      )}
-    </div>
-  ) : showPlaces ? (
-    <div>
-      <h2 className="search-category">Places</h2>
-      {searchPlaceResults.length === 0 ? (
-        <p>No places found.</p>
       ) : (
-        <div>
-          {searchPlaceResults.map(postMentionedPlace => (
-            <div className="search-result-item" key={postMentionedPlace.place_id} onClick={() => handleClickContainerPlace(postMentionedPlace.place_id)}>
-              <div>
-              <p>
-                  <span className='highlight'>{postMentionedPlace.placeName},</span> 
-                  {'        '}County:{' '}
-                  <span className='highlight'>{postMentionedPlace.county},</span>
-                  {'        '}Visitors:{' '}
-                  <span className='highlight'>{postMentionedPlace.mentionsNumber}</span>
-              </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  
-  )
-  : (
-    <div>
-      <h2 className="search-category">Groups</h2>
-      {searchGroupResults.length === 0 ? (
-        <p>No groups found.</p>
-      ) : (
-        <div>
-          {searchGroupResults.map(group => (
-            <div className="search-result-item" key={group.group.group_id}>
-              <img className='avatar-profile' src={group.group.urlImg} alt='group-avatar' onClick={() => handleClickContainerGroup(group.group.group_id)} />
-              <div>
-                <p className="group-name">{group.group.name}</p>
-                <div className="group-details">
-                  <p className="group-info">Access: {group.group.access}</p>
-                  <p className="group-info">Members: {group.membershipCount}</p>
+        <>
+          {showAccounts ? (
+            <div>
+              <h2 className="search-category">Accounts</h2>
+              {searchAccountResults.length === 0 ? (
+                <p>No accounts found.</p>
+              ) : (
+                <div>
+                  {searchAccountResults.map(account => (
+                    <div className="search-result-item" key={account.account.account_id}>
+                      <img className='avatar-profile' src={account.profile.img_url} alt='avatar' onClick={() => handleClickContainer(account.account.username)} />
+                      <div>
+                        <p className="username">{account.account.username}</p>
+                        <p className="mutual-friends">Mutual friends: {account.commonFriend === 0 ? 0 : account.commonFriend}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </div>
+              )}
             </div>
-          ))}
-        </div>
+          ) : showPlaces ? (
+            <div>
+              <h2 className="search-category">Places</h2>
+              {searchPlaceResults.length === 0 ? (
+                <p>No places found.</p>
+              ) : (
+                <div>
+                  {searchPlaceResults.map(postMentionedPlace => (
+                    <div className="search-result-item" key={postMentionedPlace.place_id} onClick={() => handleClickContainerPlace(postMentionedPlace.place_id)}>
+                      <div>
+                        <p>
+                          <span className='highlight'>{postMentionedPlace.placeName},</span> 
+                          {'        '}County:{' '}
+                          <span className='highlight'>{postMentionedPlace.county},</span>
+                          {'        '}Visitors:{' '}
+                          <span className='highlight'>{postMentionedPlace.mentionsNumber}</span>
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div>
+              <h2 className="search-category">Groups</h2>
+              {searchGroupResults.length === 0 ? (
+                <p>No groups found.</p>
+              ) : (
+                <div>
+                  {searchGroupResults.map(group => (
+                    <div className="search-result-item" key={group.group.group_id}>
+                      <img className='avatar-profile' src={group.group.urlImg} alt='group-avatar' onClick={() => handleClickContainerGroup(group.group.group_id)} />
+                      <div>
+                        <p className="group-name">{group.group.name}</p>
+                        <div className="group-details">
+                          <p className="group-info">Access: {group.group.access}</p>
+                          <p className="group-info">Members: {group.membershipCount}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </>
       )}
     </div>
-  )}
-</div>
-);
+  );
+  
 };
 
 export default SearchResult;

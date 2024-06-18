@@ -2,9 +2,9 @@ package com.license.AmiGo.service;
 
 import com.license.AmiGo.model.Account;
 import com.license.AmiGo.model.Group;
-import com.license.AmiGo.model.Profile;
 
 import java.util.List;
+import java.util.Map;
 
 public interface GroupService {
     Group saveGroup(Group group);
@@ -31,4 +31,6 @@ public interface GroupService {
     List<Account> getMembersRequestByGroupId(long group_id);
     List<Account> getCommonMembersGroupByAccountId(long account_id);
     void editGroupCreator(Group group);
+
+    List<Long> countPostInGroup(long group_id);
 }

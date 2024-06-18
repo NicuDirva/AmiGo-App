@@ -28,15 +28,16 @@ const Home = () => {
       {defaultLoggin ?
         <div>
           <Navbar />
-          <h1>Home Page</h1>
           <Recommandation.Recommandation/>
-          <PostForm userAvatar={userAvatar}/>
-          <PostCardHome />
+          <div className='homeContainer'>
+            <PostForm userAvatar={userAvatar}/>
+            <PostCardHome />
+          </div>
         </div>
         :
         <div>
           <Navbar />
-          Nu esti conectat la cont
+          <p>You are not connected!</p>
         </div>
       }
     </div>

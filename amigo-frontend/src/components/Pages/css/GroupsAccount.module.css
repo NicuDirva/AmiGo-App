@@ -60,3 +60,8 @@
   .searchResultItem {
     margin-bottom: 20px;
   }
+
+  .paragrafNoGroup {
+    margin-left: 20px;
+    font-weight: bold;
+  }

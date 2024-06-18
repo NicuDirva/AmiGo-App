@@ -93,7 +93,7 @@
 .likeComment img {
     width: 30px;
     height: 30px;
-    margin-left: 10px;
+    margin-left: 0px;
 }
 
 .postDate {
@@ -125,3 +125,20 @@ p {
   .word {
     margin-right: 5px; /* Adăugați spațiu între cuvinte */
   }
+
+.postImage {
+    width: 70%;
+    max-width: 500px; /* sau orice dimensiune dorită */
+    height: 500px !important; /* păstrează aspectul imaginii */
+    object-fit: cover; /* opțional: pentru a acoperi complet spațiul fără a distorsiona imaginea */
+    border: 2px solid #ccc; /* border de 2px cu culoarea #ccc */
+    border-radius: 8px; /* colțuri rotunjite pentru un aspect mai plăcut */
+}
+
+.likesModal {
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+  }
+

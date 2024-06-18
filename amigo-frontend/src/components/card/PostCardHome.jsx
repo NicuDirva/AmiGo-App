@@ -9,7 +9,7 @@ import commentIcon from '../Assets/chat_4663336.png';
 import CommentCard from './CommentCard';
 import CommentForm from '../forms/CommentForm';
 import dislikeIcon from '../Assets/broken-heart_9195088.png';
-import styles from './css/GroupPostCard.module.css'
+import styles from './css/PostCardHome.module.css'
 import PlaceMention from '../PlaceMention';
 
 const urlBase = "http://localhost:8080/";
@@ -218,76 +218,125 @@ const PostCardHome = () => {
 
     return (
         <div className={styles.postContainer}>
-            <div className={styles.recommandationPlace}>
-            {selectedPlace && (
-                <div className={styles.placeDetails}>
-                <p>We recommend you to visit <span onClick={() => handleClickContainerPlace(selectedPlace.place_id)} className={styles.highlight}>{selectedPlace.placeName}</span> located in <span className={styles.highlight}>{selectedPlace.county}</span>. This place has been mentioned <span className={styles.highlight}>{selectedPlace.mentionsNumber}</span> times.</p>
+            {selectedPlace ? (
+                <div className={styles.recommandationPlace}>
+                    <div className={styles.placeDetails}>
+                        <p>
+                            We recommend you to visit{' '}
+                            <span
+                                onClick={() => handleClickContainerPlace(selectedPlace.place_id)}
+                                className={styles.highlight}
+                            >
+                                {selectedPlace.placeName}
+                            </span>{' '}
+                            located in{' '}
+                            <span className={styles.highlight}>{selectedPlace.county}</span>. This place has been mentioned{' '}
+                            <span className={styles.highlight}>{selectedPlace.mentionsNumber}</span> times.
+                        </p>
+                    </div>
                 </div>
-            )}
-            </div>
-            {posts ? posts.map((pst, index) => (
-                <div key={index} className={styles.postCard}>
-                    <div className={styles.topRow}>
-                        <div className={styles.avatar}>
-                            <img src={pst.img_url} alt="Avatar" className={styles.avatarImg} onClick={() => handleClickContainer(pst.username)} />
+            ) : null}
+    
+            {posts ? (
+                posts.map((pst, index) => (
+                    <div key={index} className={styles.postCard}>
+                        <div className={styles.topRow}>
+                            <div className={styles.avatar}>
+                                <img
+                                    src={pst.img_url}
+                                    alt="Avatar"
+                                    className={styles.avatarImg}
+                                    onClick={() => handleClickContainer(pst.username)}
+                                />
+                            </div>
+                            <div className={styles.username}>
+                                <h3 className={styles.usernameH3}>{pst.username}</h3>
+                            </div>
+                            {pst.postMentionedPlace ? (
+                                <div className={styles.mentioned}>
+                                    <p>
+                                        Mentioned{' '}
+                                        <span
+                                            className={`${styles.highlight} ${styles.word}`}
+                                            onClick={() => handleClickContainerPlace(pst.postMentionedPlace.place_id)}
+                                        >
+                                            {pst.postMentionedPlace.placeName}
+                                        </span>{' '}
+                                        from{' '}
+                                        <span className={`${styles.highlight} ${styles.word}`}>
+                                            {pst.postMentionedPlace.county}
+                                        </span>
+                                    </p>
+                                </div>
+                            ) : null}
                         </div>
-                        <div className={styles.username}>
-                            <h3 className={styles.usernameH3}>{pst.username}</h3>
+                        <div className={styles.middleRow}>
+                            {pst.post.urlImgPost && (
+                                <img src={pst.post.urlImgPost} className={styles.postImage} alt="Post" />
+                            )}
                         </div>
-                        {pst.postMentionedPlace ?
-                            <div className={styles.mentioned}>
-                                <p>Mentioned{' '}
-                                    <span className={`${styles.highlight} ${styles.word}`} onClick={() => handleClickContainerPlace(pst.postMentionedPlace.place_id)}>{pst.postMentionedPlace.placeName}</span> 
-                                    {' '}from{' '}
-                                    <span className={`${styles.highlight} ${styles.word}`}>{pst.postMentionedPlace.county}</span>
+                        <div className={styles.contentRow}>
+                            <div className={styles.postContent}>
+                                <p className={styles.postContentP}>{pst.post.contentPost}</p>
+                            </div>
+                        </div>
+                        <div className={styles.bottomRow}>
+                            <div className={styles.likeComment}>
+                                <img
+                                    className={styles.likeCommentImg}
+                                    src={pst.like ? likeIcon : dislikeIcon}
+                                    alt="Like"
+                                    onClick={() => handleLikeButton(pst.post.post_id, pst.post.account_id)}
+                                />
+                                <p onClick={() => handleDisplayLike(pst.post.post_id)}>
+                                    {pst.likeProfile ? pst.likeProfile.length : 0} like
                                 </p>
                             </div>
-                            :
-                            null
-                        }
-
-                    </div>
-                    <div className={styles.middleRow}>
-                        {pst.post.urlImgPost && <img src={pst.post.urlImgPost} className={styles.middleRowImg} alt="Post" />}
-                    </div>
-                    <div className={styles.contentRow}>
-                        <div className={styles.postContent}>
-                            <p className={styles.postContentP}>{pst.post.contentPost}</p>
-                        </div>
-                    </div>
-                    <div className={styles.bottomRow}>
-                        <div className={styles.likeComment}>
-                            <img className={styles.likeCommentImg} src={pst.like ? likeIcon : dislikeIcon} alt='Like' onClick={() => handleLikeButton(pst.post.post_id, pst.post.account_id)} />
-                            <p onClick={() => handleDisplayLike(pst.post.post_id)}>{pst.likeProfile ? pst.likeProfile.length : 0} like</p>
-                        </div>
-                        <div className={styles.likeComment}>
-                            <img className={styles.likeCommentImg} src={commentIcon} alt='Comment' onClick={() => handleCommentButton(pst.post.post_id)} />
-                        </div>
-                    </div>
-                    <div>
-                    <p className={styles.postDate}>{pst.post.post_date_created}</p>
-                    </div>
-                    {
-                        showLikesModal && pst.post.post_id === showLikePost && (
-                            <div className="likes-modal">
-                                {pst.likeProfile.map((profile, index) => {
-                                    return (
-                                        <div className={styles.searchResultItem} key={index}>
-                                            <img className={styles.avatarProfile} src={profile.img_url} alt={profile.username} onClick={() => handleClickContainer(profile.username)} />
-                                            <p>{profile.username}</p>
-                                        </div>
-                                    );
-                                })}
+                            <div className={styles.likeComment}>
+                                <img
+                                    className={styles.likeCommentImg}
+                                    src={commentIcon}
+                                    alt="Comment"
+                                    onClick={() => handleCommentButton(pst.post.post_id)}
+                                />
                             </div>
-                        )
-                    }
-                    <CommentForm post_id={pst.post.post_id} userAvatar={userAvatar} onComment={handleCommentFetch}/>
-                    {displayComments && pst.post.post_id === showCommentPostId ? <CommentCard.CommentCard post_id={pst.post.post_id} /> : <div></div>}
-                </div>
-            )) :
-                <div>You are not connected!</div>}
+                        </div>
+                        {showLikesModal && pst.post.post_id === showLikePost && (
+                            <div className={styles.likesModal}>
+                                {pst.likeProfile.map((profile, index) => (
+                                    <div className={styles.searchResultItem} key={index}>
+                                        <img
+                                            className={styles.avatarProfile}
+                                            src={profile.img_url}
+                                            alt={profile.username}
+                                            onClick={() => handleClickContainer(profile.username)}
+                                        />
+                                        <p>{profile.username}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        <div>
+                            <p className={styles.postDate}>{pst.post.post_date_created}</p>
+                        </div>
+                        <CommentForm
+                            post_id={pst.post.post_id}
+                            userAvatar={userAvatar}
+                            onComment={handleCommentFetch}
+                        />
+                        {displayComments && pst.post.post_id === showCommentPostId ? (
+                            <CommentCard.CommentCard post_id={pst.post.post_id} />
+                        ) : (
+                            <div></div>
+                        )}
+                    </div>
+                ))
+            ) : (
+                <div>You are not connected!</div>
+            )}
         </div>
     );
+    
 }
 
 export default PostCardHome;

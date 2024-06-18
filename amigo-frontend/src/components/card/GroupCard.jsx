@@ -239,7 +239,7 @@ const GroupCard = () => {
 
     const handleCancelSave = () => {
         setEditMode(false);
-        setNewGroupAccess('');
+        setNewGroupAccess(groupAccess);
         setNewGroupImage('');
         setNewGroupName('');
         fetchData();
@@ -267,7 +267,7 @@ const GroupCard = () => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            setNewGroupAccess('');
+            setNewGroupAccess(groupAccess);
             setNewGroupImage('');
             setNewGroupName('');
             fetchData();
@@ -278,111 +278,120 @@ const GroupCard = () => {
 
     return (
         <div>
-            <Navbar />
-            {group && (
-                <div className={styles.groupInfo}>
-                    <img className={styles.groupImage} src={group.urlImg} alt={group.name} />
-                    <div className={styles.groupContainer}>
-                        <div className={styles.groupName}>
-                            <h1>{group.name}</h1>
-                        </div>
-                    </div>
-    
-                    <div className={styles.buttonContainer}>
-                        {(groupAccess === 'public' || isGroupMember) && (
-                            <div>
-                                <img className={styles.iconImage} onClick={() => handleGroupMember(group.group_id)} src={membersGroupIcon} alt="Members" />
-                                <p>{membershipCount} members</p>
+            {defaultEmail?
+                <div>
+                    <Navbar />
+                    {group && (
+                        <div className={styles.groupInfo}>
+                            <img className={styles.groupImage} src={group.urlImg} alt={group.name} />
+                            <div className={styles.groupContainer}>
+                                <div className={styles.groupName}>
+                                    <h1>{group.name}</h1>
+                                </div>
                             </div>
-                        )}
-                        {(isOwner || isAdmin) && (
-                            <div>
-                                <img className={styles.iconImage} onClick={() => handleGroupMemberRequest(groupIdParm)} src={membersRequestGroupIcon} alt="Member Requests" />
-                                <p>Request members</p>
-                            </div>
-                        )}
-                        {isOwner && (
-                            <div className={styles.editGroupButton}>
-                                <img onClick={handleEditGroup} className={styles.iconImage} src={editGroupIcon} alt="Edit Group" />
-                                <p>{editMode ? 'Cancel' : 'Edit Group'}</p>
-                            </div>
-                        )}
+            
+                            <div className={styles.buttonContainer}>
+                                {(groupAccess === 'public' || isGroupMember) && (
+                                    <div>
+                                        <img className={styles.iconImage} onClick={() => handleGroupMember(group.group_id)} src={membersGroupIcon} alt="Members" />
+                                        <p>{membershipCount} members</p>
+                                    </div>
+                                )}
+                                {(isOwner || isAdmin) && groupAccess === 'private' && (
+                                    <div>
+                                        <img className={styles.iconImage} onClick={() => handleGroupMemberRequest(groupIdParm)} src={membersRequestGroupIcon} alt="Member Requests" />
+                                        <p>Requested members</p>
+                                    </div>
+                                )}
+                                {isOwner && (
+                                    <div className={styles.editGroupButton}>
+                                        <img onClick={handleEditGroup} className={styles.iconImage} src={editGroupIcon} alt="Edit Group" />
+                                        <p>{editMode ? 'Cancel' : 'Edit Group'}</p>
+                                    </div>
+                                )}
 
-                        <div className={styles.joinButtonContainer}>
-                        {isGroupMember ? (
-                            isOwner ? (
-                                <div className={styles.exitGroupButton} onClick={handleDeleteJoin}>
-                                    <img className={styles.exitIcon} src={exitGroupIcon} alt="Exit Group" />
-                                    <p>You are the owner! Do you want to exit?</p>
+                                <div className={styles.joinButtonContainer}>
+                                {isGroupMember ? (
+                                    isOwner ? (
+                                        <div className={styles.exitGroupButton} onClick={handleDeleteJoin}>
+                                            <img className={styles.exitIcon} src={exitGroupIcon} alt="Exit Group" />
+                                            <p>You are the owner! Leave the group?</p>
+                                        </div>
+                                    ) : (
+                                        <div className={styles.exitGroupButton} onClick={handleDeleteJoin}>
+                                            <img className={styles.exitIcon} src={exitGroupIcon} alt="Exit Group" />
+                                            <p>Joined! Leave the group?</p>
+                                        </div>
+                                    )
+                                ) : sentRequest ? (
+                                    <button className={`${styles.groupButton} ${styles.exitButton}`} onClick={handleDeleteJoinRequest}>
+                                        Join request sent! Do you want to cancel?
+                                    </button>
+                                ) : groupAccess === "public" ? (
+                                    <div className={styles.joinGroupButton} onClick={handleJoin}>
+                                        <img className={styles.joinIcon} src={joinGroupIcon} alt="Join Group" />
+                                        <p>Join!</p>
+                                    </div>
+                                ) : (
+                                    <div className={styles.joinGroupButton} onClick={handleJoinRequest}>
+                                        <img className={styles.joinIcon} src={joinGroupIcon} alt="Join Request" />
+                                        <p>Join request!</p>
+                                    </div>
+                                    
+                                )}
                                 </div>
-                            ) : (
-                                <div className={styles.exitGroupButton} onClick={handleDeleteJoin}>
-                                    <img className={styles.exitIcon} src={exitGroupIcon} alt="Exit Group" />
-                                    <p>Joined! Do you want to exit?</p>
+                            </div>
+            
+                            {editMode && isOwner && (
+                                <div className={styles.editGroupFields}>
+                                    <input
+                                        type="text"
+                                        value={newGroupName}
+                                        onChange={(e) => setNewGroupName(e.target.value)}
+                                        placeholder="New Group Name"
+                                    />
+                                    <br />
+                                    <div className={styles.ChangeImgGroup}>
+                                        <label htmlFor="image">
+                                            <img className={styles.newImageIcon} src={newGroupImg} alt="New Group" />
+                                        </label>
+                                        <input
+                                            type="file"
+                                            id="image"
+                                            accept="image/*"
+                                            onChange={convertImgBase64}
+                                            required
+                                        />
+                                    </div>
+                                    <select
+                                        value={newGroupAccess}
+                                        onChange={(e) => setNewGroupAccess(e.target.value)}
+                                    >
+                                        <option value="public">Public</option>
+                                        <option value="private">Private</option>
+                                    </select>
+                                    <br />
+                                    <button className={styles.saveButton} onClick={() => handleSaveChanges()}>Save Changes</button>
+                                    <button className={styles.saveButton} onClick={() => handleCancelSave()}>Cancel</button>
                                 </div>
-                            )
-                        ) : sentRequest ? (
-                            <button className={`${styles.groupButton} ${styles.exitButton}`} onClick={handleDeleteJoinRequest}>
-                                Join request sent! Do you want to cancel?
-                            </button>
-                        ) : groupAccess === "public" ? (
-                            <div className={styles.joinGroupButton} onClick={handleJoin}>
-                                <img className={styles.joinIcon} src={joinGroupIcon} alt="Join Group" />
-                                <p>Join!</p>
-                            </div>
-                        ) : (
-                            <div className={styles.joinGroupButton} onClick={handleJoinRequest}>
-                                <img className={styles.joinIcon} src={joinGroupIcon} alt="Join Request" />
-                                <p>Send join request!</p>
-                            </div>
+                            )}
+            
                             
-                        )}
-                        </div>
-                    </div>
-    
-                    {editMode && isOwner && (
-                        <div className={styles.editGroupFields}>
-                            <input
-                                type="text"
-                                value={newGroupName}
-                                onChange={(e) => setNewGroupName(e.target.value)}
-                                placeholder="New Group Name"
-                            />
-                            <br />
-                            <div className={styles.ChangeImgGroup}>
-                                <label htmlFor="image">
-                                    <img className={styles.newImageIcon} src={newGroupImg} alt="New Group" />
-                                </label>
-                                <input
-                                    type="file"
-                                    id="image"
-                                    accept="image/*"
-                                    onChange={convertImgBase64}
-                                    required
-                                />
-                            </div>
-                            <select
-                                value={newGroupAccess}
-                                onChange={(e) => setNewGroupAccess(e.target.value)}
-                            >
-                                <option value="public">Public</option>
-                                <option value="private">Private</option>
-                            </select>
-                            <br />
-                            <button className={styles.saveButton} onClick={() => handleSaveChanges()}>Save Changes</button>
-                            <button className={styles.saveButton} onClick={() => handleCancelSave()}>Cancel</button>
-                        </div>
-                    )}
-    
-                    
-                    {(isOwner || isAdmin || isGroupMember) && (
-                        <div>
-                            <PostForm group_id={groupIdParm} userAvatar={userAvatar}/>
-                            <GroupPostCard groupIdParm={groupIdParm}/>
+                            {(isOwner || isAdmin || isGroupMember) && (
+                                <div>
+                                    <PostForm group_id={groupIdParm} userAvatar={userAvatar}/>
+                                    <GroupPostCard groupIdParm={groupIdParm}/>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
-            )}
+                :
+                <div>
+                    <Navbar/>
+                    <p>Nu esti conectat la cont</p>
+                </div>
+            }
         </div>
     );
     

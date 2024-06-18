@@ -10,6 +10,7 @@ import CommentForm from '../forms/CommentForm';
 import { useNavigate } from 'react-router-dom';
 import Group from '../Pages/Group';
 import PostCard from './PostCard';
+import activMemberIcon from '../Assets/star_9949711.png'
 
 const urlBase = "http://localhost:8080/";
 
@@ -37,7 +38,8 @@ const GroupPostCard = ({groupIdParm}) => {
             setCurrentUserId(currentId);
             const creatorStatus = await Group.checkCreatorGroup(currentId, groupIdParm);
             const adminStatus = await Group.checkAdminGroup(currentId, groupIdParm); // Verificați dacă utilizatorul este admin
-            
+            const membersPosts = await Group.countPostInGroup(groupIdParm);
+
             if (creatorStatus) {
                 setCurrentUserRoleNumber(2);
             }
@@ -47,6 +49,12 @@ const GroupPostCard = ({groupIdParm}) => {
                 let fetchedPostWithIcon = []
                 for (const post of fetchedPosts) {
                         const post_id = post.post_id
+                        let isActiveMember = false;
+                        for(const elem of membersPosts) {
+                          if(elem == post.account_id) {
+                            isActiveMember = true;
+                          }
+                        }
                         const response3 = await fetch(urlBase + "place/getPlaceByPostId", {
                             method: "PATCH",
                             headers: { "Content-Type": "application/json" },
@@ -111,9 +119,11 @@ const GroupPostCard = ({groupIdParm}) => {
                                 role = 0;
                             }
                         }
-                        fetchedPostWithIcon.push({post,like:alreadyLikeBool, likeProfile, username: currentUsername, img_url, role, postMentionedPlace})
+                        fetchedPostWithIcon.push({post, memberActive: isActiveMember ,like:alreadyLikeBool, likeProfile, username: currentUsername, img_url, role, postMentionedPlace})
                 }
+                fetchedPostWithIcon.sort((a, b) => new Date(b.post.post_date_created) - new Date(a.post.post_date_created));
                 setPosts(fetchedPostWithIcon);
+                console.log(fetchedPostWithIcon);
         }else {
                 setError('Error fetching posts');
             }
@@ -217,99 +227,112 @@ const GroupPostCard = ({groupIdParm}) => {
     }
 
     return (
-        <div className={styles.postContainer}>
-          {posts ? posts.map((pst, index) => (
-            <div key={index} className={styles.postCard}>
-              <div className={styles.topRow}>
-                <div className={styles.avatar}>
-                  <img
-                    src={pst.img_url}
-                    alt="Avatar"
-                    className={styles.avatarImg}
-                    onClick={() => handleClickContainer(pst.username)}
-                  />
-                </div>
-                <div className={styles.username}>
-                  <h3 className={styles.usernameH3}>{pst.username}</h3>
-                </div>
-                {pst.postMentionedPlace ?
-                    <div className={styles.mentioned}>
-                        <p>Mentioned{' '}
-                            <span className={`${styles.highlight} ${styles.word}`} onClick={() => handleClickContainerPlace(pst.postMentionedPlace.place_id)}>{pst.postMentionedPlace.placeName} </span> 
-                            {' '}from{' '}
-                            <span className={`${styles.highlight} ${styles.word}`}>{pst.postMentionedPlace.county}</span>
-                        </p>
-                    </div>
-                    :
-                    null
-                }
-                {(pst.post.account_id === currentUserId || pst.role < currentUserRoleNumber) && (
-                  <button
-                    className={styles.deleteButton}
-                    onClick={() => handleDeletePost(pst.post.post_id)}
-                  >
-                    Delete Post
-                  </button>
-                )}
+      <div className={styles.postContainer}>
+        {posts ? posts.map((pst, index) => (
+          <div key={index} className={styles.postCard}>
+            <div className={styles.topRow}>
+              <div className={styles.avatar}>
+                <img
+                  src={pst.img_url}
+                  alt="Avatar"
+                  className={styles.avatarImg}
+                  onClick={() => handleClickContainer(pst.username)}
+                />
               </div>
-              <div className={styles.middleRow}>
-                {pst.post.urlImgPost && <img src={pst.post.urlImgPost} alt="Post" className={styles.middleRowImg} />}
+              <div className={styles.username}>
+                <h3 className={styles.usernameH3}>{pst.username}</h3>
               </div>
-              <div className={styles.contentRow}>
-                <div className={styles.postContent}>
-                  <p className={styles.postContentP}>{pst.post.contentPost}</p>
-                </div>
-              </div>
-              <div className={styles.bottomRow}>
-                <div className={styles.likeComment}>
-                  <img
-                    src={pst.like ? likeIcon : dislikeIcon}
-                    alt="Like"
-                    className={styles.likeCommentImg}
-                    onClick={() => handleLikeButton(pst.post.post_id, pst.post.account_id)}
-                  />
-                  <p onClick={() => handleDisplayLike(pst.post.post_id)}>
-                    {pst.likeProfile ? pst.likeProfile.length : 0} like
+              {pst.memberActive?
+                (<div className={styles.starIcon}>
+                <img
+                  src={activMemberIcon}
+                  alt="Active member"
+                  className={styles.startImg}
+                />
+                <p className={styles.activeMemberText}>Active member</p>
+                </div>)
+              :
+                null
+              }
+              {pst.postMentionedPlace ?
+                <div className={styles.mentioned}>
+                  <p>Mentioned{' '}
+                    <span className={`${styles.highlight} ${styles.word}`} onClick={() => handleClickContainerPlace(pst.postMentionedPlace.place_id)}>{pst.postMentionedPlace.placeName} </span>
+                    {' '}from{' '}
+                    <span className={`${styles.highlight} ${styles.word}`}>{pst.postMentionedPlace.county}</span>
                   </p>
                 </div>
-                <div className={styles.likeComment}>
-                  <img
-                    src={commentIcon}
-                    alt="Comment"
-                    className={styles.likeCommentImg}
-                    onClick={() => handleCommentButton(pst.post.post_id)}
-                  />
-                </div>
-              </div>
-              <div className={styles.postDate}>
-                {pst.post.post_date_created}
-              </div>
-              {showLikesModal && pst.post.post_id === showLikePost && (
-                <div className="likes-modal">
-                  {pst.likeProfile.map((profile, index) => (
-                    <div className={styles.searchResultItem} key={index}>
-                      <img
-                        src={profile.img_url}
-                        alt={profile.username}
-                        className={styles.avatarProfile}
-                        onClick={() => handleClickContainer(profile.username)}
-                      />
-                      <p>{profile.username}</p>
-                    </div>
-                  ))}
-                </div>
+                :
+                null
+              }
+              {(pst.post.account_id === currentUserId || pst.role < currentUserRoleNumber) && (
+                <button
+                  className={styles.deleteButton}
+                  onClick={() => handleDeletePost(pst.post.post_id)}
+                >
+                  Delete Post
+                </button>
               )}
-              <CommentForm post_id={pst.post.post_id} userAvatar={userAvatar} onComment={handleCommentFetch}/>
-
-              {displayComments && pst.post.post_id === showCommentPostId ?
-               <CommentCard.CommentCard post_id={pst.post.post_id} /> :
-                <div></div>}    
             </div>
-          )) : (
-            <div>No posts to display!</div>
-          )}
-        </div>
-      );
+            <div className={styles.middleRow}>
+              {pst.post.urlImgPost && <img src={pst.post.urlImgPost} alt="Post" className={styles.postImage} />}
+            </div>
+            <div className={styles.contentRow}>
+              <div className={styles.postContent}>
+                <p className={styles.postContentP}>{pst.post.contentPost}</p>
+              </div>
+            </div>
+            <div className={styles.bottomRow}>
+              <div className={styles.likeComment}>
+                <img
+                  src={pst.like ? likeIcon : dislikeIcon}
+                  alt="Like"
+                  className={styles.likeCommentImg}
+                  onClick={() => handleLikeButton(pst.post.post_id, pst.post.account_id)}
+                />
+                <p onClick={() => handleDisplayLike(pst.post.post_id)}>
+                  {pst.likeProfile ? pst.likeProfile.length : 0} like
+                </p>
+              </div>
+              <div className={styles.likeComment}>
+                <img
+                  src={commentIcon}
+                  alt="Comment"
+                  className={styles.likeCommentImg}
+                  onClick={() => handleCommentButton(pst.post.post_id)}
+                />
+              </div>
+            </div>
+            {showLikesModal && pst.post.post_id === showLikePost && (
+              <div className={styles.likesModal}>
+                {pst.likeProfile.map((profile, index) => (
+                  <div className={styles.searchResultItem} key={index}>
+                    <img
+                      src={profile.img_url}
+                      alt={profile.username}
+                      className={styles.avatarProfile}
+                      onClick={() => handleClickContainer(profile.username)}
+                    />
+                    <p>{profile.username}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className={styles.postDate}>
+              {pst.post.post_date_created}
+            </div>
+            <CommentForm post_id={pst.post.post_id} userAvatar={userAvatar} onComment={handleCommentFetch} />
+    
+            {displayComments && pst.post.post_id === showCommentPostId ?
+              <CommentCard.CommentCard post_id={pst.post.post_id} /> :
+              <div></div>}
+          </div>
+        )) : (
+          <div>No posts to display!</div>
+        )}
+      </div>
+    );
+    
     
 };
 

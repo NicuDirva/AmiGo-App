@@ -7,6 +7,7 @@ import org.springframework.data.neo4j.repository.query.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Map;
 
 public interface GroupRepository extends Neo4jRepository<Group, Long> {
     @Query("MATCH (a:Account)\n" +
@@ -106,6 +107,14 @@ public interface GroupRepository extends Neo4jRepository<Group, Long> {
             "WHERE id(g) = $group_id\n" +
             "RETURN id(a) as account_id, a.account_date_created as account_date_created, a.password as password, a.username as username, a.email as email")
     List<Account> getMembersRequestByGroupId(@Param("group_id") long group_id);
+
+    @Query("MATCH(post:Post)<-[:HAS_POST]-(member)-[:MEMBERSHIP]->(group:Group)\n" +
+            "WHERE post.group_id = $group_id and post.account_id = id(member) and id(group) = $group_id\n" +
+            "WITH member, COUNT(post) AS postCount\n" +
+            "RETURN id(member) as id_member\n" +
+            "ORDER BY postCount DESC\n" +
+            "LIMIT 5")
+    List<Long> countPostInGroup(@Param("group_id") long group_id);
 
 
 }

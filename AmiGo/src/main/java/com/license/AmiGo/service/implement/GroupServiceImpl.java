@@ -2,13 +2,13 @@ package com.license.AmiGo.service.implement;
 
 import com.license.AmiGo.model.Account;
 import com.license.AmiGo.model.Group;
-import com.license.AmiGo.model.Profile;
 import com.license.AmiGo.repository.GroupRepository;
 import com.license.AmiGo.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class GroupServiceImpl implements GroupService {
@@ -102,5 +102,8 @@ public class GroupServiceImpl implements GroupService {
     }
     public List<Account> getCommonMembersGroupByAccountId(long account_id) {
         return groupRepository.getCommonMembersGroupByAccountId(account_id);
+    }
+    public List<Long> countPostInGroup(long group_id) {
+        return groupRepository.countPostInGroup(group_id);
     }
 }

@@ -68,3 +68,12 @@
 .highlight {
     color: purple;
 }
+
+.dynamicValue {
+    color: #26005E; /* Schimbă culoarea pentru a evidenția valorile dinamice */
+    font-weight: bold; /* Îngroașă textul pentru a-l evidenția */
+    background-color: #f0f0f0; /* Adaugă un fundal deschis pentru a scoate în evidență */
+    padding: 0 5px; /* Adaugă puțin spațiu în jurul textului */
+    border-radius: 3px; /* Rotunjirea ușoară a colțurilor pentru un aspect mai plăcut */
+}
+

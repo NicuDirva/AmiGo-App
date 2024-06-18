@@ -51,6 +51,9 @@ const MessagePage = () => {
       userConversationsData.push({ userId, username, avatarUrl, latestMessage });
     }
 
+    // Sort conversations by the time of the latest message
+    userConversationsData.sort((a, b) => new Date(b.latestMessage.timeSent) - new Date(a.latestMessage.timeSent));
+
     setUserConversations(userConversationsData);
   };
 
@@ -89,7 +92,7 @@ const MessagePage = () => {
                 <div className={styles.conversationInfo}>
                   <span>{conversation.username}</span>
                   <p>{conversation.latestMessage.content}</p>
-                  <p>{conversation.latestMessage.timeSent}</p>
+                  <p>{new Date(conversation.latestMessage.timeSent).toLocaleString()}</p>
                 </div>
               </div>
             ))}
@@ -97,7 +100,8 @@ const MessagePage = () => {
         </div>
       ) : (
         <div>
-          <p>Nu esti conectat</p>
+          <Navbar/>
+          <p>You are not connected!</p>
         </div>
       )}
     </div>

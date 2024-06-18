@@ -210,7 +210,7 @@ const Friend = () => {
         :
         <div>
           <Navbar />
-          <p>Nu esti conectat la cont!</p>
+          <p>You are not connected!</p>
         </div>
       }
     </div>

@@ -10,7 +10,10 @@
     width: 700px; /* Setează lățimea dorită pentru imagine */
     height: 350px; /* Setează înălțimea dorită pentru imagine */
     object-fit: cover;
+    border: 2px solid #333; /* Adaugă un border solid de 5px cu culoarea #333 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adaugă un efect de umbră pentru a evidenția imaginea */
 }
+
 
 .iconImage {
     width: 40px; /* Set a smaller size for the icons */
@@ -92,7 +95,7 @@
 }
 
 .editGroupFields {
-    margin-left: 245px;
+    margin-left: 340px;
 }
 .groupNameContainer {
     display: flex;

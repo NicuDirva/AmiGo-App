@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useGlobalState } from '../state';
 import Auth from '../auth/Auth';
-import './css/CommentForm.css';
+import styles from './css/CommentForm.module.css';
 
 const urlBase = "http://localhost:8080/";
 
@@ -70,26 +70,27 @@ const CommentForm = ({ post_id, userAvatar, onComment }) => {
     };
 
     return (
-        <div className="comment-form-container">
-            <div className="avatar">
-                <img src={userAvatar} alt="Avatar" />
+        <div className={styles.commentFormContainer}>
+          <div className={styles.avatar}>
+            <img src={userAvatar} alt="Avatar" />
+          </div>
+          <form onSubmit={handleSubmit}>
+            <textarea
+              value={commentContent}
+              onChange={(e) => setCommentContent(e.target.value)}
+              placeholder="Add a comment..."
+              rows="3"
+              className={styles.textarea}
+            ></textarea>
+            <div
+              className={`${styles.submitText} ${commentContent.trim() ? styles.enabled : ''}`}
+              onClick={commentContent.trim() ? handleSubmit : null}
+            >
+              Post Comment
             </div>
-            <form onSubmit={handleSubmit}>
-                <textarea
-                    value={commentContent}
-                    onChange={(e) => setCommentContent(e.target.value)}
-                    placeholder="Add a comment..."
-                    rows="3"
-                ></textarea>
-                <div
-                    className={`submit-text ${commentContent.trim() ? 'enabled' : ''}`}
-                    onClick={commentContent.trim() ? handleSubmit : null}
-                >
-                    Post Comment
-                </div>
-            </form>
+          </form>
         </div>
-    );
+      );
 };
 
 export default CommentForm;

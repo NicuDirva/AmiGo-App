@@ -89,7 +89,10 @@ const MessageCard = () => {
           </div>
         </div>
       ) : (
-        <div>You are not connected</div>
+        <div>
+          <Navbar/>
+          <p>You are not connected!</p>
+          </div>
       )}
     </div>
   );

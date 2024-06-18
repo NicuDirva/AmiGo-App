@@ -5,6 +5,10 @@
     height: 100%;
     background-color: aliceblue;
   }
+  .home-page{
+    margin-top: 85px;
+    width: 100%;
+  }
   .recommendation-container {
     display: flex;
     overflow-x: auto; /* Permite scroll pe orizontală */
@@ -28,4 +32,11 @@
 .recommendation-item h3 {
     margin: 10px 0;
     font-size: 14px; /* Opțional: Redu dimensiunea fontului pentru un aspect mai compact */
+}
+.homeContainer {
+  display: flex; /* Activează Flexbox */
+  flex-direction: column; /* Aranjează elementele pe verticală */
+  justify-content: center; /* Centrează elementele pe axa verticală (dacă containerul are o înălțime definită) */
+  align-items: center; /* Centrează elementele pe axa orizontală */
+  height: 100%; 
 }

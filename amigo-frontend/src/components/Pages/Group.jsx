@@ -73,7 +73,7 @@ const Group = () => {
             :
             <div>
               <Navbar />
-              <p>Nu esti conectat la cont</p>
+              <p>You are not connected!</p>
             </div>
           }
         </div>
@@ -482,5 +482,26 @@ const deleteCreateGroupRelationship = async (creator_id, group_id) => {
   }
 }
 
+const countPostInGroup = async (group_id) => {
+  try {
+      const response2 = await fetch(`${urlBase}group/countPostInGroup`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(group_id),
+      });
 
-export default  { Group, deletePostByGroupId, getAllPlaces, deletePostByAccountId, deleteCommentByPostId, getMembershipRequestsByGroupId, deleteCreateGroupRelationship, createCreateGroupRelationship, deleteByGroupId, getAdminByGroupId, handleJoin, handleDeleteJoinRequest, deletePost, deleteComment, createAdminRelationship, deleteAdminRelationship, deleteMembershipRelationship, getAllGroup, checkAdminGroup, checkCreatorGroup, getGroupByCreatorId, getMembershipsByGroupId, getGroupById, getPostsByGroupId, getAllMemberGroupByAccountId } 
+      if (!response2.ok) {
+        throw new Error(`HTTP error! status: ${response2.status}`);
+      }
+
+      const data = await response2.json();
+      return data;
+  } catch (error) {
+      console.error("Error getting group:", error);
+      return [];
+  }
+}
+
+export default  { Group, countPostInGroup, deletePostByGroupId, getAllPlaces, deletePostByAccountId, deleteCommentByPostId, getMembershipRequestsByGroupId, deleteCreateGroupRelationship, createCreateGroupRelationship, deleteByGroupId, getAdminByGroupId, handleJoin, handleDeleteJoinRequest, deletePost, deleteComment, createAdminRelationship, deleteAdminRelationship, deleteMembershipRelationship, getAllGroup, checkAdminGroup, checkCreatorGroup, getGroupByCreatorId, getMembershipsByGroupId, getGroupById, getPostsByGroupId, getAllMemberGroupByAccountId } 
