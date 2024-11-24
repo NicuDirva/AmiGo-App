@@ -32,6 +32,7 @@ const GroupPostCard = ({groupIdParm}) => {
     const fetchData = async () => {
         if(defaultEmail) {
             const fetchedPosts = await Group.getPostsByGroupId(groupIdParm);
+            console.log("Postarile din grup", fetchedPosts)
             const currentId = await Auth.getIdByEmail(defaultEmail);
             const currentAvatar = await PostCard.getAvatarProfileById(currentId);
             setUserAvatar(currentAvatar);

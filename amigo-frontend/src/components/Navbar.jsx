@@ -87,6 +87,8 @@ function Navbar() {
                     className={styles.searchIcon}
                     src={search_icon}
                     alt="search_icon"
+                    onMouseEnter={() => handleMouseEnter('Search')}
+                    onMouseLeave={handleMouseLeave}
                   />
                 </button>
               </div>

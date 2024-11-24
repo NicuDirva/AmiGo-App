@@ -153,7 +153,9 @@ const GroupCard = () => {
             if (isOwner) {
                 const members = await Group.getAdminByGroupId(groupIdParm);
                 const admins = await Group.getMembershipsByGroupId(groupIdParm);
-                if(!members && !admins) {
+                console.log("Membrii:", members);
+                console.log("Admins:", admins);
+                if(!members.length && !admins.length) {
                     const groupDeletedPost = await Group.getPostsByGroupId(groupIdParm);
                     await Group.deletePostByGroupId(groupIdParm);
                     await Group.deleteByGroupId(groupIdParm);
@@ -161,7 +163,7 @@ const GroupCard = () => {
                     for(const post of groupDeletedPost) {
                         await Group.deleteCommentByPostId(post.post_id);
                     }
-                    navigate(`/group`)
+                    console.log("GRUP STERSSSSSSSSSS!");
                 }
                 else {
                     await Group.deleteCreateGroupRelationship(currentId, groupIdParm);
@@ -176,9 +178,9 @@ const GroupCard = () => {
                         await handleGroupOwnership(randomMember.account_id);
                     } else {
                         await Group.deleteByGroupId(groupIdParm);
-                        navigate(`/group`);
                     }
                 }
+                navigate(`/group`);
             }
             fetchData();
         } catch (error) {
@@ -259,7 +261,7 @@ const GroupCard = () => {
             }
 
             const response = await fetch(urlBase + "group/editGroup", {
-                method: "POST",
+                method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(group)
             });
